@@ -1174,10 +1174,71 @@ let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidt
 })();
 </script>
 
-<figure id="policy-curves" style="margin: 48px 0 0; scroll-margin-top: 88px">
-<figcaption style="margin: 0 0 16px; font: 500 clamp(1.25rem, 2.6vw, 1.75rem)/1.3 'Space Grotesk', Inter, sans-serif; color: #ECEEF1">Policy curves</figcaption>
-<div style="min-height: clamp(160px, 23vw, 260px); display: grid; place-items: center; background: #101317; border: 1px dashed #404650; border-radius: 12px; color: #A3AAB5; font: 13px/1.5 'JetBrains Mono', ui-monospace, monospace">Figure placeholder</div>
+<section id="policy-curves" aria-labelledby="pe-heading">
+<style>
+#policy-curves{margin:64px 0 0;scroll-margin-top:88px;color:#eceef1}
+#policy-curves h3{margin:0;font:500 clamp(1.65rem,3vw,2.25rem)/1.2 'Space Grotesk',Inter,sans-serif;letter-spacing:-.025em}
+#policy-curves .pe-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:16px;align-items:stretch;margin-top:22px}
+#policy-curves .pe-panel{min-width:0;margin:0;padding:clamp(16px,2vw,24px);background:#111418;border:1px solid #2a2e37;border-radius:14px}
+#policy-curves h4{margin:0;font:600 18px/1.35 'Space Grotesk',Inter,sans-serif}
+#policy-curves .pe-note{margin:5px 0 0;color:#a3aab5;font:14px/1.5 Inter,sans-serif}
+#policy-curves .pe-group{margin-top:18px}
+#policy-curves h5{margin:0 0 4px;font:600 14px/1.5 Inter,sans-serif}
+#policy-curves .pe-row{box-sizing:border-box;width:100%;display:grid;grid-template-columns:6em 1fr 3.5em;align-items:center;gap:8px;min-height:34px;padding:5px 8px;margin:2px 0;border:1px solid transparent;border-radius:6px;background:transparent;color:#d8dde6;text-align:left;cursor:pointer;font:13px/1.45 Inter,sans-serif}
+#policy-curves .pe-row:hover{background:#1c2028}
+#policy-curves .pe-row[aria-pressed=true]{background:#23212b;border-color:#5b506e}
+#policy-curves .pe-row:focus-visible{outline:2px solid #c7b2f3;outline-offset:2px}
+#policy-curves .pe-track{height:9px;border-radius:2px;background:#282c34;overflow:hidden}
+#policy-curves .pe-track i{display:block;width:var(--score);height:100%;background:var(--bar)}
+#policy-curves .pe-score{text-align:right;font-variant-numeric:tabular-nums}
+#policy-curves video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#090b0e;border-radius:8px}
+#policy-curves figcaption{margin:12px 0 0}
+#policy-curves .pe-caption-title{display:block;font-weight:600;font-size:16px}
+#policy-curves .pe-meta{display:block;margin-top:3px;color:#a3aab5;font-size:13px}
+@media(max-width:760px){#policy-curves .pe-grid{grid-template-columns:minmax(0,1fr)}#policy-curves .pe-row{min-height:42px}}
+</style>
+<h3 id="pe-heading">Policy evaluation</h3>
+<div class="pe-grid">
+<div class="pe-panel">
+<h4>Real-robot success rate</h4>
+<p class="pe-note">10 trials per training set and task. Select a bar to watch one trial.</p>
+<div class="pe-group" role="group" aria-label="Fruit sorting"><h5>Fruit sorting</h5>
+<button type="button" class="pe-row" aria-label="Fruit sorting, Real, 40% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-real.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-real.jpg" data-title="Fruit sorting · Real" data-outcome="Failure" style="--score:40%;--bar:#9ba9bc"><span>Real</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">40%</span></button>
+<button type="button" class="pe-row" aria-label="Fruit sorting, OMP, 70% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-sim.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-sim.jpg" data-title="Fruit sorting · OMP" data-outcome="Success" style="--score:70%;--bar:#c7b2f3"><span>OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">70%</span></button>
+<button type="button" class="pe-row" aria-label="Fruit sorting, Real + OMP, 90% success. Show recording." aria-pressed="true" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.jpg" data-title="Fruit sorting · Real + OMP" data-outcome="Success" style="--score:90%;--bar:#efcc85"><span>Real + OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">90%</span></button></div>
+<div class="pe-group" role="group" aria-label="Bottle on tray"><h5>Bottle on tray</h5>
+<button type="button" class="pe-row" aria-label="Bottle on tray, Real, 20% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-real.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-real.jpg" data-title="Bottle on tray · Real" data-outcome="Failure" style="--score:20%;--bar:#9ba9bc"><span>Real</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">20%</span></button>
+<button type="button" class="pe-row" aria-label="Bottle on tray, OMP, 70% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-sim.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-sim.jpg" data-title="Bottle on tray · OMP" data-outcome="Success" style="--score:70%;--bar:#c7b2f3"><span>OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">70%</span></button>
+<button type="button" class="pe-row" aria-label="Bottle on tray, Real + OMP, 60% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-mixed.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-mixed.jpg" data-title="Bottle on tray · Real + OMP" data-outcome="Success" style="--score:60%;--bar:#efcc85"><span>Real + OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">60%</span></button></div>
+</div>
+<figure class="pe-panel" id="pe-recording">
+<video src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.mp4" poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.jpg" playsinline controls preload="none" aria-labelledby="pe-caption-title"></video>
+<figcaption aria-live="polite" aria-atomic="true"><span class="pe-caption-title" id="pe-caption-title">Fruit sorting · Real + OMP</span><span class="pe-meta">Layout 1 · Trial 1 · <span data-pe-outcome>Success</span></span></figcaption>
 </figure>
+</div>
+</section>
+<script>
+(() => {
+  const panel = document.getElementById('policy-curves');
+  const video = panel.querySelector('video');
+  const title = panel.querySelector('#pe-caption-title');
+  const outcome = panel.querySelector('[data-pe-outcome]');
+  const rows = panel.querySelectorAll('.pe-row');
+  for (const row of rows) {
+    row.addEventListener('click', () => {
+      if (row.getAttribute('aria-pressed') !== 'true') {
+        video.pause();
+        video.poster = row.dataset.poster;
+        video.src = row.dataset.src;
+        title.textContent = row.dataset.title;
+        outcome.textContent = row.dataset.outcome;
+        for (const item of rows) item.setAttribute('aria-pressed', String(item === row));
+      }
+      video.play().catch(() => {});
+    });
+  }
+})();
+</script>
 
 </div>
 </section>
