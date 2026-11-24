@@ -243,8 +243,13 @@
     return section;
   }
   function buildRouteCarousel(slides) {
-    const carousel = document.createElement('div');
+    const carousel = document.createElement('section');
     carousel.className = 'mg-route-carousel';
+    const title = document.createElement('h4');
+    title.className = 'mg-route-heading';
+    title.id = 'mg-route-heading';
+    title.innerHTML = 'One scene. <span>Many ways to <em>roam.</em></span>';
+    carousel.setAttribute('aria-labelledby', title.id);
     const picker = document.createElement('div');
     picker.className = 'mg-route-picker';
     picker.setAttribute('role','group');
@@ -255,17 +260,23 @@
     const disclosure = document.createElement('button');
     disclosure.type = 'button';
     disclosure.className = 'mg-route-disclosure';
-    disclosure.textContent = 'Scenes';
-    disclosure.setAttribute('aria-label', 'Choose a navigation scene');
+    disclosure.textContent = slides[0].row.title;
+    disclosure.setAttribute('aria-label', slides[0].row.title + ', choose a navigation scene');
     picker.id = 'mg-route-choices';
     disclosure.setAttribute('aria-controls', picker.id);
-    selector.append(disclosure, picker);
+    const heading = document.createElement('h5');
+    heading.append(disclosure);
+    const copy = document.createElement('div');
+    copy.className = 'mg-route-copy';
+    copy.append(heading);
+    selector.append(picker, copy);
     const bar = document.createElement('header');
     bar.className = 'mg-route-bar';
     const summary = slides[0].section.querySelector('.mg-pair-copy p');
     const replay = slides[0].section.querySelector('.mg-pair-reset');
-    bar.append(selector, summary, replay);
-    carousel.append(bar);
+    copy.append(summary);
+    bar.append(selector, replay);
+    carousel.append(title, bar);
     let open = false;
     function setOpen(value) {
       open = value;
@@ -326,6 +337,8 @@
         section.hidden = n !== current;
         buttons[n].setAttribute('aria-pressed',n === current);
       });
+      disclosure.textContent = slides[current].row.title;
+      disclosure.setAttribute('aria-label', slides[current].row.title + ', choose a navigation scene');
       summary.textContent = slides[current].row.description;
       replay.setAttribute('aria-label', 'Restart ' + slides[current].row.title + ' routes');
       arrange();
