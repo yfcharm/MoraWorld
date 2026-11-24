@@ -1,0 +1,9 @@
+#mobile-showcase .mg-window .mg-space-translucent:not(.mg-is-map) {
+  background: linear-gradient(145deg, rgb(17 28 39 / 58%), rgb(8 15 23 / 68%));
+  border-color: rgb(176 199 222 / 42%);
+  box-shadow: 0 4px 14px rgb(3 7 12 / 25%);
+}
+
+#mobile-showcase .mg-space-translucent:not(.mg-is-map) :is(.mg-space-heading, .mg-space-key) {
+  background: rgb(6 12 20 / 20%);
+}

@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoraWorld · Long rollouts</title>
+
+<link rel="stylesheet" href="video-browse.css">
+
+<style>
+:root {
+  color-scheme: dark;
+  --page: #0b0d10;
+  --surface: #14171c;
+  --line: #2a3038;
+  --white: #eceef1;
+  --muted: #a3aab5;
+  --accent: #a582ff;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --heading: "Space Grotesk", Inter, system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--white); background: var(--page); font: 16px/1.5 Inter, system-ui, sans-serif; }
+.site-header { border-bottom: 1px solid #1f242b; }
+.site-nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px 20px;
+  flex-wrap: wrap; max-width: 1168px; margin: auto; padding: 12px 24px;
+}
+.site-brand {
+  font: 600 20px/1.4 var(--heading); text-decoration: none; color: var(--white);
+}
+.section-nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.section-nav a { color: var(--muted); font-size: 13px; text-decoration: none; padding: 5px 0; }
+.section-nav a:hover, .section-nav a[aria-current="page"] { color: #d8c6ff; }
+main { max-width: 1128px; padding: clamp(24px, 3vw, 40px) 24px 48px; margin: auto; }
+.eyebrow, figcaption { font: 500 11px/1.5 var(--mono); }
+.eyebrow { margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: .13em; }
+h1 {
+  margin: 8px 0 0; font: 600 clamp(32px, 3.7vw, 48px)/1.06 var(--heading);
+  letter-spacing: -.035em;
+}
+.scene-description { color: var(--muted); margin: 12px 0 16px; max-width: 30ch; font-size: 15px; }
+.scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 360px; user-select: none; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.scene {
+  position: relative; display: block; overflow: hidden;
+  padding: 0; aspect-ratio: 2.35;
+  background: var(--surface); border: 1px solid #47414e; border-radius: 6px;
+  transition: border-color 180ms, box-shadow 180ms;
+}
+.scene img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transition: transform 260ms ease-out;
+}
+.scene:hover { border-color: #c9b5ff; }
+.scene:hover img { transform: scale(1.07); }
+.scene[aria-pressed="true"] {
+  border-color: var(--accent); outline: 1px solid var(--accent);
+}
+.viewer { margin: 0; }
+.views {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr);
+  grid-template-rows: 1fr auto;
+  grid-template-areas: "overview generated" "operator generated"; gap: 18px 22px;
+}
+.overview { grid-area: overview; }
+.view { min-width: 0; margin: 0; }
+.operator-view { grid-area: operator; }
+.generated-view { grid-area: generated; align-self: start; }
+figcaption { margin-bottom: 9px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+.generated-view figcaption { color: #c9b5ff; }
+video {
+  display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--line);
+  background: var(--surface); border-radius: 8px; object-fit: contain;
+}
+.generated-view video { aspect-ratio: 832 / 480; }
+.generated-frame { position: relative; }
+.rollout-clock {
+  position: absolute; top: clamp(8px, 2vw, 16px); left: clamp(8px, 2vw, 16px); z-index: 1;
+  display: grid; gap: 3px; padding: 8px 12px; border-radius: 7px;
+  border: 1px solid rgb(201 181 255 / 27%); background: rgb(11 13 16 / 90%);
+  font-family: var(--mono); font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.rollout-clock[hidden] { display: none; }
+.clock-label { color: #c9b5ff; font-size: clamp(8px, 1.1vw, 10px); letter-spacing: .11em; line-height: 1.3; }
+.clock-value { display: flex; align-items: baseline; gap: 7px; line-height: 1; }
+.clock-elapsed { font-size: clamp(21px, 3vw, 37px); font-weight: 500; }
+.clock-total { color: #b5bdc8; font-size: clamp(11px, 1.3vw, 16px); }
+.scene-preview {
+  position: absolute; inset: 1px; overflow: hidden; border-radius: 7px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 180ms ease;
+}
+.scene-preview[data-visible="true"] { opacity: 1; }
+.scene-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+@media (prefers-reduced-motion: reduce) {
+  .scene, .scene img, .scene-preview { transition: none; }
+  .scene:hover img { transform: none; }
+}
+.controls {
+  margin-top: 12px; display: flex; align-items: center; gap: 10px;
+}
+.play {
+  min-width: 68px; min-height: 40px; border: 0; border-radius: 5px;
+  background: var(--accent); color: var(--page); font-size: 13px; font-weight: 600;
+}
+.play:hover { background: #bc9fff; }
+.play:disabled { opacity: .6; cursor: wait; }
+.play-icon { display: none; }
+.long-rollout .play {
+  display: grid; place-items: center; width: 44px; height: 44px; min-width: 0;
+  background: var(--surface); color: #e0d1ff; border: 1px solid var(--line); border-radius: 50%;
+}
+.long-rollout .play:hover { background: #201a2b; border-color: #7963a3; }
+.long-rollout .play-label { display: none; }
+.long-rollout .play-icon {
+  display: block; width: 14px; height: 14px; background: currentColor;
+  clip-path: polygon(25% 6%, 91% 50%, 25% 94%);
+}
+.long-rollout .play[data-playing="true"] .play-icon {
+  width: 11px; height: 12px; clip-path: none;
+  background: linear-gradient(to right, currentColor 0 28%, transparent 28% 72%, currentColor 72% 100%);
+}
+.speed-select {
+  min-height: 34px; padding: 0 6px; color: var(--muted); background: transparent;
+  border: 1px solid transparent; border-radius: 6px; font: 500 11px/1.3 var(--mono);
+}
+.speed-select:hover { background: var(--surface); border-color: var(--line); }
+.speed-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.task-browser { margin-top: 22px; }
+.task-browser-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+.task-browser h2 { margin: 0; font: 600 16px/1.4 var(--heading); }
+.task-count { margin-right: 5px; color: var(--muted); font: 500 11px/1.5 var(--mono); }
+.task-rail {
+  position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: clamp(132px, 15vw, 184px);
+  gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; padding: 4px 4px 10px;
+  scrollbar-color: #574476 var(--surface);
+}
+.task-rail .scene { min-height: 76px; scroll-snap-align: start; }
+#status { color: #e7c9bb; font-size: 13px; }
+#status:empty { display: none; }
+@media (max-width: 880px) {
+  .views { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: "overview" "generated" "operator"; gap: 16px; }
+  .operator-view { width: min(60%, 324px); min-width: 184px; }
+}
+@media (max-width: 650px) {
+  main { padding-inline: 16px; }
+  .site-nav { padding-inline: 16px; }
+}
+main{padding:0}.scenes{grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px}
+.scene{aspect-ratio:1.65}.scene span{position:absolute;bottom:0;inset-inline:0;text-align:left;padding:.9rem .45rem .3rem;color:white;background:linear-gradient(transparent,#101014ed);font-weight:600;font-size:13px}
+#seek{min-width:0;flex:1;accent-color:#bd9bff}
+.controls{max-width:none;gap:14px}h1{font-size:clamp(24px,2.8vw,35px)}.scene-description{max-width:34ch}
+@media(max-width:650px){.views{gap:12px}.scenes{max-width:250px}.scene{aspect-ratio:2.2}.scene span{font-size:11px}.operator-view{width:55%}}
+.many-scenes {grid-template-columns:repeat(3,minmax(0,1fr));max-height:226px;overflow:auto;align-content:start}
+.tele-variants {display:flex;gap:4px;margin:10px 0}.tele-variants[hidden]{display:none}.tele-variants button{color:#c6c3cf;background:#15171e;border:1px solid #36363e;border-radius:5px;padding:5px 9px}.tele-variants button[aria-pressed=true]{color:#e6d8ff;background:#31263f;border-color:#a88bcf}
+@media(max-width:650px){.scenes.many-scenes{max-width:none;max-height:145px}}
+</style>
+</head>
+<body class="long-rollout">
+
+<main>
+  <section class="viewer" aria-label="Synchronized VR teleoperation demo">
+    <div class="views">
+      <div class="overview">
+        <p class="eyebrow">VR teleoperation</p>
+        <h1>10-minute generation demo.</h1>
+        <p class="scene-description" id="caption">Watch the operator and the generated view on the same 24 fps timeline.</p>
+        <div class="scenes" role="group" aria-label="Choose a scene">
+        </div>
+        <div class="tele-variants" role="group" aria-label="Embodiment" hidden><button data-variant="human">Human hands</button><button data-variant="robot">Robot arms</button></div>
+      </div>
+      <figure class="view generated-view">
+        <figcaption id="generated-label">MoraWorld · Generated view</figcaption>
+        <div class="generated-frame video-browse" role="group" tabindex="0" aria-labelledby="generated-label" aria-describedby="swipe-hint">
+          <video id="generated" aria-labelledby="generated-label" playsinline muted preload="metadata"
+                 poster="long/coastal-boardwalk-10min-generated.jpg"></video>
+          <div class="scene-preview" aria-hidden="true"><img alt=""></div>
+          <div class="rollout-clock">
+            <span class="clock-label">PLAYBACK TIME</span>
+            <div class="clock-value"><span class="clock-elapsed" id="clock-elapsed">00:00</span><span class="clock-total" id="clock-total"></span></div>
+          </div>
+        </div>
+        <div class="browse-footer">
+          <p class="swipe-hint" id="swipe-hint">
+            <span class="swipe-hint-icon" aria-hidden="true">↕</span>
+            <span><span class="touch-hint">Swipe up or down</span><span class="wheel-hint">Scroll on the video</span> to switch clips · Hold center to speed up</span>
+          </p>
+          <div class="browse-buttons" role="group" aria-label="Browse videos">
+            <button class="browse-button" type="button" data-direction="-1" aria-label="Previous video" title="Previous video"></button>
+            <button class="browse-button" type="button" data-direction="1" aria-label="Next video" title="Next video"></button>
+          </div>
+        </div>
+      </figure>
+      <figure class="view operator-view">
+        <figcaption id="operator-label">VR operator</figcaption>
+        <video id="operator" aria-labelledby="operator-label" playsinline muted preload="metadata"
+               poster="long/coastal-boardwalk-10min-operator.jpg"></video>
+      </figure>
+    </div>
+    <div class="controls">
+      <button class="play" id="play" type="button" aria-label="Play" disabled>
+        <span class="play-label">Play</span><span class="play-icon" aria-hidden="true"></span>
+      </button>
+      <input id="seek" aria-label="Seek both recordings" type="range" min="0" max="600" step="0.1" value="0" disabled>
+      <select class="speed-select" id="speed" aria-label="Playback speed">
+        <option value="auto">Auto speed</option>
+        <option value="1">1×</option>
+        <option value="2">2×</option>
+        <option value="4">4×</option>
+        <option value="8">8×</option>
+        <option value="16" selected>16×</option>
+      </select>
+    </div>
+    <p id="status" role="status"></p>
+
+  </section>
+</main>
+<script src="video-browse.js"></script>
+<script src="video-effects.js"></script>
+<script>
+const generated = document.querySelector('#generated');
+const operator = document.querySelector('#operator');
+const videos = [generated, operator];
+const play = document.querySelector('#play');
+const playLabel = play.querySelector('.play-label');
+const clockElapsed = document.querySelector('#clock-elapsed');
+const clockTotal = document.querySelector('#clock-total');
+const speed = document.querySelector('#speed');
+const status = document.querySelector('#status');
+const generatedFrame = document.querySelector('.generated-frame');
+const setNormalRate = bindVideoEffects(generatedFrame, videos);
+const preview = document.querySelector('.scene-preview');
+const rolloutMinutes = 10;
+const seek = document.querySelector('#seek');
+const browseButtons = document.querySelector('.browse-buttons');
+let playbackRequest = 0;
+let autoplay = false;
+const groups = {
+  "long": [
+    [
+      "long/coastal-boardwalk-10min",
+      "Coastal boardwalk"
+    ],
+    [
+      "long/case318-232008-10min",
+      "Tabletop manipulation"
+    ]
+  ],
+  "roaming": [
+    [
+      "tokyo",
+      "Tokyo"
+    ],
+    [
+      "castle",
+      "Castle"
+    ],
+    [
+      "conference",
+      "Conference"
+    ],
+    [
+      "titanic",
+      "Titanic"
+    ],
+    [
+      "classroom",
+      "Classroom"
+    ],
+    [
+      "chongqing",
+      "Chongqing"
+    ]
+  ],
+  "robot": [
+    [
+      "robot/storage",
+      "Storage"
+    ],
+    [
+      "robot/washer",
+      "Washer"
+    ],
+    [
+      "robot/fold-shirt",
+      "Fold shirt"
+    ],
+    [
+      "robot/shoelaces",
+      "Shoelaces"
+    ],
+    [
+      "robot/laundry",
+      "Laundry"
+    ],
+    [
+      "robot/hang-shirt",
+      "Hang shirt"
+    ],
+    [
+      "robot/toaster",
+      "Toaster"
+    ],
+    [
+      "robot/fridge",
+      "Fridge"
+    ],
+    [
+      "robot/packing",
+      "Packing"
+    ],
+    [
+      "robot/name-card",
+      "Name card"
+    ],
+    [
+      "robot/checkout",
+      "Checkout"
+    ]
+  ],
+  "novel": [
+    [
+      "novel/lipstick",
+      "Lipstick"
+    ],
+    [
+      "novel/blanket",
+      "Blanket"
+    ],
+    [
+      "novel/eggs",
+      "Eggs"
+    ],
+    [
+      "novel/pool",
+      "Pool"
+    ],
+    [
+      "novel/cat",
+      "Cat"
+    ],
+    [
+      "novel/doudizhu",
+      "Doudizhu"
+    ],
+    [
+      "novel/wukong",
+      "Wukong"
+    ],
+    [
+      "novel/driving",
+      "Driving"
+    ],
+    [
+      "novel/cake",
+      "Cake"
+    ],
+    [
+      "novel/door",
+      "Door"
+    ],
+    [
+      "novel/pet-cat",
+      "Pet cat"
+    ],
+    [
+      "novel/tug",
+      "Tug"
+    ]
+  ]
+};
+const requested = new URLSearchParams(location.search).get('section');
+const group = Object.hasOwn(groups, requested) ? requested : 'long';
+const paired = new Set(['novel/lipstick','novel/blanket','novel/eggs','novel/pool','novel/cat','novel/doudizhu']);
+const variants = document.querySelector('.tele-variants');
+const choices = new Map();
+function variantFor(key) { return choices.get(key) || (key === 'novel/lipstick' ? 'robot' : 'human'); }
+function fileStem(key) { return paired.has(key) ? key + '-' + variantFor(key) : key; }
+const picker = document.querySelector('.scenes');
+for (const [key,name] of groups[group]) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.className = 'scene'; button.dataset.scene = key;
+  button.setAttribute('aria-label', name); button.setAttribute('aria-pressed','false');
+  const image = document.createElement('img'); image.alt = ''; image.loading = 'lazy'; image.src = fileStem(key)+'-generated.jpg';
+  const label = document.createElement('span'); label.textContent = name; button.append(image,label); picker.append(button);
+}
+const headings = {roaming:['Move and look around.','Follow the VR operator through six environments.'],robot:['Robot manipulation','Each rollout starts from a frame sampled from a robot dataset.'],novel:['New scenes','Explore the generated scene alongside the VR operator.']};
+if (group !== 'long') {
+  picker.classList.add('many-scenes');
+  document.querySelector('h1').textContent = headings[group][0];
+  document.querySelector('#caption').textContent = headings[group][1];
+  speed.value = '1';
+}
+variants.addEventListener('click', event => {
+  const option = event.target.closest('button[data-variant]');
+  if (!option) return;
+  const button = picker.querySelector('[aria-pressed=true]');
+  choices.set(button.dataset.scene,option.dataset.variant);
+  button.setAttribute('aria-pressed','false');
+  button.querySelector('img').src=fileStem(button.dataset.scene)+'-generated.jpg';
+  selectScene(button);
+});
+const scenes = Array.from(document.querySelectorAll('.scene'));
+
+function formatTime(seconds) {
+  const whole = Math.floor(Math.max(0, seconds || 0));
+  return Math.floor(whole / 60) + ':' + String(whole % 60).padStart(2, '0');
+}
+
+function syncRate(seconds) {
+  let rate = Number(speed.value);
+  if (speed.value === 'auto') {
+    if (seconds < 10) rate = 1;
+    else if (seconds < 60 || seconds >= rolloutMinutes * 60 - 15) rate = 4;
+    else rate = 16;
+  }
+  setNormalRate(rate);
+}
+
+function updateTime() {
+  const ready = videos.every(video => Number.isFinite(video.duration));
+  play.disabled = !ready;
+  seek.disabled = !ready;
+  if (!ready) return;
+  const duration = Math.min(generated.duration, operator.duration);
+  const at = Math.min(generated.currentTime, duration);
+  syncRate(at);
+  seek.max = duration;
+  seek.value = at;
+  clockElapsed.textContent = formatTime(at).padStart(5, '0');
+  clockTotal.textContent = '/ ' + formatTime(duration).padStart(5, '0');
+}
+
+function showPlaybackState(playing) {
+  const label = playing ? 'Pause' : 'Play';
+  playLabel.textContent = label;
+  play.setAttribute('aria-label', label);
+  play.title = label;
+  play.dataset.playing = String(playing);
+}
+
+function pauseBoth() {
+  playbackRequest += 1;
+  videos.forEach(video => video.pause());
+  showPlaybackState(false);
+}
+
+function rewind() {
+  videos.forEach(video => { video.currentTime = 0; });
+  updateTime();
+}
+
+async function startPlayback() {
+  preview.dataset.visible = 'false';
+  if (Number.isFinite(generated.duration)) {
+    if (generated.ended) rewind();
+    operator.currentTime = generated.currentTime;
+  }
+  const request = ++playbackRequest;
+  status.textContent = '';
+  showPlaybackState(true);
+  try {
+    await Promise.all(videos.map(video => video.play()));
+  } catch {
+    if (request !== playbackRequest) return;
+    autoplay = false;
+    pauseBoth();
+    status.textContent = 'Playback could not start. Try pressing Play again.';
+  }
+}
+
+play.addEventListener('click', () => {
+  if (!generated.paused) {
+    autoplay = false;
+    pauseBoth();
+  } else {
+    autoplay = true;
+    startPlayback();
+  }
+});
+
+seek.addEventListener('input', () => {
+  for (const video of videos) video.currentTime = Number(seek.value);
+});
+speed.addEventListener('change', () => syncRate(generated.currentTime));
+generated.addEventListener('timeupdate', () => {
+  updateTime();
+  const syncTolerance = Math.max(0.12, generated.playbackRate * 0.075);
+  if (!generated.paused && !operator.seeking && Math.abs(operator.currentTime - generated.currentTime) > syncTolerance) {
+    operator.currentTime = generated.currentTime;
+  }
+});
+generated.addEventListener('ended', () => {
+  if (!generated.ended) return;
+  pauseBoth();
+  rewind();
+  if (autoplay) startPlayback();
+});
+videos.forEach(video => {
+  video.addEventListener('loadedmetadata', updateTime);
+  video.addEventListener('error', () => {
+    pauseBoth();
+    status.textContent = 'This video could not load.';
+  });
+});
+
+function selectScene(button) {
+  preview.dataset.visible = 'false';
+  if (button.getAttribute('aria-pressed') === 'true') return;
+  pauseBoth();
+  scenes.forEach(scene => scene.setAttribute('aria-pressed', String(scene === button)));
+  const scene = button.dataset.scene;
+  variants.hidden = !paired.has(scene);
+  variants.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.variant === variantFor(scene))));
+  loadScene(fileStem(scene));
+}
+
+function loadScene(scene) {
+  status.textContent = '';
+  clockElapsed.textContent = '00:00';
+  seek.value = 0;
+  play.disabled = seek.disabled = true;
+  for (const video of videos) {
+    video.poster = scene + '-' + video.id + '.jpg';
+    video.src = scene + '-' + video.id + '.mp4';
+    video.load();
+  }
+  if (autoplay) startPlayback();
+}
+
+function advanceScene(direction) {
+  const current = scenes.findIndex(button => button.getAttribute('aria-pressed') === 'true');
+  const next = (current + direction + scenes.length) % scenes.length;
+  selectScene(scenes[next]);
+  animateVideoBrowse(generatedFrame, direction);
+}
+
+scenes.forEach((button, index) => {
+  button.addEventListener('click', () => selectScene(button));
+  button.addEventListener('pointerenter', event => {
+    if (event.pointerType !== 'mouse' || !generated.paused || button.getAttribute('aria-pressed') === 'true') return;
+    preview.querySelector('img').src = button.querySelector('img').src;
+    preview.dataset.visible = 'true';
+  });
+  button.addEventListener('pointerleave', () => { preview.dataset.visible = 'false'; });
+  button.addEventListener('keydown', event => {
+    const direction = { ArrowLeft: -1, ArrowRight: 1 }[event.key];
+    if (!direction) return;
+    event.preventDefault();
+    const target = scenes[index + direction];
+    if (!target) return;
+    target.focus();
+    selectScene(target);
+  });
+});
+
+bindVideoBrowse(generatedFrame, browseButtons, advanceScene);
+selectScene(scenes[0]);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { autoplay = false; pauseBoth(); }
+});
+window.addEventListener('message', event => {
+  if (event.origin === location.origin && event.source === parent && event.data === 'pause-rollout') {
+    autoplay = false;
+    pauseBoth();
+  }
+});
+</script>
+</body>
+</html>

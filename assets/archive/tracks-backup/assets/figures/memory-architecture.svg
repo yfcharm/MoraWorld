@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="650" viewBox="0 0 1120 650" role="img" aria-labelledby="title desc">
+ <title id="title">Memory: retrieve the view, condition the next chunk</title>
+ <desc id="desc">Past visual latent patches and camera poses form a memory bank. Query camera frusta retrieve relevant past frames outside the recent context window. Their image tokens are packed beside recent context and the current noisy chunk. H3 masked attention lets current queries read memory keys and values, while memory cannot read the current target. A separate Memory LoRA adds weight updates to native Q, K, V, O and feed-forward projections. The next latent chunk is decoded to RGB. Completed generated chunks can be appended in online-bank mode.</desc>
+ <defs>
+  <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#17141F"/><stop offset="1" stop-color="#0C1117"/></linearGradient>
+  <linearGradient id="memory" x2="1" y2="1"><stop stop-color="#A582FF" stop-opacity=".2"/><stop offset="1" stop-color="#A582FF" stop-opacity=".035"/></linearGradient>
+  <linearGradient id="current" x2="1" y2="1"><stop stop-color="#6CCAB0" stop-opacity=".15"/><stop offset="1" stop-color="#6CCAB0" stop-opacity=".025"/></linearGradient>
+  <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#B69CD6" stroke-width="1.3"/></marker>
+  <marker id="green-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#7BB6A7" stroke-width="1.3"/></marker>
+  <pattern id="patches" width="11" height="11" patternUnits="userSpaceOnUse"><rect x="1" y="1" width="8" height="8" rx="1" fill="#BFA0F0" opacity=".55"/></pattern>
+ </defs>
+ <style>text{font-family:Inter,Arial,sans-serif;fill:#D6CDDF;font-size:14px}.small{font-size:12px;fill:#8F879C}.mono{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:1.6px;fill:#A78ABC}.heading{font-size:20px;font-weight:500;fill:#E5DBEF}.purple{fill:#C8A9F2}.green{fill:#93CEBC}.wire{fill:none;stroke:#9D7CC1;stroke-width:1.5;marker-end:url(#arrow)}</style>
+ <rect width="1120" height="650" rx="16" fill="url(#bg)"/>
+ <text x="30" y="34" class="mono">MEMORY / MODEL ARCHITECTURE</text>
+ <text x="30" y="70" style="font-size:27px;letter-spacing:-.5px">Retrieve the view. Condition the next chunk.</text>
+ <text x="1090" y="35" text-anchor="end" class="mono">PAST → PRESENT</text>
+ <path d="M30 91H1090" stroke="#302B3A"/>
+
+ <text x="30" y="122" class="mono">01 / STORE</text><text x="300" y="122" class="mono">02 / RETRIEVE</text><text x="580" y="122" class="mono">03 / READ WITH ATTENTION</text>
+ <rect x="30" y="140" width="228" height="241" rx="10" fill="#141820" stroke="#353440"/>
+ <text x="48" y="168" class="heading">Past-only bank</text><text x="48" y="190" class="small">Visual latents + camera poses</text>
+ <g stroke="#565064" fill="#1B1D28"><rect x="48" y="210" width="48" height="62" rx="4"/><rect x="102" y="210" width="48" height="62" rx="4"/><rect x="156" y="210" width="48" height="62" rx="4"/><rect x="210" y="210" width="28" height="62" rx="4" opacity=".35"/></g>
+ <g fill="url(#patches)"><rect x="54" y="218" width="36" height="44"/><rect x="108" y="218" width="36" height="44"/><rect x="162" y="218" width="36" height="44"/></g>
+ <rect x="102" y="210" width="48" height="62" rx="4" fill="url(#memory)" stroke="#BE98ED" stroke-width="1.6"/>
+ <g fill="none" stroke="#8E769F" stroke-width="1.2"><path d="M61 292L81 282V303ZM81 282L91 288V309L81 303M81 282L91 288"/><path d="M114 292L134 282V303ZM134 282L144 288V309L134 303M134 282L144 288"/><path d="M168 292L188 282V303ZM188 282L198 288V309L188 303M188 282L198 288"/></g>
+ <text x="48" y="339" class="small">Older than the recent window</text><text x="48" y="360" class="small">Each entry keeps its own pose</text>
+
+ <rect x="300" y="140" width="230" height="241" rx="10" fill="#18141F" stroke="#4E3B62"/>
+ <text x="318" y="168" class="heading">Pose-guided retrieval</text><text x="318" y="190" class="small">Query the next camera views</text>
+ <g transform="translate(329 207)">
+  <path d="M5 58L69 11L89 67Z" fill="#8C69B81A" stroke="#9272B3"/><path d="M39 64L83 7L115 64Z" fill="#A582FF15" stroke="#B393D7"/>
+  <path d="M67 56L127 21L144 83Z" fill="#77C7AB10" stroke="#76B9A2"/><path d="M5 58L67 56" stroke="#5A4B6A" stroke-dasharray="3 4"/>
+  <circle cx="5" cy="58" r="4" fill="#B995E4"/><circle cx="67" cy="56" r="4" fill="#83C9AF"/>
+ </g>
+ <text x="318" y="319" class="small">Frustum overlap + temporal score</text>
+ <rect x="318" y="334" width="194" height="29" rx="5" fill="url(#memory)" stroke="#654B7B"/><text x="415" y="354" text-anchor="middle" class="purple">Selected latent patches</text>
+ <path d="M258 252H294" class="wire"/><path d="M530 252H574" class="wire"/>
+
+ <rect x="580" y="140" width="510" height="241" rx="10" fill="url(#memory)" stroke="#84639F"/>
+ <text x="599" y="168" class="heading">H3 Video DiT</text><text x="1070" y="166" text-anchor="end" class="small">Native image-token format</text>
+ <g><rect x="599" y="185" width="77" height="34" rx="4" fill="#20242D" stroke="#4F4C5B"/><rect x="682" y="185" width="112" height="34" rx="4" fill="#A582FF28" stroke="#A184C7"/><rect x="800" y="185" width="116" height="34" rx="4" fill="#222934" stroke="#5B697A"/><rect x="922" y="185" width="149" height="34" rx="4" fill="#6CCAB015" stroke="#72A596"/>
+  <text x="637" y="207" text-anchor="middle" class="small">Conditions</text><text x="738" y="207" text-anchor="middle" class="purple">Memory tokens</text><text x="858" y="207" text-anchor="middle">Recent context</text><text x="996" y="207" text-anchor="middle" class="green">Current noisy chunk</text></g>
+ <path d="M738 220V235H794V246M858 220V246M996 220V235H921V246" fill="none" stroke="#8E739F" stroke-width="1.3"/>
+ <text x="780" y="243" text-anchor="end" class="small">K / V</text><text x="939" y="243" class="small">Q</text>
+ <rect x="668" y="250" width="335" height="42" rx="6" fill="#231C30" stroke="#A582FF"/><text x="835" y="276" text-anchor="middle">Masked self-attention</text>
+ <path d="M835 293V305" class="wire"/><rect x="668" y="311" width="335" height="32" rx="6" fill="#181D26" stroke="#514859"/><text x="835" y="333" text-anchor="middle">Output projection + feed-forward</text>
+ <text x="599" y="365" class="small">Action adapter + camera conditioning enter the backbone</text>
+
+ <path d="M835 382V414H1000" class="wire"/>
+ <text x="824" y="413" text-anchor="end" class="small">Next latent chunk</text><rect x="1006" y="396" width="84" height="35" rx="6" fill="url(#current)" stroke="#609987"/><text x="1048" y="419" text-anchor="middle" class="green">VAE → RGB</text>
+ <path d="M835 414V436H144V386" fill="none" stroke="#6C9186" stroke-width="1.2" stroke-dasharray="5 5" marker-end="url(#green-arrow)"/>
+ <rect x="236" y="424" width="455" height="24" rx="4" fill="#13151D"/><text x="463" y="440" text-anchor="middle" class="small">Online-bank mode: append completed generated chunks</text>
+
+ <rect x="30" y="460" width="510" height="143" rx="10" fill="#131820" stroke="#30333F"/>
+ <text x="48" y="485" class="mono">CAUSAL ATTENTION</text>
+ <rect x="48" y="501" width="103" height="32" rx="5" fill="#6CCAB00B" stroke="#547E73"/><text x="99" y="522" text-anchor="middle" class="green">Current Q</text><path d="M160 517H226" class="wire"/><text x="192" y="506" text-anchor="middle" class="small">reads</text><rect x="238" y="501" width="134" height="32" rx="5" fill="#A582FF0D" stroke="#75608E"/><text x="305" y="522" text-anchor="middle" class="purple">Memory K / V</text><text x="398" y="522" class="green">Allowed</text>
+ <rect x="48" y="549" width="103" height="32" rx="5" fill="#A582FF0D" stroke="#54445F"/><text x="99" y="570" text-anchor="middle" class="small">Memory Q</text><path d="M160 565H226" stroke="#82606B" stroke-dasharray="3 4"/><path d="M188 558L200 572M200 558L188 572" stroke="#C18693" stroke-width="1.6"/><rect x="238" y="549" width="134" height="32" rx="5" fill="#1C1B24" stroke="#493C49"/><text x="305" y="570" text-anchor="middle" class="small">Current target</text><text x="398" y="570" style="fill:#B87E8C">Blocked</text>
+
+ <rect x="560" y="460" width="530" height="143" rx="10" fill="#17141F" stroke="#47374F"/>
+ <text x="578" y="485" class="mono">MEMORY LORA / INDEPENDENT WEIGHT INCREMENT</text>
+ <text x="578" y="522" style="font-size:21px;fill:#E1D3EE">W = W<tspan baseline-shift="sub" font-size="12">parent</tspan><tspan baseline-shift="baseline"> + </tspan><tspan fill="#BE99F1">ΔW</tspan><tspan baseline-shift="sub" font-size="12" fill="#BE99F1">Memory</tspan></text>
+ <text x="578" y="553" class="small">Applied to native Q / K / V / O and FFN projections</text><text x="578" y="579" class="small">Parent stays frozen during Memory training</text>
+ <text x="30" y="632" class="small">Architecture schematic · bank policy and retrieval count depend on the run</text><text x="1090" y="632" text-anchor="end" class="mono">MORAWORLD / MEMORY</text>
+</svg>
