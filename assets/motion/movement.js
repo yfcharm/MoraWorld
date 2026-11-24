@@ -248,7 +248,7 @@
     const title = document.createElement('h4');
     title.className = 'mg-route-heading';
     title.id = 'mg-route-heading';
-    title.innerHTML = 'One scene. <span>Many ways to <em>roam.</em></span>';
+    title.innerHTML = 'One scene, <span>many ways to <em>roam.</em></span>';
     carousel.setAttribute('aria-labelledby', title.id);
     const picker = document.createElement('div');
     picker.className = 'mg-route-picker';
