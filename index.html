@@ -46,18 +46,101 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 @media (prefers-reduced-motion: reduce){.mw-dot{animation:none;opacity:1}}
 </style>
 <style>
-#real-time{margin-top:72px;padding-top:40px;border-top:1px solid #272a32}
-.showcase-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
-.showcase-section-head h3{font:500 clamp(27px,3.2vw,38px)/1.15 'Space Grotesk',sans-serif;letter-spacing:-.035em;margin:12px 0 0}.showcase-section-head h3 span{color:#a582ff}
+#stay .stay-feature {
+  margin-top: clamp(32px, 4vw, 52px);
+  padding-top: clamp(22px, 3vw, 32px);
+  border-top: 1px solid #1F242B;
+}
+#stay .stay-feature-copy {
+  max-width: 68ch;
+  margin: 12px 0 0;
+  color: #D5D9DF;
+  font-size: 16px;
+  line-height: 1.65;
+}
+#stay .stay-feature-heading {margin-bottom: 20px}
+#stay #long-horizon {margin-top: 32px; padding-top: 20px}
+#stay #long-horizon + .stay-feature {margin-top: 32px}
+.stay-memory-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px 28px;
+}
+.stay-method-trigger {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid #353640;
+  border-radius: 10px;
+  background: #14171C;
+  color: #ECEEF1;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.stay-method-trigger:hover {border-color: #A582FF; background: #1A1823}
+.stay-method-trigger img {width: 72px; height: 44px; border-radius: 5px; object-fit: cover}
+.stay-method-trigger strong {display: block; font-size: 14px; font-weight: 600}
+.stay-method-trigger small {display: block; margin-top: 3px; color: #A3AAB5; font-size: 12px}
+.stay-method-trigger > svg {width: 16px; height: 16px; color: #C9B8FF}
+.stay-method-trigger:focus-visible,
+.stay-method-close:focus-visible {outline: 2px solid #A582FF; outline-offset: 2px}
+.stay-method-dialog {
+  box-sizing: border-box;
+  width: min(960px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100% - 32px);
+  padding: 0;
+  border: 1px solid #353640;
+  border-radius: 16px;
+  background: #11141A;
+  color: #ECEEF1;
+}
+.stay-method-dialog::backdrop {background: rgb(5 6 9 / 78%)}
+.stay-method-dialog .cabinet-method {margin: 0; border: 0; border-radius: 0}
+.stay-method-dialog-actions {display: flex; align-items: center; gap: 12px}
+.stay-method-dialog-actions form {margin: 0}
+.stay-method-dialog-actions > span {color: #A3AAB5; font-size: 12px}
+.stay-method-close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #353640;
+  border-radius: 6px;
+  background: #191B22;
+  color: #ECEEF1;
+  font: inherit;
+  font-size: 22px;
+  cursor: pointer;
+}
+.stay-method-close:hover {background: #27242F}
+@media (max-width: 620px) {
+  .stay-memory-heading {grid-template-columns: minmax(0, 1fr)}
+  .stay-method-trigger {justify-self: start}
+  .stay-method-dialog-actions > span {display: none}
+}
+#stay .mw-feature-heading > .mw-feature-count {
+  margin: 0;
+  color: #7e8794;
+  font: 400 .75rem/1.4 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: .1em;
+}
+#stay .mw-feature-heading > h3 {
+  margin: 10px 0 0;
+  font: 600 1.25rem/1.35 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+#stay .mw-feature-heading > h3 span {color:#a582ff}
 #mobile-showcase .mg-heading {display:block;margin:0 0 clamp(18px,2.4vw,30px)}
 #mobile-showcase .mg-heading .mg-kicker {margin:0 0 12px}
 #mobile-showcase #motion-title {display:flex;align-items:baseline;flex-wrap:wrap;gap:0 .22em;line-height:1.06}
 #mobile-showcase #motion-title em {line-height:inherit}
-#mem-title {font:500 clamp(2.375rem,5vw,4rem)/1.1 'Space Grotesk',Inter,sans-serif;letter-spacing:-.047em}
-#mem-title > span {display:inline-block;white-space:nowrap}
-#mem-title .mem-conjunction {font:400 .64em/1 Inter,system-ui,sans-serif;letter-spacing:-.015em;color:#b6b1c1}
-#mem-title em {font:italic 400 1.025em/1.1 Georgia,'Times New Roman',serif;letter-spacing:-.035em;color:#d2bbef}
-#mobile-showcase .demo-deck, #memory-demo .demo-deck {max-width:68ch;margin:14px 0 0;color:#bdbac9;font:400 1rem/1.55 Inter,system-ui,sans-serif;text-wrap:pretty}
+#mobile-showcase .demo-deck {max-width:68ch;margin:14px 0 0;color:#bdbac9;font:400 1rem/1.55 Inter,system-ui,sans-serif;text-wrap:pretty}
 #showcase-teleop{display:block;width:100%;height:520px;border:0;color-scheme:dark}
 #back #omp-introduction .omp-description{white-space:normal;overflow:visible}
 @media(max-width:760px){#memory-demo .memory-method-showcase{grid-template-columns:1fr;gap:15px}.memory-method-showcase em{display:inline}.memory-method-showcase a{margin-top:6px}#showcase-teleop{height:750px}}
@@ -656,35 +739,40 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 <h2 style="margin: 12px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: clamp(2.25rem, 4.5vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em">Stay in it</h2>
 <p style="margin: 16px 0 0; font-size: 22px; line-height: 1.5; color: #A3AAB5; max-width: 760px">Minutes in one take, with memory, in real time.</p>
 
-<div id="long-horizon" style="margin-top: 64px; padding-top: 40px; border-top: 1px solid #1F242B">
-<div class="mw-feature" style="display: grid; gap: 32px; align-items: stretch">
-<div style="min-width: 0">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.1em; color: #7E8794">1 / 3</p>
-<h3 style="margin: 10px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em"><span style="color: #A582FF">Minutes</span>, not seconds</h3>
-<p style="margin: 12px 0 0; font-size: 16px; line-height: 1.7; color: #D5D9DF">A mobile task can span a room, a corridor, and a return trip. MoraWorld rolls the scene forward one video chunk at a time.</p>
-</div>
-<div style="min-width: 0; border: 1px dashed #3A414B; border-radius: 12px; padding: 20px 22px; background: #101317; min-height: 320px; box-sizing: border-box">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; color: #A582FF">TECHNICAL APPROACH</p>
-<p style="margin: 12px 0 0; font-size: 15px; line-height: 1.65; color: #A3AAB5">[placeholder]</p>
-</div>
-</div>
-<div style="margin-top: 24px; position: relative; aspect-ratio: 2 / 1; background: #14171C; border: 1px solid #2A3038; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center">
-<div style="text-align: center; padding: 24px; max-width: 520px">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #7E8794">[placeholder]</p>
-</div>
-</div>
-</div>
-
-<div id="memory-demo" class="mx" style="margin-top:72px;padding-top:40px;border-top:1px solid #1F242B">
-<div class="memory-introduction">
-  <div>
-    <p class="mem-kicker">02 / VIEWPOINT MEMORY</p>
-    <h3 id="mem-title"><span>Look away</span> <span><span class="mem-conjunction">and</span> <em>come back</em></span></h3>
-    <p class="demo-deck">Watch the shoe cabinet leave the camera’s view and come back. Compare the same trajectory with memory on and off to see which details carry over.</p>
+<div id="long-horizon" class="stay-feature">
+  <div class="mw-feature-heading">
+    <p class="mw-feature-count">1 / 3</p>
+    <h3><span>Minutes</span>, not seconds</h3>
+    <p class="stay-feature-copy">MoraWorld rolls the scene forward one video chunk at a time.</p>
   </div>
 </div>
+
+<div id="memory-demo" class="mx stay-feature">
+<header class="stay-feature-heading stay-memory-heading">
+  <div class="mw-feature-heading">
+    <p class="mw-feature-count">2 / 3</p>
+    <h3 id="mem-title"><span>Look away</span> and come back</h3>
+    <p class="stay-feature-copy">Watch the shoe cabinet leave the camera’s view and come back. Compare the same trajectory with memory on and off to see which details carry over.</p>
+  </div>
+  <button type="button" class="stay-method-trigger" id="memory-method-trigger" aria-haspopup="dialog" aria-controls="memory-method-dialog">
+    <img src="assets/showcase/memory-originals/galaxea_9636eca52052-on-f0.png" alt="" width="72" height="44" loading="lazy">
+    <span><strong>Viewpoint memory</strong><small>Technical approach</small></span>
+    <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 2h5v5M14 2 9 7M7 14H2V9M2 14l5-5"/>
+    </svg>
+  </button>
+</header>
+<dialog class="stay-method-dialog" id="memory-method-dialog" aria-labelledby="memory-architecture">
 <section class="mem-method cabinet-method" id="technical-approach" aria-labelledby="memory-architecture" data-phase="store">
-  <header class="mem-method-head"><h4 id="memory-architecture"><i aria-hidden="true"></i>MoraWorld <span>/</span> Viewpoint memory</h4><span>Shoe cabinet</span></header>
+  <header class="mem-method-head">
+    <h4 id="memory-architecture"><i aria-hidden="true"></i>MoraWorld <span>/</span> Viewpoint memory</h4>
+    <div class="stay-method-dialog-actions">
+      <span>Shoe cabinet</span>
+      <form method="dialog">
+        <button class="stay-method-close" type="submit" aria-label="Close viewpoint memory" autofocus>×</button>
+      </form>
+    </div>
+  </header>
   <figure class="cm-figure">
     <div class="cm-stage">
       <div class="cm-architecture">
@@ -760,7 +848,16 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
     </div>
   </div>
 </section>
-<script defer src="assets/showcase/cabinet-method.js"></script>
+</dialog>
+<script>
+(() => {
+  const trigger = document.getElementById('memory-method-trigger');
+  const dialog = document.getElementById('memory-method-dialog');
+  trigger.addEventListener('click', () => dialog.showModal());
+  trigger.addEventListener('click', () => import('./assets/showcase/cabinet-method.js'), { once: true });
+  dialog.addEventListener('close', () => dialog.querySelector('video').pause());
+})();
+</script>
 <div class="mx-shell" id="memory-gallery">
   <div class="mx-gallery-strip" data-left="true" data-right="true"><div class="mx-cases" role="group" aria-label="Memory examples"></div><button id="mx-gallery-prev" class="mx-gallery-arrow" aria-label="Scroll gallery left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg></button><button id="mx-gallery-next" class="mx-gallery-arrow" aria-label="Scroll gallery right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l6 6-6 6"/></svg></button></div>
 
@@ -1095,8 +1192,11 @@ warmMemory.observe(q('#memory-gallery'));
 })();
 </script>
 
-<section id="real-time" aria-labelledby="realtime-title">
-  <div class="showcase-section-head"><div><p class="mx-eyebrow">3 / 3</p><h3 id="realtime-title"><span>Real-time</span>: fast enough to drive</h3></div></div>
+<section id="real-time" class="stay-feature" aria-labelledby="realtime-title">
+  <header class="mw-feature-heading stay-feature-heading">
+    <p class="mw-feature-count">3 / 3</p>
+    <h3 id="realtime-title"><span>Real-time</span>: fast enough to drive</h3>
+  </header>
 <div class="tele-sections" role="group" aria-label="Teleoperation collections"><button type="button" data-collection="long" aria-pressed="true">Long rollouts</button><button type="button" data-collection="roaming" aria-pressed="false">Roaming</button><button type="button" data-collection="robot" aria-pressed="false">Robot manipulation</button><button type="button" data-collection="novel" aria-pressed="false">New scenes</button></div>
   <iframe id="showcase-teleop" src="assets/showcase/colleague-demos/teleop/long.html?player=2" loading="lazy" title="Synchronized VR teleoperation recordings" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <script>
