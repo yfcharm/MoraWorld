@@ -1,4 +1,4 @@
-#mobile-showcase .mg-window .mg-space-translucent:not(.mg-is-map) {
+#mobile-showcase :is(.mg-window, .mg-route-wipe) .mg-space-translucent:not(.mg-is-map) {
   background: linear-gradient(145deg, rgb(17 28 39 / 58%), rgb(8 15 23 / 68%));
   border-color: rgb(176 199 222 / 42%);
   box-shadow: 0 4px 14px rgb(3 7 12 / 25%);

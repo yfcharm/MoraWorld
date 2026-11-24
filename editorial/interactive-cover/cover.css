@@ -1,0 +1,168 @@
+/* mw-cover.css: layout for the interactive cover. Pair with mw-cover.js. */
+.mw-cover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 100vh;
+  height: 100svh;
+  --ink: #ECEEF1;
+  --ink2: #D5D9DF;
+  --acc2: #C9B8FF;
+  background: #0B0D10;
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.mw-cover__poster,
+.mw-cover__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: -2;
+}
+.mw-cover__canvas {
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.mw-cover.is-live .mw-cover__canvas { opacity: 1; }
+
+/* Keeps the navigation and the handover to the next section readable without flattening the footage. */
+.mw-cover__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(11, 13, 16, 0.62) 0%, rgba(11, 13, 16, 0) 20%),
+    linear-gradient(0deg, #0B0D10 0%, rgba(11, 13, 16, 0.55) 12%, rgba(11, 13, 16, 0) 34%),
+    linear-gradient(90deg, rgba(11, 13, 16, 0.34) 0%, rgba(11, 13, 16, 0.2) 36%, rgba(11, 13, 16, 0) 58%);
+}
+
+/* The three stages named under the part of the cover they belong to. */
+.mw-cover__stages {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  margin: 0;
+  padding: 0 clamp(20px, 5vw, 72px);
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  font: 500 12px/1 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #A3AAB5;
+  pointer-events: none;
+}
+.mw-cover__stages li { display: flex; align-items: center; gap: 10px; }
+.mw-cover__stages li::before { content: ''; width: 18px; height: 1px; background: currentColor; opacity: 0.7; }
+.mw-cover__stages li:nth-child(2) { justify-content: center; }
+.mw-cover__stages li:nth-child(3) { justify-content: flex-end; color: #C9B8FF; }
+
+.mw-cover__hint {
+  position: absolute;
+  left: clamp(20px, 5vw, 72px);
+  bottom: 64px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 13px/1 'Inter', system-ui, sans-serif;
+  color: #D5D9DF;
+  opacity: 0.9;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.mw-cover__hint::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #A582FF;
+  box-shadow: 0 0 0 5px rgba(165, 130, 255, 0.22);
+}
+.mw-cover.is-touched .mw-cover__hint { opacity: 0; }
+
+@media (max-width: 720px) {
+  .mw-cover__stages { font-size: 10px; letter-spacing: 0.1em; bottom: 22px; }
+  .mw-cover__stages li::before { width: 10px; }
+  .mw-cover__hint { bottom: 50px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-cover__canvas { transition: none; }
+}
+
+.mw-cover__nav { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 22px clamp(20px, 5vw, 72px); }
+
+.mw-cover__nav-mark { font: 600 19px/1 'Space Grotesk', sans-serif; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+
+.mw-cover__nav-links { display: flex; gap: 28px; font-size: 14px; }
+
+.mw-cover__nav-links a { color: var(--ink2); text-decoration: none; }
+
+.mw-cover__nav-links a:hover { color: var(--acc2); }
+
+.mw-cover__hero { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-46%); padding: 0 clamp(20px, 5vw, 72px); pointer-events: none; }
+
+.mw-cover__hero-eyebrow { margin: 0 0 22px; font: 500 13px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--acc2); }
+
+.mw-cover__hero-title { margin: 0; max-width: 11ch; font: 600 clamp(42px, 6.4vw, 104px)/1.0 'Space Grotesk', sans-serif; letter-spacing: -0.025em; text-wrap: balance; text-shadow: 0 2px 30px rgba(11, 13, 16, 0.55), 0 0 2px rgba(11, 13, 16, 0.5); }
+
+.mw-cover__continue {
+  position: absolute;
+  z-index: 2;
+  right: clamp(20px, 5vw, 72px);
+  bottom: 54px;
+  padding: 9px 13px;
+  color: var(--ink);
+  background: rgb(11 13 16 / 65%);
+  border: 1px solid rgb(236 238 241 / 40%);
+  border-radius: 999px;
+  font: 500 13px/1.2 'Inter', system-ui, sans-serif;
+  text-decoration: none;
+}
+.mw-cover__continue:hover,
+.mw-cover__nav a:hover { color: var(--acc2); }
+.mw-cover a:focus-visible { outline: 2px solid var(--acc2); outline-offset: 4px; }
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .mw-cover__hint { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-cover.is-live .mw-cover__canvas { opacity: 0; }
+}
+@media (max-width: 720px) {
+  .mw-cover__nav-links { display: none; }
+  .mw-cover__continue { bottom: 46px; }
+}
+@media (max-width: 600px) {
+  .mw-cover__hint { bottom: 90px; }
+}
+@media (max-height: 460px) {
+  .mw-cover__hero-title { font-size: clamp(32px, 9vh, 44px); }
+  .mw-cover__hero-eyebrow { margin-bottom: 10px; }
+}
+
+html.mw-cover-open,
+html.mw-cover-handoff {
+  overflow: hidden;
+  overscroll-behavior-y: none;
+}
+.mw-cover-enhanced #cover {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  touch-action: pan-x pinch-zoom;
+}
+.mw-cover-enhanced:not(.mw-cover-open) #cover { display: none; }
+.mw-cover-open:not(.mw-cover-leaving) #moraworld-article { visibility: hidden; }
+.mw-cover-open.mw-cover-leaving #cover {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 420ms cubic-bezier(.22,.75,.23,1);
+}
+#moraworld-article:focus { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mw-cover-open.mw-cover-leaving #cover { transition: none; }
+}

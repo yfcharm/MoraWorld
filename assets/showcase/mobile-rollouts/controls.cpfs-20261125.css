@@ -1,0 +1,149 @@
+.motion-gallery .mg-views .mg-mobile-pages {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  margin-right: 8px;
+  padding: 3px;
+  border: 1px solid #4d445b;
+  border-radius: 8px;
+  background: #14131b;
+}
+
+.motion-gallery .mg-views .mg-mobile-pages button {
+  padding: 4px 11px;
+  color: #c8bfd3;
+  white-space: nowrap;
+}
+
+.motion-gallery .mg-views .mg-mobile-pages button[aria-pressed=true] {
+  color: #241a31;
+  background: #dbc7f8;
+  border-color: #e2d5f7;
+  font-weight: 650;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-caption {
+  padding-block: 15px 12px;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-views {
+  padding: 8px 10px;
+  border-color: #373444;
+  border-radius: 14px 14px 0 0;
+  background: #191923;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-layer-title {
+  display: none;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-channel-key {
+  display: flex;
+  margin-left: 9px;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-grid {
+  gap: 10px;
+  margin-top: 0;
+  padding: 10px;
+  border: 1px solid #373444;
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: #14141c;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-tile {
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window {
+  aspect-ratio: 26 / 15;
+}
+
+#mg-panel[data-group='mobile'] .mg-tile-caption {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  min-height: 0;
+  padding: 27px 52px 12px 14px;
+  border: 0;
+  background: linear-gradient(0deg, rgb(5 7 12 / 84%) 0%, rgb(5 7 12 / 58%) 41%, transparent 100%);
+  pointer-events: none;
+}
+
+#mg-panel[data-group='mobile'] .mg-tile-caption strong {
+  color: #f7f3fa;
+  font-size: clamp(.8rem, 1.32vw, 1.02rem);
+  letter-spacing: -.015em;
+  text-shadow: 0 1px 8px #05070c;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-expand {
+  inset: auto 10px 9px auto;
+  z-index: 2;
+  background: rgb(12 13 21 / 65%);
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-tile:hover .mg-expand,
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-tile:focus-visible .mg-expand {
+  border-color: #dcc9f8;
+  background: #dcc9f8;
+  color: #211a2a;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space {
+  position: absolute;
+  inset: 10px auto auto 10px;
+  width: 28%;
+  max-width: 152px;
+  height: auto;
+  border: 1px solid #a6bfd252;
+  border-radius: 7px;
+  background: #111b26;
+  box-shadow: 0 4px 14px #05081168;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space canvas { height: auto; }
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space-heading {
+  position: static;
+  border-bottom: 1px solid rgb(176 199 222 / 16%);
+  border-radius: 0;
+  padding: 4px 7px;
+}
+
+#mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space-key {
+  display: flex;
+  gap: 6px;
+  border-top: 1px solid rgb(176 199 222 / 16%);
+  padding: 3px 7px 4px;
+}
+
+@media (max-width: 700px) {
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space {
+    inset: 5px auto auto 5px;
+    width: 34%;
+  }
+
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-grid { gap: 8px; padding: 8px; }
+  #mg-panel[data-group='mobile'] .mg-tile-caption { padding: 20px 34px 8px 8px; }
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-expand { right: 6px; bottom: 5px; }
+
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window :is(.mg-space-heading, .mg-space-key) {
+    padding: 2px 3px;
+    font-size: .48rem;
+  }
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space-key { gap: 4px; }
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space-key span { gap: 2px; }
+  #mg-panel:is([data-group='mobile'], [data-layout='focus']) .mg-window .mg-space-key span::before { width: 3px; height: 3px; }
+}
+
+@media (max-width: 580px) {
+  .motion-gallery .mg-views .mg-mobile-pages {
+    flex-basis: 100%;
+    margin: 2px 0 3px;
+  }
+
+  .motion-gallery .mg-views .mg-mobile-pages button { flex: 1; }
+}
