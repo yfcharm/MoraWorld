@@ -236,7 +236,8 @@ const rolloutMinutes = 10;
 const seek = document.querySelector('#seek');
 const browseButtons = document.querySelector('.browse-buttons');
 let playbackRequest = 0;
-let autoplay = false;
+let autoplay = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+let hostVisible = window === parent;
 const groups = {
   "long": [
     [
@@ -453,6 +454,7 @@ function rewind() {
 }
 
 async function startPlayback() {
+  if (!autoplay || !hostVisible || document.hidden) return;
   preview.dataset.visible = 'false';
   if (Number.isFinite(generated.duration)) {
     if (generated.ended) rewind();
@@ -463,8 +465,8 @@ async function startPlayback() {
   showPlaybackState(true);
   try {
     await Promise.all(videos.map(video => video.play()));
-  } catch {
-    if (request !== playbackRequest) return;
+  } catch (error) {
+    if (request !== playbackRequest || error.name === 'AbortError') return;
     autoplay = false;
     pauseBoth();
     status.textContent = 'Playback could not start. Try pressing Play again.';
@@ -558,14 +560,15 @@ scenes.forEach((button, index) => {
 
 bindVideoBrowse(generatedFrame, browseButtons, advanceScene);
 selectScene(scenes[0]);
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { autoplay = false; pauseBoth(); }
-});
+function syncVisibility() {
+  if (!hostVisible || document.hidden) pauseBoth();
+  else if (autoplay && generated.paused) startPlayback();
+}
+document.addEventListener('visibilitychange', syncVisibility);
 window.addEventListener('message', event => {
-  if (event.origin === location.origin && event.source === parent && event.data === 'pause-rollout') {
-    autoplay = false;
-    pauseBoth();
-  }
+  if (event.origin !== location.origin || event.source !== parent || event.data?.type !== 'teleop-visible') return;
+  hostVisible = event.data.visible;
+  syncVisibility();
 });
 </script>
 </body>

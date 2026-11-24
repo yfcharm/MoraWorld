@@ -561,14 +561,14 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 <div class="ev-frame"><video muted loop playsinline disablepictureinpicture disableremoteplayback preload="none"
   poster="assets/embodiments/embodiments/favorites/bedside-cabinet.jpg" data-src="assets/embodiments/embodiments/favorites/bedside-cabinet.mp4" aria-label="Galaxea R1-Lite — Open the bedside cabinet"></video><div class="ev-tags"></div></div>
 <figcaption><div class="ev-credit"><b>Galaxea R1-Lite</b></div><span class="ev-task">Open the bedside cabinet</span></figcaption></figure></div></div>
-<script src="assets/movement/embodiments/gallery.js?v=3"></script>
+<script src="assets/movement/embodiments/gallery.js?v=4"></script>
 </div>
 
 <!-- movement gallery starts -->
 <link rel="stylesheet" href="assets/motion/movement.css">
 <link rel="stylesheet" href="assets/movement/movement-previews.css">
 <link rel="stylesheet" href="assets/showcase/mobile-rollouts/controls.css?v=7">
-<link rel="stylesheet" href="assets/showcase/navigation/controls.css?v=9">
+<link rel="stylesheet" href="assets/showcase/navigation/controls.css?v=10">
 <link rel="stylesheet" href="assets/showcase/track-overlay.css">
 <section id="mobile-showcase" class="motion-gallery" data-loop-previews data-translucent-tracks data-route-carousel aria-labelledby="motion-title">
   <header class="mg-heading">
@@ -635,7 +635,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   <script src="assets/showcase/manipulation/track-data.js"></script>
   <script src="assets/showcase/mobile-rollouts/track-data.js?v=3"></script>
   <script src="assets/motion/motion-space.js?v=4"></script>
-  <script src="assets/motion/movement.js?v=19"></script>
+  <script src="assets/motion/movement.js?v=20"></script>
 </section>
 
 <!-- movement gallery ends -->
@@ -871,7 +871,7 @@ function syncMapPlayback(){
   map.play().catch(()=>{});
 }
 async function resumeIfVisible(){
-  if(!wantsPlayback||!visible||document.hidden||!v.paused)return;
+  if(!serial||!wantsPlayback||!visible||document.hidden||!v.paused)return;
   const requestedCase=serial;
   try{
     await pair.play();
@@ -1077,14 +1077,20 @@ new IntersectionObserver(entries=>{
   updateVisibility();
 }).observe(q('#memory-gallery'));
 document.addEventListener('visibilitychange',updateVisibility);
-let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidth;if(width!==galleryWidth){galleryWidth=width;stopGalleryMotion();revealSelected()}updateGallery();schedule()}).observe(root);select(0);
+let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidth;if(width!==galleryWidth){galleryWidth=width;stopGalleryMotion();revealSelected()}updateGallery();schedule()}).observe(root);
+const warmMemory = new IntersectionObserver(([entry]) => {
+  if (!entry.isIntersecting) return;
+  warmMemory.disconnect();
+  if (serial === 0) select(0);
+}, {rootMargin:'160px 0px'});
+warmMemory.observe(q('#memory-gallery'));
 })();
 </script>
 
 <section id="real-time" aria-labelledby="realtime-title">
   <div class="showcase-section-head"><div><p class="mx-eyebrow">3 / 3</p><h3 id="realtime-title"><span>Real-time</span>: fast enough to drive</h3></div></div>
 <div class="tele-sections" role="group" aria-label="Teleoperation collections"><button type="button" data-collection="long" aria-pressed="true">Long rollouts</button><button type="button" data-collection="roaming" aria-pressed="false">Roaming</button><button type="button" data-collection="robot" aria-pressed="false">Robot manipulation</button><button type="button" data-collection="novel" aria-pressed="false">New scenes</button></div>
-  <iframe id="showcase-teleop" src="assets/showcase/colleague-demos/teleop/long.html" loading="lazy" title="Synchronized VR teleoperation recordings" allow="fullscreen" allowfullscreen></iframe>
+  <iframe id="showcase-teleop" src="assets/showcase/colleague-demos/teleop/long.html?player=2" loading="lazy" title="Synchronized VR teleoperation recordings" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <script>
   (() => {
     const frame = document.getElementById('showcase-teleop');
@@ -1096,12 +1102,20 @@ let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidt
       if (!button || button.getAttribute('aria-pressed') === 'true') return;
       collections.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed',String(b === button)));
       sizeObserver?.disconnect();
-      frame.src = playerURL + '?section=' + button.dataset.collection;
+      const url = new URL(playerURL, document.baseURI);
+      url.searchParams.set('section', button.dataset.collection);
+      frame.src = url.href;
     });
-    new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting) frame.contentWindow?.postMessage('pause-rollout', location.origin);
+    let visible = false;
+    function sendVisibility() {
+      frame.contentWindow?.postMessage({type:'teleop-visible', visible}, location.origin);
+    }
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      sendVisibility();
     }).observe(frame);
     frame.addEventListener('load', () => {
+      sendVisibility();
       const content = frame.contentDocument.querySelector('main');
       const resize = () => { frame.style.height = Math.ceil(content.getBoundingClientRect().bottom + 2) + 'px'; };
       sizeObserver?.disconnect();
@@ -1157,7 +1171,7 @@ let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidt
 </script>
 
 <div id="real-world-results" style="margin-top:72px;padding-top:32px;border-top:1px solid #252932">
-<iframe id="moraworld-real-results" src="assets/showcase/colleague-demos/robot/real-results.html" title="Real-world evaluation: Real, OMP, and Real plus OMP" loading="lazy" allow="autoplay; fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:1500px;border:0;background:#0B0D10;color-scheme:dark"></iframe>
+<iframe id="moraworld-real-results" src="assets/showcase/colleague-demos/robot/real-results.html?player=2" title="Real-world evaluation: Real, OMP, and Real plus OMP" loading="lazy" allow="autoplay; fullscreen" allowfullscreen scrolling="no" style="display:block;width:100%;height:1500px;border:0;background:#0B0D10;color-scheme:dark"></iframe>
 </div>
 <script>
 (()=>{
@@ -1212,7 +1226,7 @@ let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidt
 <button type="button" class="pe-row" aria-label="Bottle on tray, Real + OMP, 60% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-mixed.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-mixed.jpg" data-title="Bottle on tray · Real + OMP" data-outcome="Success" style="--score:60%;--bar:#efcc85"><span>Real + OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">60%</span></button></div>
 </div>
 <figure class="pe-panel" id="pe-recording">
-<video src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.mp4" poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.jpg" playsinline controls preload="none" aria-labelledby="pe-caption-title"></video>
+<video src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.mp4" poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.jpg" muted playsinline controls loop preload="none" aria-labelledby="pe-caption-title"></video>
 <figcaption aria-live="polite" aria-atomic="true"><span class="pe-caption-title" id="pe-caption-title">Fruit sorting · Real + OMP</span><span class="pe-meta">Layout 1 · Trial 1 · <span data-pe-outcome>Success</span></span></figcaption>
 </figure>
 </div>
@@ -1224,6 +1238,21 @@ let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidt
   const title = panel.querySelector('#pe-caption-title');
   const outcome = panel.querySelector('[data-pe-outcome]');
   const rows = panel.querySelectorAll('.pe-row');
+  let onScreen = false;
+  let wantsPlay = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function syncExample() {
+    if (!onScreen || document.hidden) video.pause();
+    else if (wantsPlay) video.play().catch(() => {});
+  }
+  new IntersectionObserver(([entry]) => {
+    onScreen = entry.isIntersecting;
+    syncExample();
+  }).observe(video);
+  document.addEventListener('visibilitychange', syncExample);
+  video.addEventListener('pause', () => {
+    if (onScreen && !document.hidden && video.paused && video.readyState >= 2) wantsPlay = false;
+  });
+  video.addEventListener('play', () => { wantsPlay = true; });
   for (const row of rows) {
     row.addEventListener('click', () => {
       if (row.getAttribute('aria-pressed') !== 'true') {
@@ -1234,7 +1263,8 @@ let galleryWidth=0;new ResizeObserver(()=>{const width=q('.mx-cases').clientWidt
         outcome.textContent = row.dataset.outcome;
         for (const item of rows) item.setAttribute('aria-pressed', String(item === row));
       }
-      video.play().catch(() => {});
+      wantsPlay = true;
+      syncExample();
     });
   }
 })();

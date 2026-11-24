@@ -12,12 +12,13 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const pageSize = 4;
   const positions = ['top left', 'top right', 'bottom left', 'bottom right'];
-  let selection = null, paused = false, inView = false;
+  const visibleClips = new Set();
+  let selection = null, paused = false;
   let pages = [], page = 0, videos = [];
   let clock = null, transition = null;
 
   function canPlay() {
-    return inView && !paused && !document.hidden;
+    return !paused && !document.hidden && videos.some(video => visibleClips.has(video));
   }
 
   function syncClock() {
@@ -34,7 +35,7 @@
 
   function syncPlayback() {
     for (const video of videos) {
-      if (!canPlay()) {
+      if (!visibleClips.has(video) || !canPlay()) {
         video.pause();
         continue;
       }
@@ -161,8 +162,12 @@
   motion.addEventListener('click', () => setPaused(!paused));
   document.addEventListener('visibilitychange', syncPlayback);
   select(null);
-  new IntersectionObserver(([entry]) => {
-    inView = entry.isIntersecting && entry.intersectionRatio >= .15;
+  const observer = new IntersectionObserver(entries => {
+    for (const {target, isIntersecting} of entries) {
+      if (isIntersecting) visibleClips.add(target);
+      else visibleClips.delete(target);
+    }
     syncPlayback();
-  }, {threshold:[0, .15]}).observe(grid);
+  });
+  cards.forEach(card => observer.observe(card.querySelector('video')));
 })();

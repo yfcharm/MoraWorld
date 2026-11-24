@@ -60,9 +60,9 @@
   if(master.ended)seekTo(0);
   const promises=videos.filter(v=>!v.ended).map(v=>{v.playbackRate=rate();return v.play()});
   const results=await Promise.allSettled(promises);
-  if(current!==generation)return;
+  if(current!==generation||!visible||!hostVisible||document.hidden||!wantsPlay)return;
   playing=results.some(r=>r.status==='fulfilled')&&!master.paused;
-  if(!playing){wantsPlay=false}
+  if(!playing&&results.some(r=>r.status==='rejected'&&r.reason?.name==='NotAllowedError'))wantsPlay=false;
   paintTransport();
  }
  function seekTo(t){

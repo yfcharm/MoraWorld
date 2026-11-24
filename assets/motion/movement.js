@@ -107,13 +107,27 @@
       else if (playing && video.paused) playClip(video, generation);
     }
   }
+  const visibleTiles = new Set();
+  const tileObserver = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      const video = entry.target;
+      if (!grid.contains(video)) continue;
+      if (entry.isIntersecting) {
+        visibleTiles.add(video);
+        if (playing && video.paused) playClip(video, generation);
+      } else {
+        visibleTiles.delete(video);
+        video.pause();
+      }
+    }
+  });
   function startGroup() {
     if (!loopPreviews() && groupTime >= longest - .09) seekGroup(0);
     get('error').hidden = true;
     const token = ++generation;
     playState(true);
     for (const {video, item, carouselMember} of clips) {
-      if (carouselMember) continue;
+      if (carouselMember || (loopPreviews() && !visibleTiles.has(video))) continue;
       if (loopPreviews() || groupTime < item.duration - .03) playClip(video, token);
     }
     routeCarousel?.resume();
@@ -235,7 +249,52 @@
     picker.className = 'mg-route-picker';
     picker.setAttribute('role','group');
     picker.setAttribute('aria-label','Shared-start scenes');
-    carousel.append(picker);
+    const selector = document.createElement('div');
+    selector.className = 'mg-route-selector';
+    selector.style.setProperty('--scene-count', slides.length);
+    const disclosure = document.createElement('button');
+    disclosure.type = 'button';
+    disclosure.className = 'mg-route-disclosure';
+    disclosure.textContent = 'Scenes';
+    disclosure.setAttribute('aria-label', 'Choose a navigation scene');
+    picker.id = 'mg-route-choices';
+    disclosure.setAttribute('aria-controls', picker.id);
+    selector.append(disclosure, picker);
+    const bar = document.createElement('header');
+    bar.className = 'mg-route-bar';
+    const summary = slides[0].section.querySelector('.mg-pair-copy p');
+    const replay = slides[0].section.querySelector('.mg-pair-reset');
+    bar.append(selector, summary, replay);
+    carousel.append(bar);
+    let open = false;
+    function setOpen(value) {
+      open = value;
+      selector.dataset.open = String(value);
+      disclosure.setAttribute('aria-expanded', String(value));
+      buttons.forEach((button, i) => { button.tabIndex = value || i === current ? 0 : -1; });
+    }
+    function arrange() {
+      buttons.forEach((button, i) => {
+        button.style.setProperty('--depth', (i - current + slides.length) % slides.length);
+        button.tabIndex = open || i === current ? 0 : -1;
+      });
+    }
+    selector.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'mouse') setOpen(true);
+    });
+    selector.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'mouse' && !selector.matches(':has(:focus-visible)')) setOpen(false);
+    });
+    selector.addEventListener('focusin', event => {
+      if (event.target.matches(':focus-visible') && event.target !== disclosure) setOpen(true);
+    });
+    selector.addEventListener('focusout', event => {
+      if (!selector.contains(event.relatedTarget)) setOpen(false);
+    });
+    selector.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { setOpen(false); disclosure.focus(); }
+    });
+    disclosure.onclick = () => setOpen(!open);
     let current = 0, rounds = 0, visible = false;
     const currentMembers = () => slides[current].members;
 
@@ -267,6 +326,9 @@
         section.hidden = n !== current;
         buttons[n].setAttribute('aria-pressed',n === current);
       });
+      summary.textContent = slides[current].row.description;
+      replay.setAttribute('aria-label', 'Restart ' + slides[current].row.title + ' routes');
+      arrange();
       if (restoreFocus) buttons[current].focus({preventScroll:true});
       rewind();
     }
@@ -275,32 +337,26 @@
       const button = document.createElement('button');
       button.type = 'button';
       button.id = section.id + '-choice';
-      const frame = document.createElement('span');
-      frame.className = 'mg-pair-start';
       const image = section.querySelector('.mg-pair-start img');
       image.alt = '';
-      const frameLabel = document.createElement('span');
-      frameLabel.className = 'mg-frame-label';
-      frameLabel.textContent = 'Shared frame';
-      frame.append(image, frameLabel);
+      button.style.setProperty('--position', index);
       const name = document.createElement('span');
       name.className = 'mg-route-name';
       name.textContent = row.title;
-      button.append(frame, name);
+      button.append(image, name);
       button.setAttribute('aria-label', row.title);
       button.setAttribute('aria-pressed',index === current);
       button.setAttribute('aria-controls',section.id);
-      button.onclick = () => select(index);
+      button.onclick = () => {
+        if (!open) { setOpen(true); return; }
+        select(index);
+        if (!matchMedia('(hover: hover)').matches) setOpen(false);
+      };
       picker.append(button);
       section.classList.add('mg-route-slide');
       section.hidden = index !== current;
       section.setAttribute('aria-labelledby', button.id);
-      const restart = section.querySelector('.mg-pair-reset');
-      section.querySelector('.mg-pair-head').replaceChildren(section.querySelector('.mg-pair-copy p'), restart);
-      restart.onclick = () => {
-        rounds = 0;
-        rewind();
-      };
+      section.querySelector('.mg-pair-head').remove();
       for (const clip of members) {
         clip.carouselMember = true;
         clip.video.loop = false;
@@ -313,10 +369,13 @@
       carousel.append(section);
       return button;
     });
+    replay.onclick = () => { rounds = 0; rewind(); };
+    arrange();
+    setOpen(false);
     const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.intersectionRatio >= .15;
+      visible = entry.isIntersecting;
       resume();
-    }, {threshold:.15});
+    });
     observer.observe(carousel);
     return {element:carousel, resume, disconnect:() => observer.disconnect()};
   }
@@ -348,6 +407,12 @@
     const keepPlayback = activeGroup === group && autoplayRequested;
     const enteringGroup = activeGroup !== group;
     pauseGroup();
+    for (const {video} of clips) {
+      video.removeAttribute('src');
+      video.load();
+    }
+    tileObserver.disconnect();
+    visibleTiles.clear();
     routeCarousel?.disconnect();
     routeCarousel = null;
     get('error').hidden = true;
@@ -395,6 +460,9 @@
     master = clips.reduce((lead, c) => c.item.duration > lead.item.duration ? c : lead);
     longest = master.item.duration;
     renderClips();
+    if (loopPreviews()) for (const {video, carouselMember} of clips) {
+      if (!carouselMember) tileObserver.observe(video);
+    }
     selectView(preferences[group]);
     seek.max = longest;
     setClock(0);
@@ -486,6 +554,7 @@
     openDetail(button, item.title, label.filter(Boolean).join(' · '), item.note);
     const generated = film(item.video, 'Generated rollout', true, item.poster);
     mainFilm = generated.video;
+    mainFilm.autoplay = true;
     get('dialog-media').replaceChildren(generated.figure);
     get('compare').parentElement.hidden = false;
     const thumbnail = clips.find(c=>c.item.id===item.id);
@@ -549,6 +618,7 @@
     get('compare').parentElement.hidden = true;
     const study = film(item.video, item.meta, true, item.poster);
     mainFilm = study.video;
+    mainFilm.autoplay = true;
     get('dialog-media').replaceChildren(study.figure);
   }
   get('close').onclick = () => detail.close();
