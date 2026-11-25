@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="assets-v22/training-data/showcase.css">
+<link rel="preload" as="image" href="editorial/interactive-cover/poster.jpg" fetchpriority="high">
+<link rel="stylesheet" href="assets-v22/training-data/showcase.css" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="assets-v22/training-data/showcase.css"></noscript>
 <script type="module" src="assets-v22/training-data/showcase.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MoraWorld · A world robots can practice in</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap"></noscript>
 <style>
 body{margin:0;background:#0B0D10}
 html{scroll-behavior:smooth}
@@ -151,12 +152,193 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 .mw-method-figure figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;margin-top:12px}
 @media(max-width:1028px){.mw-method-hint{display:block}}
 </style>
-<link rel="stylesheet" href="assets-v22/method-flow/method.cpfs-20261125.css?v=toy906-ten-views">
+<link rel="stylesheet" href="assets-v22/method-flow/method.cpfs-20261125.css?v=toy906-ten-views" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="assets-v22/method-flow/method.cpfs-20261125.css?v=toy906-ten-views"></noscript>
 <script src="assets-v22/method-flow/method.cpfs-20261125.js?v=toy906-clay-first" defer></script>
-<link rel="stylesheet" href="editorial/interactive-cover/cover.css?v=2">
+<style>
+/* mw-cover.css: layout for the interactive cover. Pair with mw-cover.js. */
+.mw-cover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 100vh;
+  height: 100svh;
+  --ink: #ECEEF1;
+  --ink2: #D5D9DF;
+  --acc2: #C9B8FF;
+  background: #0B0D10;
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.mw-cover__poster,
+.mw-cover__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: -2;
+}
+.mw-cover__canvas {
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.mw-cover.is-live .mw-cover__canvas { opacity: 1; }
+
+/* Keeps the navigation and the handover to the next section readable without flattening the footage. */
+.mw-cover__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(11, 13, 16, 0.62) 0%, rgba(11, 13, 16, 0) 20%),
+    linear-gradient(0deg, #0B0D10 0%, rgba(11, 13, 16, 0.55) 12%, rgba(11, 13, 16, 0) 34%),
+    linear-gradient(90deg, rgba(11, 13, 16, 0.34) 0%, rgba(11, 13, 16, 0.2) 36%, rgba(11, 13, 16, 0) 58%);
+}
+
+/* The three stages named under the part of the cover they belong to. */
+.mw-cover__stages {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  margin: 0;
+  padding: 0 clamp(20px, 5vw, 72px);
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  font: 500 12px/1 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #A3AAB5;
+  pointer-events: none;
+}
+.mw-cover__stages li { display: flex; align-items: center; gap: 10px; }
+.mw-cover__stages li::before { content: ''; width: 18px; height: 1px; background: currentColor; opacity: 0.7; }
+.mw-cover__stages li:nth-child(2) { justify-content: center; }
+.mw-cover__stages li:nth-child(3) { justify-content: flex-end; color: #C9B8FF; }
+
+.mw-cover__hint {
+  position: absolute;
+  left: clamp(20px, 5vw, 72px);
+  bottom: 64px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 13px/1 'Inter', system-ui, sans-serif;
+  color: #D5D9DF;
+  opacity: 0.9;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.mw-cover__hint::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #A582FF;
+  box-shadow: 0 0 0 5px rgba(165, 130, 255, 0.22);
+}
+.mw-cover.is-touched .mw-cover__hint { opacity: 0; }
+
+@media (max-width: 720px) {
+  .mw-cover__stages { font-size: 10px; letter-spacing: 0.1em; bottom: 22px; }
+  .mw-cover__stages li::before { width: 10px; }
+  .mw-cover__hint { bottom: 50px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-cover__canvas { transition: none; }
+}
+
+.mw-cover__nav { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 22px clamp(20px, 5vw, 72px); }
+
+.mw-cover__nav-mark { font: 600 19px/1 'Space Grotesk', sans-serif; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+
+.mw-cover__nav-links { display: flex; gap: 28px; font-size: 14px; }
+
+.mw-cover__nav-links a { color: var(--ink2); text-decoration: none; }
+
+.mw-cover__nav-links a:hover { color: var(--acc2); }
+
+.mw-cover__hero { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-46%); padding: 0 clamp(20px, 5vw, 72px); pointer-events: none; }
+
+.mw-cover__hero-eyebrow { margin: 0 0 22px; font: 500 13px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--acc2); }
+
+.mw-cover__hero-title { margin: 0; max-width: 11ch; font: 600 clamp(42px, 6.4vw, 104px)/1.0 'Space Grotesk', sans-serif; letter-spacing: -0.025em; text-wrap: balance; text-shadow: 0 2px 30px rgba(11, 13, 16, 0.55), 0 0 2px rgba(11, 13, 16, 0.5); }
+
+.mw-cover__continue {
+  position: absolute;
+  z-index: 2;
+  right: clamp(20px, 5vw, 72px);
+  bottom: 54px;
+  padding: 9px 13px;
+  color: var(--ink);
+  background: rgb(11 13 16 / 65%);
+  border: 1px solid rgb(236 238 241 / 40%);
+  border-radius: 999px;
+  font: 500 13px/1.2 'Inter', system-ui, sans-serif;
+  text-decoration: none;
+}
+.mw-cover__continue:hover,
+.mw-cover__nav a:hover { color: var(--acc2); }
+.mw-cover a:focus-visible { outline: 2px solid var(--acc2); outline-offset: 4px; }
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .mw-cover__hint { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-cover.is-live .mw-cover__canvas { opacity: 0; }
+}
+@media (max-width: 720px) {
+  .mw-cover__nav-links { display: none; }
+  .mw-cover__continue { bottom: 46px; }
+}
+@media (max-width: 600px) {
+  .mw-cover__hint { bottom: 90px; }
+}
+@media (max-height: 460px) {
+  .mw-cover__hero-title { font-size: clamp(32px, 9vh, 44px); }
+  .mw-cover__hero-eyebrow { margin-bottom: 10px; }
+}
+
+html.mw-cover-open,
+html.mw-cover-handoff {
+  overflow: hidden;
+  overscroll-behavior-y: none;
+}
+.mw-cover-enhanced #cover {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  touch-action: pan-x pinch-zoom;
+}
+.mw-cover-enhanced:not(.mw-cover-open) #cover { display: none; }
+.mw-cover-open:not(.mw-cover-leaving) #moraworld-article { visibility: hidden; }
+.mw-cover-open.mw-cover-leaving #cover {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 420ms cubic-bezier(.22,.75,.23,1);
+}
+#moraworld-article:focus { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mw-cover-open.mw-cover-leaving #cover { transition: none; }
+}
+
+</style>
+<script defer src="editorial/performance/startup.js?v=1"></script>
+<style>
+.mw-cover button[data-mw-cover-start][hidden] { display: none; }
+.mw-cover button[data-mw-cover-start]:not([hidden]) {
+  pointer-events: auto; cursor: pointer; padding: 6px 8px; border: 0; background: transparent;
+}
+.mw-cover button[data-mw-cover-start]:focus-visible { outline: 2px solid #C9B8FF; outline-offset: 4px; }
+@media (hover: none) {
+  .mw-cover button[data-mw-cover-start]:not([hidden]) { display: inline-flex; bottom: 48px; z-index: 2; }
+}
+</style>
 </head>
 <body>
-<section class="mw-cover" id="cover" data-mw-cover aria-labelledby="mw-cover-title"
+<section class="mw-cover" id="cover" data-mw-cover data-mw-cover-src="editorial/interactive-cover/cover.js?v=2" aria-labelledby="mw-cover-title"
          data-atlas-lo="editorial/interactive-cover/atlas-preview.mp4"
          data-atlas-still="editorial/interactive-cover/atlas-still.jpg">
   <img class="mw-cover__poster" src="editorial/interactive-cover/poster.jpg" alt="" fetchpriority="high">
@@ -175,13 +357,185 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
     <p class="mw-cover__hero-eyebrow">MoraWorld</p>
     <h1 class="mw-cover__hero-title" id="mw-cover-title">A world robots can practice in.</h1>
   </div>
-  <p class="mw-cover__hint">Move the cursor over the scene to render it</p>
+  <button type="button" class="mw-cover__hint" data-mw-cover-start hidden>Move the cursor over the scene to render it</button>
   <a class="mw-cover__continue" href="#moraworld-article">Scroll to article <span aria-hidden="true">↓</span></a>
   <ol class="mw-cover__stages"><li>Wireframe</li><li>White model</li><li>Rendered</li></ol>
 </section>
-<script async src="editorial/interactive-cover/cover.js?v=2"></script>
+
 <div id="moraworld-article" tabindex="-1" style="background: #0B0D10; color: #ECEEF1; font-family: Inter, system-ui, sans-serif; min-height: 100vh">
-<script async src="editorial/interactive-cover/entry.js?v=2"></script>
+<script>
+(() => {
+  const cover = document.getElementById('cover');
+  const article = document.getElementById('moraworld-article');
+  if (!cover || !article) return;
+
+  const documentRoot = document.documentElement;
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const entryHash = '#' + article.id;
+  const coverHash = '#' + cover.id;
+  const idleTime = 170;
+  let page = 'article';
+  let version = 0;
+  let lastWheel = -Infinity;
+  let wheelDistance = 0;
+  let wheelTimer;
+  let guardDeadline = 0;
+  let guardMinimum = 0;
+  let swipeStart;
+
+  function targetFor(hash) {
+    if (!hash || hash === entryHash) return article;
+    try {
+      return document.getElementById(decodeURIComponent(hash.slice(1))) || article;
+    } catch {
+      return article;
+    }
+  }
+
+  function jumpTo(hash) {
+    targetFor(hash).scrollIntoView({ block: 'start', behavior: 'instant' });
+  }
+
+  function releaseWheel() {
+    clearTimeout(wheelTimer);
+    documentRoot.classList.remove('mw-cover-handoff');
+    window.removeEventListener('wheel', onWheel, true);
+  }
+
+  function guardWheel() {
+    clearTimeout(wheelTimer);
+    const now = performance.now();
+    const quietAt = Math.max(guardMinimum, lastWheel + idleTime);
+    const timeLeft = Math.min(guardDeadline, quietAt) - now;
+    if (timeLeft <= 0) releaseWheel();
+    else wheelTimer = setTimeout(guardWheel, timeLeft);
+  }
+
+  function onWheel(event) {
+    if (event.ctrlKey) return;
+    const now = performance.now();
+    if (page === 'article' && (now >= guardDeadline || (now >= guardMinimum && now - lastWheel >= idleTime))) {
+      releaseWheel();
+      return;
+    }
+    event.preventDefault();
+    if (page === 'cover' && event.deltaY > 0 && event.deltaY >= Math.abs(event.deltaX)) {
+      if (now - lastWheel >= idleTime) wheelDistance = 0;
+      const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
+      wheelDistance += event.deltaY * scale;
+      lastWheel = now;
+      if (wheelDistance >= 22) enterArticle(entryHash, true);
+    } else {
+      lastWheel = now;
+      if (page === 'article') guardWheel();
+    }
+  }
+
+  function showCover() {
+    version += 1;
+    page = 'cover';
+    lastWheel = -Infinity;
+    wheelDistance = 0;
+    clearTimeout(wheelTimer);
+    article.inert = true;
+    documentRoot.classList.remove('mw-cover-leaving', 'mw-cover-handoff');
+    documentRoot.classList.add('mw-cover-open');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+  }
+
+  function showArticle() {
+    page = 'article';
+    documentRoot.classList.remove('mw-cover-open', 'mw-cover-leaving');
+    article.inert = false;
+  }
+
+  function enterArticle(hash, fromWheel) {
+    if (page !== 'cover') return;
+    page = 'leaving';
+    const ticket = ++version;
+    let timeout;
+    function finish() {
+      cover.removeEventListener('transitionend', onEnd);
+      clearTimeout(timeout);
+      if (ticket !== version || page !== 'leaving') return;
+      if (fromWheel) documentRoot.classList.add('mw-cover-handoff');
+      showArticle();
+      history.pushState(null, '', hash);
+      article.focus({ preventScroll: true });
+      jumpTo(hash);
+      if (fromWheel) {
+        const now = performance.now();
+        guardMinimum = now + 150;
+        guardDeadline = now + 620;
+        guardWheel();
+      } else {
+        releaseWheel();
+      }
+    }
+    function onEnd(event) {
+      if (event.target === cover && event.propertyName === 'transform') finish();
+    }
+
+    if (motion.matches) {
+      finish();
+      return;
+    }
+    documentRoot.classList.add('mw-cover-leaving');
+    jumpTo(hash);
+    cover.addEventListener('transitionend', onEnd);
+    timeout = setTimeout(finish, 620);
+  }
+
+  cover.addEventListener('click', event => {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link || link.hash === coverHash || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    enterArticle(link.hash, false);
+  });
+
+  cover.addEventListener('touchstart', event => {
+    const finger = event.touches.length === 1 ? event.touches[0] : null;
+    swipeStart = finger && { x: finger.clientX, y: finger.clientY };
+  }, { passive: true });
+  cover.addEventListener('touchend', event => {
+    if (!swipeStart) return;
+    const finger = event.changedTouches[0];
+    const upward = swipeStart.y - finger.clientY;
+    if (upward >= 45 && upward > Math.abs(finger.clientX - swipeStart.x)) {
+      enterArticle(entryHash, false);
+    }
+    swipeStart = null;
+  }, { passive: true });
+  cover.addEventListener('touchcancel', () => { swipeStart = null; }, { passive: true });
+
+  document.addEventListener('keydown', event => {
+    if (page !== 'cover' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (!['ArrowDown', 'PageDown', ' '].includes(event.key)) return;
+    if (event.target.closest?.('a, button, input, textarea, select, [contenteditable]')) return;
+    event.preventDefault();
+    enterArticle(entryHash, false);
+  });
+
+  function syncLocation() {
+    const hash = location.hash;
+    if (!hash || hash === coverHash) {
+      if (page !== 'cover') showCover();
+    } else if (page !== 'article') {
+      version += 1;
+      showArticle();
+      releaseWheel();
+      jumpTo(hash);
+    }
+  }
+
+  documentRoot.classList.add('mw-cover-enhanced');
+  syncLocation();
+  window.addEventListener('hashchange', syncLocation);
+  window.addEventListener('popstate', syncLocation);
+})();
+
+</script>
 <header style="border-bottom: 1px solid #1F242B">
 <div style="max-width: 1120px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
 <a href="#top" style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; color: #ECEEF1; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">MoraWorld</a>
@@ -278,7 +632,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 </div>
 
 <div id="take" style="margin-top: 64px; position: relative; aspect-ratio: 16 / 9; background: #14171C; border: 1px solid #2A3038; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center">
-  <video controls playsinline preload="metadata" aria-label="MoraWorld overview" src="assets-v22/MoraWorld-overview-v2.mp4" poster="assets-v22/MoraWorld-overview-v2.jpg" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #0B0D10"></video>
+  <video controls playsinline preload="none" aria-label="MoraWorld overview" src="assets-v22/MoraWorld-overview-v2.mp4" poster="assets-v22/MoraWorld-overview-v2.jpg" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #0B0D10"></video>
 </div>
 </section>
 
@@ -505,7 +859,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   </div>
   <noscript><p class="mc-status">Enable JavaScript to compare the videos.</p></noscript>
 </section>
-<script defer src="assets-control/control.cpfs-20261125.js"></script>
+<script type="text/plain" data-mw-near="control-demo" data-mw-src="assets-control/control.cpfs-20261125.js"></script>
 </div>
 
 <div id="embodiment-showcase" class="ev-gallery" role="region" aria-labelledby="em-title">
@@ -948,13 +1302,13 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
     </details>
   </dialog>
   <script id="mg-data" type="application/json">{"covers":{"mobile":"assets/motion/field-room.jpg","nav":"assets/motion/field-scan.jpg","manip":"assets/motion/field-wrists.jpg"},"cases":[{"id":"2d287dfce7","group":"manip","title":"Slide a plate into the microwave","dataset":"AgiBot","model":"SGF EMA500","note":"The right gripper carries the blue plate through the open door and withdraws, leaving the plate inside.","duration":13.6,"video":"assets/rollouts/2d287dfce7-prediction-rollout.mp4","reference":"assets/rollouts/2d287dfce7-prediction-source.mp4","poster":"assets/rollouts/2d287dfce7-prediction.jpg","posterTime":2.3},{"id":"1ef2e6ba60","group":"manip","title":"Cover the middle steamer","dataset":"Galaxea","model":"SGF+ EMA700","note":"The right gripper lifts a woven lid from the stack on the right, sets it on the middle steamer and releases it.","duration":13.6,"video":"assets/rollouts/1ef2e6ba60-sgfplus700-rollout.mp4","reference":"assets/rollouts/1ef2e6ba60-sgfplus700-source.mp4","poster":"assets/rollouts/1ef2e6ba60-sgfplus700.jpg","posterTime":3.6},{"id":"93b0532b80","group":"manip","title":"Fit a printed lid onto a box","dataset":"RoboChallenge","model":"SGF EMA500","note":"The grippers guide opposite edges of the printed lid until it sits on the white box, then draw away.","duration":13.6,"video":"assets/rollouts/93b0532b80-prediction-rollout.mp4","reference":"assets/rollouts/93b0532b80-prediction-source.mp4","poster":"assets/rollouts/93b0532b80-prediction.jpg","posterTime":2.8},{"id":"22620a6cb0","group":"manip","title":"Cross the ends of a red cord","dataset":"AgiBot","model":"SGF EMA500","note":"The grippers draw the two ends across the top of the box, changing the shape of the red loop.","duration":13.6,"video":"assets/rollouts/22620a6cb0-prediction-rollout.mp4","reference":"assets/rollouts/22620a6cb0-prediction-source.mp4","poster":"assets/rollouts/22620a6cb0-prediction.jpg","posterTime":7.5},{"id":"long-5b3365e5a571","group":"manip","title":"Slide open a glass display cabinet","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The gripper meets the edge of the glass door and slides it aside, revealing the contents of the display cabinet.","duration":20.0,"video":"assets/showcase/manipulation/open-display-cabinet-rollout.mp4","reference":"assets/showcase/manipulation/open-display-cabinet-source.mp4","poster":"assets/showcase/manipulation/open-display-cabinet.jpg","posterTime":14},{"id":"mobile-ec866b7fd645","group":"manip","title":"Set a bottle on the table","dataset":"AgiBot","model":"SGF EMA700 + Memory 2019","note":"The right gripper carries a bottle from the nearby pack, sets it upright on the table, and withdraws.","duration":18.7,"video":"assets/showcase/manipulation/set-down-bottle-rollout.mp4","reference":"assets/showcase/manipulation/set-down-bottle-source.mp4","poster":"assets/showcase/manipulation/set-down-bottle.jpg","posterTime":8},{"id":"sekai2-035-forward","group":"nav","title":"Window corridor · forward","dataset":"Sekai2","model":"SGF EMA500 + Memory 2019","note":"The camera continues down the corridor toward the windows.","duration":12.466666666666667,"video":"assets/rollouts/sekai2-035-forward-sgf500_mem-rollout.mp4","reference":"assets/rollouts/sekai2-035-forward-sgf500_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-035-first-frame.jpg","posterTime":0},{"id":"sekai2-035-reverse","group":"nav","title":"Window corridor · reverse","dataset":"Sekai2","model":"SGF EMA700 + Memory 2019","note":"The camera turns toward the white wall and heads back along the corridor.","duration":12.466666666666667,"video":"assets/rollouts/sekai2-035-reverse-sgf700_mem-rollout.mp4","reference":"assets/rollouts/sekai2-035-reverse-sgf700_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-035-first-frame.jpg","posterTime":0},{"id":"sekai2-001","group":"nav","title":"Round a pillar in the metro","dataset":"Sekai2","model":"SGF EMA700 + Memory 2019","note":"The camera passes the advertisement pillar and turns into a blue-lined passage. Watch the poster wall slide into view.","duration":24.933333333333334,"video":"assets/rollouts/sekai2-001-sgf700_mem-rollout.mp4","reference":"assets/rollouts/sekai2-001-sgf700_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-001-first-frame.jpg","posterTime":0},{"id":"sekai2-025","group":"nav","title":"Turn through a museum gallery","dataset":"Sekai2","model":"SGF+ EMA700 + Memory 2019","note":"Lit display cases pass on either side as the camera rounds a dark partition and turns back toward the exhibits.","duration":24.933333333333334,"video":"assets/rollouts/sekai2-025-sgfplus700_mem-rollout.mp4","reference":"assets/rollouts/sekai2-025-sgfplus700_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-025-first-frame.jpg","posterTime":0},{"id":"long-685650b57c3d","group":"mobile","page":"long","title":"Draw the curtain from two positions","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot moves along the window and reaches for the curtain twice, with a release and repositioning between pulls.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/two-curtain-pulls-rollout.mp4","reference":"assets/showcase/mobile-rollouts/two-curtain-pulls-source.mp4","poster":"assets/showcase/mobile-rollouts/two-curtain-pulls.jpg","posterTime":19,"previewLabel":"Draw the curtain","taskDescription":"Approach the window and pull the curtain. Release it, move along the window, and pull again from the new position."},{"id":"sofa-wide-start-013","group":"mobile","page":"long","title":"Approach the sofa and rearrange cushions","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"Starting with the full sofa in view, the robot moves closer to lift a floral cushion, then shifts along the sofa to handle another cushion.","duration":56.666666666666664,"video":"assets/showcase/mobile-rollouts/approach-sofa-rollout.mp4","reference":"assets/showcase/mobile-rollouts/approach-sofa-source.mp4","poster":"assets/showcase/mobile-rollouts/approach-sofa.jpg","posterTime":17,"previewLabel":"Arrange the cushions","rolloutPrompt":"A light gray sofa with a wooden floor beneath it holds three pillows: two with a blue background and white daisies, and one white pillow with a cartoon cactus face and orange trim. In the background, a bed with white bedding and a person are visible, along with a curtain and a dark object on the floor to the right.","taskDescription":"Approach the sofa, move alongside it, and rearrange the cushions."},{"id":"long-2fc4e86c310d","group":"mobile","page":"long","title":"Move along the bed with a cleaning cloth","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The robot approaches the bed, picks up a cloth, shifts position while working along the floor, and lowers the cloth again.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/wipe-bedside-rollout.mp4","reference":"assets/showcase/mobile-rollouts/wipe-bedside-source.mp4","poster":"assets/showcase/mobile-rollouts/wipe-bedside.jpg","posterTime":37,"previewLabel":"Wipe beside the bed","taskDescription":"Pick up the cleaning cloth and wipe the floor while moving alongside the bed."},{"id":"long-e6edc18b1bd5","group":"mobile","page":"long","title":"Carry a bowl and return to the table","dataset":"Galaxea","model":"SGF+ EMA700 + Memory 2019","note":"The robot picks up a bowl, turns away from the round table, then returns to the sofa area.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/carry-bowl-rollout.mp4","reference":"assets/showcase/mobile-rollouts/carry-bowl-source.mp4","poster":"assets/showcase/mobile-rollouts/carry-bowl.jpg","posterTime":34,"previewLabel":"Carry a bowl","taskDescription":"Pick up the bowl at the round table, turn away with it, and return to the seating area."},{"id":"doll-wide-f30-s101","group":"mobile","page":"long","title":"Put a toy away, then return","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot picks up a toy, moves around the bed to the basket, then returns to the bed.","duration":60.0,"video":"assets/showcase/mobile-rollouts/bedside-toys-rollout.mp4","reference":"assets/showcase/mobile-rollouts/bedside-toys-source.mp4","poster":"assets/showcase/mobile-rollouts/bedside-toys.jpg","posterTime":11,"previewLabel":"Put away a toy","rolloutPrompt":"A large bed with a white sheet and pillows is positioned against a wooden headboard. On the bed, a yellow plush toy and a green plush toy are visible. A round, woven basket containing various colorful toys sits on the floor beside the bed. A shopping cart is located near the basket. A person is seated on a chair to the right of the bed. A lamp is mounted on the wall next to the bed. A blue bag rests on the bed near the headboard. A plastic bag is on the floor near the shopping cart. The room has blue curtains and a wooden floor.","taskDescription":"Pick up a toy, carry it to the basket, and return to the bed."},{"id":"long-a2b05075e306","group":"mobile","page":"long","title":"Open a washer and turn toward the basket","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot repositions between two washers, opens a drum door, and turns toward the laundry basket.","duration":44,"video":"assets/showcase/mobile-rollouts/washer-to-basket-rollout.mp4","reference":"assets/showcase/mobile-rollouts/washer-to-basket-source.mp4","poster":"assets/showcase/mobile-rollouts/washer-to-basket.jpg","posterTime":28,"previewLabel":"Open the washer","taskDescription":"Move between the two washing machines, open a drum door, and turn toward the laundry basket."},{"id":"mobile-1aa8f2df1802","group":"mobile","page":"short","title":"Carry a tray to a trolley","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"Both grippers carry a green tray and set it on the trolley before withdrawing.","duration":17.0,"video":"assets/showcase/mobile-rollouts/carry-tray-rollout.mp4","reference":"assets/showcase/mobile-rollouts/carry-tray-source.mp4","poster":"assets/showcase/mobile-rollouts/carry-tray.jpg","posterTime":5,"previewLabel":"Carry the tray","taskDescription":"Carry the green tray with both grippers and set it on the trolley."},{"id":"mobile-c95bd41c4685","group":"mobile","page":"short","title":"Set an orange cloth on the side table","dataset":"Galaxea","model":"SGF+ EMA700 + Memory 2019","note":"The robot approaches the round table, places the orange cloth, and backs away with the cloth still visible on the tabletop.","duration":23.8,"video":"assets/showcase/mobile-rollouts/place-orange-cloth-rollout.mp4","reference":"assets/showcase/mobile-rollouts/place-orange-cloth-source.mp4","poster":"assets/showcase/mobile-rollouts/place-orange-cloth.jpg","posterTime":17,"previewLabel":"Set down the cloth","rolloutPrompt":"A light-colored sofa with multiple cushions is positioned against a wall, adjacent to a round wooden side table. A floor lamp with a black base and circular shades stands near the sofa. A glass door or window is visible, reflecting an interior space, and is framed by curtains. An orange cloth and a black device are placed on the side table, and the orange cloth is also seen on the sofa. A black cable extends from the device on the table.","taskDescription":"Approach the side table, set down the orange cloth, and back away."},{"id":"mobile-5d2560347ee9","group":"mobile","page":"short","title":"Reach for a bowl by the microwave","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot shifts along the counter toward the pink bowl beside the open microwave.","duration":17.0,"video":"assets/showcase/mobile-rollouts/reach-microwave-rollout.mp4","reference":"assets/showcase/mobile-rollouts/reach-microwave-source.mp4","poster":"assets/showcase/mobile-rollouts/reach-microwave.jpg","posterTime":15,"previewLabel":"Reach for the bowl","taskDescription":"Move along the counter and reach for the pink bowl beside the open microwave."},{"id":"mobile-42861afcb295","group":"mobile","page":"short","title":"Open the drawer for a hair dryer","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The camera lowers from the counter as the gripper opens the drawer beside the hair dryer.","duration":17.0,"video":"assets/showcase/mobile-rollouts/store-hair-dryer-rollout.mp4","reference":"assets/showcase/mobile-rollouts/store-hair-dryer-source.mp4","poster":"assets/showcase/mobile-rollouts/store-hair-dryer.jpg","posterTime":10,"previewLabel":"Open the drawer","taskDescription":"Reach down and open the drawer beside the hair dryer."},{"id":"mobile-8773eab7d6b7","group":"mobile","page":"short","title":"Drop a garment into a hamper","dataset":"ManipArena","model":"SGF EMA500 + Memory 2019","note":"The gripper brings a black garment over the hamper, releases it and moves away.","duration":16.15,"video":"assets/showcase/mobile-rollouts/load-hamper-rollout.mp4","reference":"assets/showcase/mobile-rollouts/load-hamper-source.mp4","poster":"assets/showcase/mobile-rollouts/load-hamper.jpg","posterTime":9,"previewLabel":"Load the hamper","rolloutPrompt":"Put the clothes in the laundry basket","taskDescription":"Carry the garment to the hamper, release it, and move away."},{"id":"mobile-cdfaab0e0320","group":"mobile","page":"short","title":"Set down a sign beside the steamers","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The right gripper carries a small sign along the counter and releases it beside the steamers.","duration":17.0,"video":"assets/showcase/mobile-rollouts/place-sign-rollout.mp4","reference":"assets/showcase/mobile-rollouts/place-sign-source.mp4","poster":"assets/showcase/mobile-rollouts/place-sign.jpg","posterTime":9,"previewLabel":"Set down the sign","taskDescription":"Carry the sign along the counter with the right gripper and set it beside the steamers."},{"id":"sekai2-027-forward","group":"nav","title":"Perforated wall corner · forward","dataset":"Sekai2","model":"SGF+ EMA700","note":"The camera passes the perforated wall and moves toward the bright landing.","duration":12.466666666666667,"video":"assets/showcase/navigation/sekai2-027-forward-rollout.mp4","reference":"assets/showcase/navigation/sekai2-027-forward-source.mp4","poster":"assets/showcase/navigation/sekai2-027-first-frame.jpg","posterTime":0},{"id":"sekai2-027-reverse","group":"nav","title":"Perforated wall corner · reverse","dataset":"Sekai2","model":"SGF+ EMA700 + Memory 2019","note":"The camera follows the railing back toward the stairs.","duration":12.466666666666667,"video":"assets/showcase/navigation/sekai2-027-reverse-rollout.mp4","reference":"assets/showcase/navigation/sekai2-027-reverse-source.mp4","poster":"assets/showcase/navigation/sekai2-027-first-frame.jpg","posterTime":0}],"replays":[{"category":"combined","name":"A robot in its room","short":"GALAXEA · 55.7 s","video":"assets/mobile/galaxea-room-gt.mp4","poster":"assets/mobile/galaxea-room.jpg","meta":"GT + RGB RECONSTRUCTION · 2× · 55.7 s","kicker":"01 / MOBILE + MANIPULATION","title":"A room to move in. A sofa to work on.","description":"Follow the recorded camera and hand motion through a reconstructed room, with the source view synchronized beside the robot.","watch":"The sofa, changing viewpoint and hand motion stay in one spatial overview. Geometry is estimated from RGB; the robot body and base are schematic."},{"category":"mobile","name":"A room, remembered in 3D","short":"MATTERPORT3D · 15 s","video":"assets/mobile/matterport-spatial-gt.mp4","poster":"assets/mobile/matterport-spatial.jpg","meta":"RGB-D SPATIAL REPLAY · 2× · 15 s","kicker":"02 / MOBILE · SPATIAL VIEW","title":"Turn away. See the room again.","description":"A colored RGB-D point cloud, current and historical view frusta, and a synchronized source window reveal the surrounding space.","watch":"This example rotates at a fixed camera center. The overhead orbit is for presentation; it does not represent robot translation."},{"category":"interaction","name":"Fridge to countertop","short":"AGIBOT · 16.1 s","video":"assets/mobile/agibot-fridge-gt.mp4","poster":"assets/mobile/agibot-fridge-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 4× · 16.1 s","kicker":"03 / INTERACTION","title":"Open. Retrieve. Close.","description":"Follow the gripper from the fridge handle to a boxed item, then to the countertop and back to the door.","watch":"A continuous action chain, with recorded wrist paths and gripper state beside the source video."},{"category":"interaction","name":"Pack the shopping bag","short":"AGIBOT · 15.6 s","video":"assets/mobile/agibot-packing-gt.mp4","poster":"assets/mobile/agibot-packing-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 3× · 15.6 s","kicker":"04 / INTERACTION","title":"Two hands, one shopping bag.","description":"One hand holds the red bag open while the other puts successive items inside.","watch":"Different roles for the two hands: holding the bag versus reaching, grasping and releasing."},{"category":"interaction","name":"Unlock and open","short":"AGIBOT · 15.1 s","video":"assets/mobile/agibot-key-gt.mp4","poster":"assets/mobile/agibot-key-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 4× · 15.1 s","kicker":"05 / INTERACTION","title":"A small key. A precise interaction.","description":"The robot brings a key to the lock, turns it and opens the door.","watch":"Contact-rich manipulation: key alignment, the turn, and the door opening in one continuous clip."}],"spatial":{"poses":"assets/motion/poses.json","landmarks":"assets/motion/landmarks.json","loops":{"mobile":"assets/motion/field-room-loop.mp4","nav":"assets/motion/field-scan-loop.mp4","manip":"assets/motion/field-wrists-loop.mp4"},"maps":{"multiple-sofa-cushions":["assets/motion/multiple-sofa-cushions-action.mp4","assets/motion/multiple-sofa-cushions-action.jpg"],"agi25_236970b9cbda":["assets/rollouts/agi25_236970b9cbda-action.mp4","assets/rollouts/agi25_236970b9cbda-action.jpg"],"2d287dfce7":["assets/rollouts/2d287dfce7-action.mp4","assets/rollouts/2d287dfce7-action.jpg"],"1ef2e6ba60":["assets/motion/1ef2e6ba60-action.mp4","assets/motion/1ef2e6ba60-action.jpg"],"93b0532b80":["assets/rollouts/93b0532b80-action.mp4","assets/rollouts/93b0532b80-action.jpg"],"22620a6cb0":["assets/rollouts/22620a6cb0-action.mp4","assets/rollouts/22620a6cb0-action.jpg"],"mobile-b870e2f1904c":["assets/movement/mobile-manipulation/curtain-action.mp4","assets/movement/mobile-manipulation/curtain-action.jpg"],"mobile-fe719b48fd27":["assets/movement/mobile-manipulation/push-chair-action.mp4","assets/movement/mobile-manipulation/push-chair-action.jpg"]}},"navigationRows":[{"title":"Metro concourse","anchor":"assets/showcase/navigation/sekai2-001-first-frame.jpg","ids":["sekai2-001"],"description":"Round the advertising pillar into a blue-lined passage."},{"title":"Museum gallery","anchor":"assets/showcase/navigation/sekai2-025-first-frame.jpg","ids":["sekai2-025"],"description":"Turn around a dark partition to reveal the lit display cases."},{"title":"Window corridor","anchor":"assets/showcase/navigation/sekai2-035-first-frame.jpg","ids":["sekai2-035-forward","sekai2-035-reverse"],"description":"Turn toward the windows or retrace the corridor along the white wall."},{"title":"Perforated wall corner","anchor":"assets/showcase/navigation/sekai2-027-first-frame.jpg","ids":["sekai2-027-forward","sekai2-027-reverse"],"description":"Round the partition toward the bright landing or head back along the stair rail."}]}</script>
-  <script src="assets/rollouts/track-data.js"></script>
-  <script src="assets/showcase/navigation/track-data.js?v=3"></script>
-  <script src="assets/showcase/manipulation/track-data.js"></script>
-  <script src="assets/showcase/mobile-rollouts/track-data.js?v=3"></script>
-  <script src="assets/motion/motion-space.cpfs-20261125.js?v=route-wipe"></script>
-  <script src="assets/showcase/mobile-rollouts/feature.js?v=12"></script>
-  <script src="assets/motion/movement.cpfs-20261125.js?rev=nav-tagline"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/rollouts/track-data.js"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/navigation/track-data.js?v=3"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/manipulation/track-data.js"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/mobile-rollouts/track-data.js?v=3"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/motion/motion-space.cpfs-20261125.js?v=route-wipe"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/mobile-rollouts/feature.js?v=12"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/motion/movement.cpfs-20261125.js?rev=nav-tagline"></script>
 </section>
 
 <!-- movement gallery ends -->
@@ -1023,8 +1377,8 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
             <rect x="18" y="29" width="63" height="36" rx="3" fill="#221e30" stroke="#775d92"/>
             <rect x="21" y="33" width="63" height="36" rx="3" fill="#332842" stroke="#997cad"/>
             <g class="cm-bank-photo" clip-path="url(#cm-photo-clip)">
-              <image href="assets/showcase/memory-originals/galaxea_9636eca52052-on-f0.png" x="24" y="37" width="63" height="36"/>
-              <image class="cm-saved-frame" href="assets/showcase/memory-originals/galaxea_9636eca52052-on-f13.png" x="24" y="37" width="63" height="36" opacity="0"/>
+              <image data-mw-href="assets/showcase/memory-originals/galaxea_9636eca52052-on-f0.png" x="24" y="37" width="63" height="36"/>
+              <image class="cm-saved-frame" data-mw-href="assets/showcase/memory-originals/galaxea_9636eca52052-on-f13.png" x="24" y="37" width="63" height="36" opacity="0"/>
             </g>
             <path d="M96 53h10m-5-5v10" stroke="#84738c"/>
             <g fill="none" stroke="#cbaee4" stroke-width="1.2"><path d="m112 51 18-9v20l-18-7z"/><path d="m114 52 15-3m-15 5 15 2" opacity=".5"/></g>
@@ -1051,7 +1405,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
           <g aria-hidden="true" class="cm-packets">
             <g id="cm-history-packet" opacity="0">
               <rect x="-10" y="-7" width="20" height="14" rx="2" fill="#2c2234" stroke="#e5c7fc"/>
-              <image href="assets/showcase/memory-originals/galaxea_9636eca52052-on-f13.png" x="-8.5" y="-5" width="17" height="10"/>
+              <image data-mw-href="assets/showcase/memory-originals/galaxea_9636eca52052-on-f13.png" x="-8.5" y="-5" width="17" height="10"/>
             </g>
             <circle id="cm-motion-packet" r="3.3" fill="#ade4cf" opacity="0"/>
             <circle id="cm-output-packet" r="2.7" cy="128" fill="#eed9ff" opacity="0"/>
@@ -1524,87 +1878,18 @@ warmMemory.observe(q('#memory-gallery'));
 })();
 </script>
 
-<section id="policy-curves" aria-labelledby="pe-heading">
+<section id="policy-real-sim" aria-labelledby="prs-heading">
 <style>
-#policy-curves{margin:64px 0 0;scroll-margin-top:88px;color:#eceef1}
-#policy-curves h3{margin:0;font:500 clamp(1.65rem,3vw,2.25rem)/1.2 'Space Grotesk',Inter,sans-serif;letter-spacing:-.025em}
-#policy-curves .pe-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:16px;align-items:stretch;margin-top:22px}
-#policy-curves .pe-panel{min-width:0;margin:0;padding:clamp(16px,2vw,24px);background:#111418;border:1px solid #2a2e37;border-radius:14px}
-#policy-curves h4{margin:0;font:600 18px/1.35 'Space Grotesk',Inter,sans-serif}
-#policy-curves .pe-note{margin:5px 0 0;color:#a3aab5;font:14px/1.5 Inter,sans-serif}
-#policy-curves .pe-group{margin-top:18px}
-#policy-curves h5{margin:0 0 4px;font:600 14px/1.5 Inter,sans-serif}
-#policy-curves .pe-row{box-sizing:border-box;width:100%;display:grid;grid-template-columns:6em 1fr 3.5em;align-items:center;gap:8px;min-height:34px;padding:5px 8px;margin:2px 0;border:1px solid transparent;border-radius:6px;background:transparent;color:#d8dde6;text-align:left;cursor:pointer;font:13px/1.45 Inter,sans-serif}
-#policy-curves .pe-row:hover{background:#1c2028}
-#policy-curves .pe-row[aria-pressed=true]{background:#23212b;border-color:#5b506e}
-#policy-curves .pe-row:focus-visible{outline:2px solid #c7b2f3;outline-offset:2px}
-#policy-curves .pe-track{height:9px;border-radius:2px;background:#282c34;overflow:hidden}
-#policy-curves .pe-track i{display:block;width:var(--score);height:100%;background:var(--bar)}
-#policy-curves .pe-score{text-align:right;font-variant-numeric:tabular-nums}
-#policy-curves video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#090b0e;border-radius:8px}
-#policy-curves figcaption{margin:12px 0 0}
-#policy-curves .pe-caption-title{display:block;font-weight:600;font-size:16px}
-#policy-curves .pe-meta{display:block;margin-top:3px;color:#a3aab5;font-size:13px}
-@media(max-width:760px){#policy-curves .pe-grid{grid-template-columns:minmax(0,1fr)}#policy-curves .pe-row{min-height:42px}}
+#policy-real-sim{margin-top:40px;scroll-margin-top:88px;color:#eceef1}
+#policy-real-sim #prs-heading{margin:0 0 22px;font:500 clamp(1.65rem,3vw,2.25rem)/1.2 'Space Grotesk',Inter,sans-serif;letter-spacing:-.025em}
+#policy-real-sim figure{max-width:760px;margin:0;border:1px solid #2a2e37;border-radius:14px;overflow:hidden;background:#0b0d10}
+#policy-real-sim img{display:block;width:100%;height:auto}
 </style>
-<h3 id="pe-heading">Policy evaluation</h3>
-<div class="pe-grid">
-<div class="pe-panel">
-<h4>Real-robot success rate</h4>
-<p class="pe-note">10 trials per training set and task. Select a bar to watch one trial.</p>
-<div class="pe-group" role="group" aria-label="Fruit sorting"><h5>Fruit sorting</h5>
-<button type="button" class="pe-row" aria-label="Fruit sorting, Real, 40% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-real.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-real.jpg" data-title="Fruit sorting · Real" data-outcome="Failure" style="--score:40%;--bar:#9ba9bc"><span>Real</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">40%</span></button>
-<button type="button" class="pe-row" aria-label="Fruit sorting, OMP, 70% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-sim.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-sim.jpg" data-title="Fruit sorting · OMP" data-outcome="Success" style="--score:70%;--bar:#c7b2f3"><span>OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">70%</span></button>
-<button type="button" class="pe-row" aria-label="Fruit sorting, Real + OMP, 90% success. Show recording." aria-pressed="true" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.jpg" data-title="Fruit sorting · Real + OMP" data-outcome="Success" style="--score:90%;--bar:#efcc85"><span>Real + OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">90%</span></button></div>
-<div class="pe-group" role="group" aria-label="Bottle on tray"><h5>Bottle on tray</h5>
-<button type="button" class="pe-row" aria-label="Bottle on tray, Real, 20% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-real.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-real.jpg" data-title="Bottle on tray · Real" data-outcome="Failure" style="--score:20%;--bar:#9ba9bc"><span>Real</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">20%</span></button>
-<button type="button" class="pe-row" aria-label="Bottle on tray, OMP, 70% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-sim.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-sim.jpg" data-title="Bottle on tray · OMP" data-outcome="Success" style="--score:70%;--bar:#c7b2f3"><span>OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">70%</span></button>
-<button type="button" class="pe-row" aria-label="Bottle on tray, Real + OMP, 60% success. Show recording." aria-pressed="false" aria-controls="pe-recording" data-src="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-mixed.mp4" data-poster="assets/showcase/colleague-demos/robot/results/dp0-l1-t1-mixed.jpg" data-title="Bottle on tray · Real + OMP" data-outcome="Success" style="--score:60%;--bar:#efcc85"><span>Real + OMP</span><span class="pe-track" aria-hidden="true"><i></i></span><span class="pe-score">60%</span></button></div>
-</div>
-<figure class="pe-panel" id="pe-recording">
-<video src="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.mp4" poster="assets/showcase/colleague-demos/robot/results/dp5-l1-t1-mixed.jpg" muted playsinline controls loop preload="none" aria-labelledby="pe-caption-title"></video>
-<figcaption aria-live="polite" aria-atomic="true"><span class="pe-caption-title" id="pe-caption-title">Fruit sorting · Real + OMP</span><span class="pe-meta">Layout 1 · Trial 1 · <span data-pe-outcome>Success</span></span></figcaption>
+<h3 id="prs-heading">Real-world vs. simulation success</h3>
+<figure>
+<img src="assets-v22/policy-evaluation-20261125/success-rate-id-ood-two-colors.png" width="1760" height="1716" loading="lazy" alt="Real-world versus simulation success rates for Apple, Bottle and Banana tasks, with OOD and in-domain points, a linear fit and ideal agreement line.">
 </figure>
-</div>
 </section>
-<script>
-(() => {
-  const panel = document.getElementById('policy-curves');
-  const video = panel.querySelector('video');
-  const title = panel.querySelector('#pe-caption-title');
-  const outcome = panel.querySelector('[data-pe-outcome]');
-  const rows = panel.querySelectorAll('.pe-row');
-  let onScreen = false;
-  let wantsPlay = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function syncExample() {
-    if (!onScreen || document.hidden) video.pause();
-    else if (wantsPlay) video.play().catch(() => {});
-  }
-  new IntersectionObserver(([entry]) => {
-    onScreen = entry.isIntersecting;
-    syncExample();
-  }).observe(video);
-  document.addEventListener('visibilitychange', syncExample);
-  video.addEventListener('pause', () => {
-    if (onScreen && !document.hidden && video.paused && video.readyState >= 2) wantsPlay = false;
-  });
-  video.addEventListener('play', () => { wantsPlay = true; });
-  for (const row of rows) {
-    row.addEventListener('click', () => {
-      if (row.getAttribute('aria-pressed') !== 'true') {
-        video.pause();
-        video.poster = row.dataset.poster;
-        video.src = row.dataset.src;
-        title.textContent = row.dataset.title;
-        outcome.textContent = row.dataset.outcome;
-        for (const item of rows) item.setAttribute('aria-pressed', String(item === row));
-      }
-      wantsPlay = true;
-      syncExample();
-    });
-  }
-})();
-</script>
 
 </div>
 </section>
