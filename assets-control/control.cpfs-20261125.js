@@ -6,7 +6,6 @@
   const videos = [...demo.querySelectorAll("video[data-role]")];
   const master = demo.querySelector('[data-role="generated"]');
   const modes = [...demo.querySelectorAll("[data-mode]")];
-  const cameras = [...demo.querySelectorAll("[data-view]")];
   const durations = [...demo.querySelectorAll("[data-duration]")];
   const library = demo.querySelector(".mc-examples");
   const title = demo.querySelector("#mc-case-title");
@@ -21,7 +20,6 @@
   let examples = [];
   let currentExample;
   let mode = "scene";
-  let preferredView = "multi";
   let position = 0;
   let duration = 5;
   let ready = false;
@@ -144,14 +142,10 @@
     demo.setAttribute("aria-busy", "true");
 
     const options = currentExample.tracks[mode];
-    const view = preferredView in options ? preferredView : "main";
+    const view = mode === "action" ? "main" : "multi";
     const media = options[view];
     title.textContent = currentExample.title;
     modes.forEach(button => markPressed(button, button.dataset.mode === mode));
-    for (const button of cameras) {
-      button.disabled = !(button.dataset.view in options);
-      markPressed(button, button.dataset.view === view);
-    }
     demo.dataset.layout = view;
     cameraNote.hidden = mode !== "action" && view !== "multi";
     cameraNote.textContent = mode === "action"
@@ -223,12 +217,6 @@
     void loadExample({ time: position, resume: playing });
   }));
 
-  cameras.forEach(button => button.addEventListener("click", () => {
-    if (!currentExample || (ready && button.getAttribute("aria-pressed") === "true")) return;
-    preferredView = button.dataset.view;
-    void loadExample({ time: position, resume: playing });
-  }));
-
   durations.forEach(button => button.addEventListener("click", () => {
     const seconds = Number(button.dataset.duration);
     if (!currentExample || currentExample.seconds === seconds) return;
@@ -262,7 +250,7 @@
     try {
       const response = await fetch(new URL("cases.cpfs-20261125.json", assets));
       if (!response.ok) throw new Error("Examples unavailable");
-      examples = await response.json();
+      examples = (await response.json()).filter(example => example.seconds === 5);
       currentExample = examples.find(example => example.id === "d02-5s") || examples[0];
       for (const button of durations) {
         button.disabled = !examples.some(example => example.seconds === Number(button.dataset.duration));

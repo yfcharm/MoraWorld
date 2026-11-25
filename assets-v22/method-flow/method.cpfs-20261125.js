@@ -152,7 +152,7 @@
     text('[data-ref-views]',level?'Head + both wrists':'Head only');
     text('[data-output-label]',level?'Three-view ground truth':'Head-view ground truth');
     text('[data-ref-tokens]',level?'Sparse visual reference tokens':'End-effector map');
-    text('[data-encoding]',level?'White-clay reference frames are encoded on a sparse time grid.':'The spatial end-effector map encodes the grippers’ position and orientation.');
+    if (one('[data-encoding]')) text('[data-encoding]',level?'White-clay reference frames are encoded on a sparse time grid.':'The spatial end-effector map encodes the grippers’ position and orientation.');
     resizeCanvases();
   }
   function selectRead(rank) {
