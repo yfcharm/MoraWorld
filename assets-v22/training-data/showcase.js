@@ -1,8 +1,10 @@
-import { initializeFilms } from './studies.js?v=1126a';
+import { initializeFilms } from './studies.js?v=data-grid';
 
 const presentation = document.querySelector('#data .mw-training');
 const featured = presentation.querySelector('.mw-training-wall');
+const studies = Array.from(featured.querySelectorAll(':scope > .mw-cell'));
 const shots = Array.from(featured.querySelectorAll('video'));
+const visibleStudies = new Set();
 const scale = presentation.querySelector('.mw-scale');
 const canvas = presentation.querySelector('.mw-wall');
 const context = canvas.getContext('2d');
@@ -12,7 +14,6 @@ const counter = presentation.querySelector('.mw-hero [data-count]');
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 const playToggle = presentation.querySelector('.mw-play');
 let wantsPlayback = !motionPreference.matches;
-let wallVisible = false;
 let atlasVisible = false;
 let frameRequest = 0;
 let lastFrame = 0;
@@ -209,7 +210,7 @@ function playIfPaused(video) {
 function sync() {
   const active = wantsPlayback && !document.hidden;
   for (const video of shots) {
-    if (wallVisible && active && video.readyState >= 2 && !video.closest('.mw-cell:not(.mw-open)')) playIfPaused(video);
+    if (active && visibleStudies.has(video.closest('.mw-cell')) && video.readyState >= 2) playIfPaused(video);
     else video.pause();
   }
   if (atlasVisible && active) loadTexture();
@@ -246,7 +247,7 @@ function countUp(element, delay = 0) {
 const revealTargets = [
   presentation.querySelector('.mw-intro'), scale,
   ...legendButtons, presentation.querySelector('.mw-footnote'),
-  presentation.querySelector('.mw-closeup-head'), ...featured.querySelectorAll('.mw-cell')
+  presentation.querySelector('.mw-closeup-head'), ...studies
 ];
 if (!motionPreference.matches) {
   const reveal = new IntersectionObserver(entries => {
@@ -261,45 +262,60 @@ if (!motionPreference.matches) {
     }
   }, { rootMargin: '0px 0px -12% 0px' });
   legendButtons.forEach((button, i) => button.style.setProperty('--d', (i * .08).toFixed(2)));
-  featured.querySelectorAll('.mw-cell').forEach((cell, i) => cell.style.setProperty('--d', ((i % 2) * .1).toFixed(2)));
+  studies.forEach((cell, i) => cell.style.setProperty('--d', ((i % 2) * .1).toFixed(2)));
   for (const target of revealTargets) { target.classList.add('mw-reveal'); reveal.observe(target); }
 }
 
 initializeFilms(featured, sync);
 playToggle.onclick = () => { wantsPlayback = !wantsPlayback; sync(); };
 for (const video of shots) video.addEventListener('loadeddata', sync);
-featured.addEventListener('mw-fold', sync);
 texture.addEventListener('loadeddata', () => { draw(); sync(); });
 fallback.onload = draw;
+const atlasPreview = new IntersectionObserver(([entry]) => {
+  if (!entry.isIntersecting) return;
+  atlasPreview.disconnect();
+  fallback.src = new URL('atlas-sheet.webp', import.meta.url).href;
+}, { rootMargin: '320px 0px' });
+atlasPreview.observe(scale);
 document.addEventListener('visibilitychange', sync);
 motionPreference.addEventListener('change', event => { if (event.matches) { wantsPlayback = false; sync(); } });
 new ResizeObserver(layout).observe(scale);
 
-// Defer the films while visitors are reading earlier chapters.
-const preload = new IntersectionObserver(([entry]) => {
-  if (!entry.isIntersecting) return;
-  preload.disconnect();
-  for (const video of shots) {
-    video.preload = 'auto';
-    video.src = new URL(video.dataset.file, import.meta.url).href;
+// Load each study near the viewport and play it while visible.
+const preload = new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    preload.unobserve(entry.target);
+    for (const video of entry.target.querySelectorAll('video[data-file]')) {
+      if (video.hasAttribute('src')) continue;
+      video.preload = 'auto';
+      video.src = new URL(video.dataset.file, import.meta.url).href;
+    }
   }
-  if (!motionPreference.matches) loadTexture();
-  fallback.src = new URL('atlas-sheet.webp', import.meta.url).href;
-}, { rootMargin: '400px 0px' });
-preload.observe(presentation);
+}, { rootMargin: '320px 0px' });
+
 function loadTexture() {
   if (texture.hasAttribute('src')) return;
   texture.preload = 'auto';
   texture.src = new URL('motion-mixture.mp4', import.meta.url).href;
 }
+
 const visibility = new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (entry.target === featured) wallVisible = entry.isIntersecting;
-    else { atlasVisible = entry.isIntersecting; if (entry.isIntersecting) countUp(counter); }
+    if (entry.target === scale) {
+      atlasVisible = entry.isIntersecting;
+      if (atlasVisible) countUp(counter);
+      continue;
+    }
+    if (entry.isIntersecting) visibleStudies.add(entry.target);
+    else visibleStudies.delete(entry.target);
   }
   sync();
 });
-visibility.observe(featured);
+for (const study of studies) {
+  preload.observe(study);
+  visibility.observe(study);
+}
 visibility.observe(scale);
 layout();
 sync();

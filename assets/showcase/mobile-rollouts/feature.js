@@ -3,13 +3,6 @@ class RolloutFeature extends HTMLElement {
   #caseKey;
   #selection = new Map();
 
-  resetSelection(group, page = 'all') {
-    const picker = this.querySelector('.mg-featured-picker');
-    if (picker) picker.scrollLeft = 0;
-    if (group) return this.#selection.delete(`${group}/${page}`);
-    this.#selection.clear();
-  }
-
   setCases(cases, onSelect, routeRows = []) {
     if (!this.firstElementChild) {
       this.innerHTML = `<article class="mg-featured-rollout" id="mg-featured-rollout" aria-labelledby="mg-featured-title">
@@ -75,7 +68,7 @@ class RolloutFeature extends HTMLElement {
   show(item, clips) {
     for (const {element, stage} of clips) {
       element.querySelector('.mg-tile-caption').hidden = true;
-      element.title = 'Inspect and compare with the source';
+      element.title = 'Open rollout details';
       if (stage.aperture) {
         stage.aperture.querySelector('.mg-aperture-label').textContent = 'Gripper opening';
         stage.append(stage.aperture);

@@ -25,10 +25,9 @@
   const rolloutFeature = root.hasAttribute('data-rollout-focus')
     ? document.createElement('mw-rollout-feature')
     : null;
-  const layouts = root.querySelector('.mg-layout-options');
-  const layoutButtons = [...(layouts?.querySelectorAll('[data-rollout-layout]') ?? [])];
-  let layoutMode = 'focus';
-  const showFocus = () => rolloutFeature && layoutMode === 'focus';
+  const layoutGroups = [...panel.querySelectorAll('[data-layout-group]')];
+  const layoutModes = { manip: 'grid', nav: 'grid', mobile: 'focus' };
+  const showFocus = () => rolloutFeature && layoutModes[activeGroup] === 'focus';
   const mobilePages = get('mobile-pages');
   const routeRows = navigationRows ?? [{
     title: 'Window corridor',
@@ -52,7 +51,7 @@
   }
   let clips = [], master, groupTime = 0, longest = 0, playing = false, generation = 0;
   let routeCarousel;
-  let detailCase, mainFilm, referenceFilm, opener;
+  let mainFilm, opener;
   let activeGroup, labStage, gridVisible = false, autoplayRequested = false;
   const loopPreviews = () => enhancedPreviews;
   const rateKey = () => activeGroup === 'mobile' && mobilePage ? 'mobile/' + mobilePage : activeGroup;
@@ -446,10 +445,7 @@
     panel.classList.toggle('mg-preview-panel',loopPreviews());
     panel.dataset.group = group;
     panel.dataset.layout = showFocus() ? 'focus' : 'grid';
-    if (layouts) {
-      layouts.hidden = !rolloutFeature;
-      layoutButtons.forEach(button => button.setAttribute('aria-pressed', button.dataset.rolloutLayout === layoutMode));
-    }
+    for (const layout of layoutGroups) layout.hidden = !rolloutFeature || layout.dataset.layoutGroup !== group;
     transport.hidden = loopPreviews();
     if (rateControl) {
       rateControl.closest('label').hidden = !loopPreviews();
@@ -542,19 +538,19 @@
       setGroup('mobile');
     };
   });
-  layoutButtons.forEach(button => {
-    button.onclick = () => {
-      const group = activeGroup;
-      const nextLayout = button.dataset.rolloutLayout;
-      if (nextLayout === layoutMode) {
-        if (nextLayout !== 'focus' || !rolloutFeature?.resetSelection(group, group === 'mobile' ? mobilePage : undefined)) return;
-      } else if (nextLayout === 'focus') {
-        rolloutFeature?.resetSelection();
-      }
-      layoutMode = nextLayout;
-      setGroup(group);
-    };
-  });
+  for (const layout of layoutGroups) {
+    const group = layout.dataset.layoutGroup;
+    const buttons = [...layout.querySelectorAll('[data-rollout-layout]')];
+    for (const button of buttons) {
+      button.onclick = () => {
+        const next = button.dataset.rolloutLayout;
+        if (group !== activeGroup || next === layoutModes[group]) return;
+        layoutModes[group] = next;
+        for (const choice of buttons) choice.setAttribute('aria-pressed', choice === button);
+        setGroup(group);
+      };
+    }
+  }
   tabs.forEach((tab, index) => {
     tab.onclick = () => { if (tab.getAttribute('aria-selected') !== 'true') setGroup(tab.dataset.group); };
     tab.onkeydown = event => {
@@ -566,12 +562,12 @@
     };
   });
 
-  function film(url, label, controls, poster) {
+  function film(url, label, poster) {
     const figure = document.createElement('figure');
     const video = document.createElement('video');
     video.muted = true;
     video.playsInline = true;
-    video.controls = controls;
+    video.controls = true;
     video.preload = 'auto';
     video.setAttribute('aria-label', label);
     if (poster) video.poster = poster;
@@ -593,21 +589,17 @@
       promptBlock.open = false;
       promptBlock.querySelector('p').textContent = prompt ?? '';
     }
-    get('dialog-media').classList.remove('mg-side-by-side');
-    get('compare').setAttribute('aria-pressed','false');
     detail.showModal();
     get('close').focus();
   }
   function openRollout(item, button) {
-    detailCase = item;
     const showDataset = item.group !== 'mobile' || !rolloutFeature;
     const label = [showDataset ? item.dataset : '', item.model, item.observedHistory ? 'Recorded history' : ''];
     openDetail(button, item.title, label.filter(Boolean).join(' · '), item.note, item.rolloutPrompt);
-    const generated = film(item.video, 'Generated rollout', true, item.poster);
+    const generated = film(item.video, 'Generated rollout', item.poster);
     mainFilm = generated.video;
     mainFilm.autoplay = true;
     get('dialog-media').replaceChildren(generated.figure);
-    get('compare').parentElement.hidden = false;
     const thumbnail = clips.find(c=>c.item.id===item.id);
     if (loopPreviews()) applyRate(mainFilm,rates[rateKey()]);
     const initial = thumbnail?.video.currentTime || 0;
@@ -626,7 +618,6 @@
     mainFilm.addEventListener('loadedmetadata', () => {
       if (mainFilm === generated.video && 'targetTime' in mainFilm.dataset) timeAt(mainFilm, Number(mainFilm.dataset.targetTime));
     }, {once:true});
-    for (const event of ['play','pause','seeking','seeked','ratechange','timeupdate']) mainFilm.addEventListener(event, syncReference);
   }
   function updateLab(){
     const mapped=labStage.mode==='map';
@@ -639,35 +630,11 @@
       updateLab();
     };
   }
-  function syncReference() {
-    if (!referenceFilm || !mainFilm || referenceFilm.readyState === 0) return;
-    if (Math.abs(referenceFilm.currentTime - mainFilm.currentTime) > .12) timeAt(referenceFilm, mainFilm.currentTime);
-    referenceFilm.playbackRate = mainFilm.playbackRate;
-    if (mainFilm.paused || mainFilm.ended) referenceFilm.pause();
-    else if (referenceFilm.paused && !referenceFilm.ended) referenceFilm.play().catch(() => {});
-  }
-  get('compare').onclick = () => {
-    const area = get('dialog-media');
-    if (referenceFilm) {
-      referenceFilm.pause();
-      referenceFilm.parentElement.remove();
-      referenceFilm = null;
-    } else {
-      const source = film(detailCase.reference, 'Source reference', false);
-      referenceFilm = source.video;
-      area.append(source.figure);
-      referenceFilm.onloadeddata = syncReference;
-      syncReference();
-    }
-    area.classList.toggle('mg-side-by-side', Boolean(referenceFilm));
-    get('compare').setAttribute('aria-pressed', Boolean(referenceFilm));
-  };
   function openStudy(item, button) {
     openDetail(button, item.name, 'Source replay · ' + item.short, item.description + ' ' + item.watch);
     get('lab').hidden=true;
     preview?.pause();
-    get('compare').parentElement.hidden = true;
-    const study = film(item.video, item.meta, true, item.poster);
+    const study = film(item.video, item.meta, item.poster);
     mainFilm = study.video;
     mainFilm.autoplay = true;
     get('dialog-media').replaceChildren(study.figure);
@@ -680,9 +647,8 @@
   };
   detail.addEventListener('close', () => {
     mainFilm?.pause();
-    referenceFilm?.pause();
     get('lab-view').replaceChildren(); get('lab').hidden=true;
-    mainFilm = referenceFilm = detailCase = labStage = null;
+    mainFilm = labStage = null;
     get('dialog-media').replaceChildren();
     opener?.focus({preventScroll:true});
     resumePreviews();

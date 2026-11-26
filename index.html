@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <link rel="preload" as="image" href="editorial/interactive-cover/poster.jpg" fetchpriority="high">
-<link rel="stylesheet" href="assets-v22/training-data/showcase.css?v=1126a" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="assets-v22/training-data/showcase.css?v=1126a"></noscript>
-<script type="module" src="assets-v22/training-data/showcase.js?v=1126a"></script>
+<link rel="stylesheet" href="assets-v22/training-data/showcase.css?v=data-grid-2" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="assets-v22/training-data/showcase.css?v=data-grid-2"></noscript>
+<script type="module" src="assets-v22/training-data/showcase.js?v=data-grid"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MoraWorld · A world robots can practice in</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap"></noscript>
 <style>
 body{margin:0;background:#0B0D10}
 html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 a{color:#A582FF}a:hover{color:#C9B8FF}
 @keyframes mw-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes mw-pulse{0%,100%{opacity:.35}50%{opacity:1}}
@@ -251,37 +252,161 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   .mw-cover__canvas { transition: none; }
 }
 
-.mw-cover__nav { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 22px clamp(20px, 5vw, 72px); }
+.mw-cover__nav {
+  position: fixed;
+  z-index: 20;
+  inset: 12px auto auto 50vw;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(10px, 1.8vw, 22px);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 4px 7px 4px 17px;
+  border: 1px solid rgb(236 238 241 / 19%);
+  border-radius: 999px;
+  background: rgb(14 16 21 / 90%);
+  box-shadow: 0 10px 34px rgb(0 0 0 / 25%);
+  backdrop-filter: blur(14px) saturate(1.22);
+}
+.mw-cover__nav-mark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #ECEEF1;
+  font: 600 20px/1 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: -0.025em;
+  text-decoration: none;
+}
+.mw-site-links {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font: 500 14px/1.25 Inter, system-ui, sans-serif;
+  white-space: nowrap;
+}
+.mw-site-links a {
+  padding: 0 11px;
+  border-radius: 999px;
+}
+.mw-site-links a[aria-current="location"],
+.mw-sections-menu a[aria-current="location"] {
+  background: rgb(194 166 255 / 16%);
+  color: #F0E8FF;
+}
+.mw-site-links a,
+.mw-sections-menu a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: #D5D9DF;
+  text-decoration: none;
+}
+.mw-site-links a:hover,
+.mw-sections-menu a:hover { color: #D3C3FF; }
+.mw-cover__nav-mark:focus-visible,
+.mw-site-links a:focus-visible,
+.mw-sections-menu :is(summary, a):focus-visible {
+  outline: 2px solid #C9B8FF;
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+.mw-sections-menu { position: relative; z-index: 5; display: none; }
+.mw-sections-menu summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid rgb(236 238 241 / 28%);
+  border-radius: 999px;
+  background: rgb(11 13 16 / 80%);
+  color: #ECEEF1;
+  font: 600 13px/1 Inter, system-ui, sans-serif;
+  list-style: none;
+  cursor: pointer;
+}
+.mw-sections-menu summary::-webkit-details-marker { display: none; }
+.mw-sections-menu summary span {
+  width: 6px;
+  height: 6px;
+  border: solid currentColor;
+  border-width: 0 1px 1px 0;
+  transform: translateY(-2px) rotate(45deg);
+}
+.mw-sections-menu[open] summary span { transform: translateY(2px) rotate(225deg); }
+.mw-sections-menu nav {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  width: min(240px, calc(100vw - 48px));
+  max-height: calc(100svh - 100px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px solid #36313F;
+  border-radius: 12px;
+  background: #131419;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 30%);
+  font: 500 14px/1.25 Inter, system-ui, sans-serif;
+}
+.mw-sections-menu a { padding: 0 12px; border-radius: 6px; }
+.mw-sections-menu :is(summary, a) { -webkit-tap-highlight-color: transparent; }
+.mw-sections-menu :is(summary, a):active { background: #2B2337; }
+@media (max-width: 710px) {
+  .mw-cover__nav { width: min(440px, calc(100vw - 24px)); }
+  .mw-site-links { display: none; }
+  .mw-sections-menu { display: block; }
+  .mw-sections-menu summary { border-color: transparent; background: rgb(255 255 255 / 7%); }
+}
 
-.mw-cover__nav-mark { font: 600 19px/1 'Space Grotesk', sans-serif; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
-
-.mw-cover__nav-links { display: flex; gap: 28px; font-size: 14px; }
-
-.mw-cover__nav-links a { color: var(--ink2); text-decoration: none; }
-
-.mw-cover__nav-links a:hover { color: var(--acc2); }
-
-.mw-cover__hero { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-46%); padding: 0 clamp(20px, 5vw, 72px); pointer-events: none; }
-
-.mw-cover__hero-eyebrow { margin: 0 0 22px; font: 500 13px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--acc2); }
-
-.mw-cover__hero-title { margin: 0; max-width: 11ch; font: 600 clamp(42px, 6.4vw, 104px)/1.0 'Space Grotesk', sans-serif; letter-spacing: -0.025em; text-wrap: balance; text-shadow: 0 2px 30px rgba(11, 13, 16, 0.55), 0 0 2px rgba(11, 13, 16, 0.5); }
+.mw-cover__hero {
+  position: absolute;
+  inset: 50% 0 auto;
+  transform: translateY(-46%);
+  padding: 0 clamp(20px, 5vw, 72px);
+  pointer-events: none;
+  text-shadow: 0 3px 26px rgb(11 13 16 / 70%);
+}
+.mw-cover__hero-title {
+  margin: 0;
+  color: #F1EFF4;
+  font: 600 clamp(3.15rem, 9.4vw, 8.5rem)/0.97 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: -0.07em;
+  white-space: nowrap;
+}
+.mw-cover__hero-title span { color: #C9B8FF; }
+.mw-cover__hero-tagline {
+  max-width: 30ch;
+  margin: clamp(12px, 2vw, 24px) 0 0;
+  color: #ECEEF1;
+  font: 500 clamp(1.45rem, 3.25vw, 3.45rem)/1.12 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: -0.035em;
+}
 
 .mw-cover__continue {
   position: absolute;
   z-index: 2;
   right: clamp(20px, 5vw, 72px);
   bottom: 54px;
-  padding: 9px 13px;
-  color: var(--ink);
-  background: rgb(11 13 16 / 65%);
-  border: 1px solid rgb(236 238 241 / 40%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  color: #0B0D10;
+  background: #B59AFF;
   border-radius: 999px;
-  font: 500 13px/1.2 'Inter', system-ui, sans-serif;
+  font: 600 13px/1.2 'Inter', system-ui, sans-serif;
   text-decoration: none;
 }
-.mw-cover__continue:hover,
-.mw-cover__nav a:hover { color: var(--acc2); }
+.mw-cover__continue:hover { color: #0B0D10; background: #C9B8FF; }
+.mw-cover__nav-mark:hover { color: #C9B8FF; }
 .mw-cover a:focus-visible { outline: 2px solid var(--acc2); outline-offset: 4px; }
 @media (hover: none), (prefers-reduced-motion: reduce) {
   .mw-cover__hint { display: none; }
@@ -290,40 +415,70 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   .mw-cover.is-live .mw-cover__canvas { opacity: 0; }
 }
 @media (max-width: 720px) {
-  .mw-cover__nav-links { display: none; }
   .mw-cover__continue { bottom: 46px; }
 }
 @media (max-width: 600px) {
   .mw-cover__hint { bottom: 90px; }
 }
 @media (max-height: 460px) {
-  .mw-cover__hero-title { font-size: clamp(32px, 9vh, 44px); }
-  .mw-cover__hero-eyebrow { margin-bottom: 10px; }
+  .mw-cover__hero-title { font-size: clamp(42px, 15vh, 70px); }
+  .mw-cover__hero-tagline { font-size: clamp(20px, 6vh, 32px); }
 }
 
-html.mw-cover-open,
-html.mw-cover-handoff {
-  overflow: hidden;
-  overscroll-behavior-y: none;
+/* Hold the cover while the title clears, then let the overview meet the scene. */
+:root {
+  --mw-cover-hold: clamp(190px, 39vh, 370px);
+  --mw-opening-blend: clamp(125px, 24vh, 230px);
 }
-.mw-cover-enhanced #cover {
-  position: fixed;
-  z-index: 1000;
+@supports (height: 100svh) {
+  :root {
+    --mw-cover-hold: clamp(190px, 39svh, 370px);
+    --mw-opening-blend: clamp(125px, 24svh, 230px);
+  }
+}
+#cover {
+  height: calc(100vh + var(--mw-cover-hold));
+  height: calc(100svh + var(--mw-cover-hold));
+}
+#cover .mw-cover {
+  position: sticky;
+  top: 0;
+}
+.mw-cover__front {
+  position: absolute;
   inset: 0;
-  touch-action: pan-x pinch-zoom;
+  --mw-title-exit: clamp(0, calc((var(--mw-cover-progress, 0) - .08) / .57), 1);
 }
-.mw-cover-enhanced:not(.mw-cover-open) #cover { display: none; }
-.mw-cover-open:not(.mw-cover-leaving) #moraworld-article { visibility: hidden; }
-.mw-cover-open.mw-cover-leaving #cover {
-  transform: translate3d(0, -100%, 0);
-  transition: transform 420ms cubic-bezier(.22,.75,.23,1);
+.mw-cover__hero {
+  opacity: calc(1 - var(--mw-title-exit));
+  transform: translateY(calc(-46% - var(--mw-title-exit) * 22px));
 }
-#moraworld-article:focus { outline: none; }
+.mw-cover__front :is(.mw-cover__continue, .mw-cover__hint, .mw-cover__stages) {
+  opacity: clamp(0, calc((.81 - var(--mw-cover-progress, 0)) / .46), 1);
+}
+.mw-cover__front.is-past-labels :is(.mw-cover__continue, .mw-cover__hint, .mw-cover__stages) {
+  visibility: hidden;
+}
+#moraworld-article {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * var(--mw-opening-blend));
+  background: linear-gradient(180deg, transparent, rgb(11 13 16 / 75%) calc(var(--mw-opening-blend) * .58), #0B0D10 var(--mw-opening-blend));
+}
 @media (prefers-reduced-motion: reduce) {
-  .mw-cover-open.mw-cover-leaving #cover { transition: none; }
+  :root { --mw-cover-hold: 0px; --mw-opening-blend: 0px; }
+  #cover .mw-cover { position: relative; }
+  .mw-cover__hero { opacity: 1; transform: translateY(-46%); }
+  #moraworld-article { background: #0B0D10; }
 }
+:is(#top, #overview, #take, #bring, #stay, #back, #how, #memory-demo, #real-time) {
+  scroll-margin-top: 78px;
+}
+#cover:focus { outline: none; }
+#moraworld-article:focus { outline: none; }
 
 </style>
+<script defer src="editorial/interactive-cover/entry.js?v=6"></script>
 <script defer src="editorial/performance/startup.js?v=1"></script>
 <style>
 .mw-cover button[data-mw-cover-start][hidden] { display: none; }
@@ -334,433 +489,315 @@ html.mw-cover-handoff {
 @media (hover: none) {
   .mw-cover button[data-mw-cover-start]:not([hidden]) { display: inline-flex; bottom: 48px; z-index: 2; }
 }
+@media (hover: none) and (max-width: 480px) {
+  .mw-cover button[data-mw-cover-start]:not([hidden]) { bottom: 92px; }
+}
+.mw-overview {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 64px) 24px clamp(44px, 6vw, 76px);
+}
+.mw-overview-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr);
+  gap: 12px clamp(24px, 4vw, 64px);
+  align-items: start;
+}
+.mw-overview-intro h2 {
+  margin: 0;
+  font: 600 clamp(2rem, 4vw, 3.1rem)/1.05 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: -0.04em;
+}
+.mw-overview-intro p {
+  max-width: 64ch;
+  margin: 0;
+  color: #A3AAB5;
+  font-size: clamp(1rem, 1.5vw, 1.1875rem);
+  line-height: 1.6;
+}
+.mw-overview-intro strong { color: #ECEEF1; font-weight: 600; }
+.mw-overview-player {
+  margin-top: clamp(18px, 3vw, 30px);
+  aspect-ratio: 16 / 9;
+  background: #0B0D10;
+  border: 1px solid #2A3038;
+  border-radius: 16px;
+  overflow: hidden;
+}
+@media (max-width: 660px) {
+  .mw-overview-intro { grid-template-columns: minmax(0, 1fr); }
+  .mw-overview-player { border-radius: 12px; }
+}
 </style>
+<link rel="stylesheet" href="editorial/overview-cards.css?v=8">
+<link rel="stylesheet" href="editorial/chapter-backgrounds.css">
+<script defer src="editorial/overview-cards.js?v=8"></script>
 </head>
 <body>
-<section class="mw-cover" id="cover" data-mw-cover data-mw-cover-src="editorial/interactive-cover/cover.js?v=2" aria-labelledby="mw-cover-title"
+  <div class="mw-cover__nav">
+    <a class="mw-cover__nav-mark" href="#cover">MoraWorld</a>
+    <nav class="mw-site-links" aria-label="Main navigation">
+      <a href="#top">Overview</a>
+      <a href="#data">Data</a>
+      <a href="#bring">Control</a>
+      <a href="#stay">Continuity</a>
+      <a href="#back">Robots</a>
+      <a href="#how">Architecture</a>
+    </nav>
+    <details class="mw-sections-menu">
+      <summary>Sections <span aria-hidden="true"></span></summary>
+      <nav aria-label="Main navigation">
+      <a href="#top">Overview</a>
+      <a href="#data">Data</a>
+      <a href="#bring">Control</a>
+      <a href="#stay">Continuity</a>
+      <a href="#back">Robots</a>
+      <a href="#how">Architecture</a>
+      </nav>
+    </details>
+  </div>
+<div id="cover" tabindex="-1">
+<section class="mw-cover" data-mw-cover data-mw-cover-src="editorial/interactive-cover/cover.js?v=4" aria-labelledby="mw-cover-title"
          data-atlas-lo="editorial/interactive-cover/atlas-preview.mp4"
          data-atlas-still="editorial/interactive-cover/atlas-still.jpg">
   <img class="mw-cover__poster" src="editorial/interactive-cover/poster.jpg" alt="" fetchpriority="high">
   <canvas class="mw-cover__canvas" aria-hidden="true"></canvas>
   <div class="mw-cover__shade" aria-hidden="true"></div>
-  <nav class="mw-cover__nav" aria-label="Cover navigation">
-    <a class="mw-cover__nav-mark" href="#cover">MoraWorld</a>
-    <div class="mw-cover__nav-links">
-      <a href="#overview">Overview</a>
-      <a href="#bring">Control</a>
-      <a href="#stay">Memory</a>
-      <a href="#back">Real robot</a>
-    </div>
-  </nav>
+  <div class="mw-cover__front">
   <div class="mw-cover__hero">
-    <p class="mw-cover__hero-eyebrow">MoraWorld</p>
-    <h1 class="mw-cover__hero-title" id="mw-cover-title">A world robots can practice in.</h1>
+    <h1 class="mw-cover__hero-title" id="mw-cover-title">Mora<span>World</span></h1>
+    <p class="mw-cover__hero-tagline">A world robots can practice in.</p>
   </div>
   <button type="button" class="mw-cover__hint" data-mw-cover-start hidden>Move the cursor over the scene to render it</button>
-  <a class="mw-cover__continue" href="#moraworld-article">Scroll to article <span aria-hidden="true">↓</span></a>
+  <a class="mw-cover__continue" href="#take">Watch the overview <span aria-hidden="true">↓</span></a>
   <ol class="mw-cover__stages"><li>Wireframe</li><li>White model</li><li>Rendered</li></ol>
+  </div>
+</section>
+</div>
+
+<div id="moraworld-article" tabindex="-1" style="color: #ECEEF1; font-family: Inter, system-ui, sans-serif; min-height: 100vh">
+<section id="top" class="mw-overview" aria-labelledby="mw-overview-title">
+  <div class="mw-overview-intro">
+    <h2 id="mw-overview-title">Overview</h2>
+    <p><strong>MoraWorld</strong> keeps generated scenes coherent for minutes and accepts controls ranging from a simple action map to a full grey-box scene. Its real-time mode lets a person steer the scene as it unfolds.</p>
+  </div>
+  <div id="take" class="mw-overview-player">
+    <video controls playsinline preload="none" aria-label="MoraWorld overview" src="assets-v22/MoraWorld-overview-v2.mp4" poster="assets-v22/MoraWorld-overview-v2.jpg" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #0B0D10"></video>
+  </div>
+  <div id="overview" class="mw-overview-cards">
+    <article class="mw-overview-card">
+      <div class="mw-overview-visual">
+        <div class="mw-overview-card-media" data-overview-diagram="control">
+          <canvas width="360" height="202" role="img" aria-label="Illustration of a complete mobile robot with a wheeled base, two arms and a head camera. Select a stage to see different control inputs."></canvas>
+        </div>
+        <div class="mw-overview-story-tools" hidden>
+          <div class="mw-overview-story-stages" role="group" aria-label="Control inputs">
+            <button type="button" data-story-stage aria-label="Action map" aria-pressed="false">Action</button>
+            <button type="button" data-story-stage aria-label="Robot geometry" aria-pressed="false">Robot</button>
+            <button type="button" data-story-stage aria-label="Arms and objects" aria-pressed="false">Objects</button>
+            <button type="button" data-story-stage aria-label="Full grey-box scene" aria-pressed="true">Scene</button>
+          </div>
+          <button type="button" data-story-replay aria-label="Replay control animation" title="Replay control animation">↻</button>
+        </div>
+      </div>
+      <div class="mw-overview-card-copy">
+        <h3><a href="#bring">Control <span aria-hidden="true">→</span></a></h3>
+        <dl class="mw-overview-features">
+          <div><dt>Multiple embodiments</dt><dd>Use one model for single and dual arms, human hands, and mobile robots.</dd></div>
+          <div><dt>Flexible control</dt><dd>Guide generation with an action map or a full grey-box scene.</dd></div>
+          <div><dt>Mobile manipulation</dt><dd>Combine base motion, arm actions, and camera motion in one take.</dd></div>
+        </dl>
+      </div>
+    </article>
+    <article class="mw-overview-card">
+      <div class="mw-overview-visual">
+        <div class="mw-overview-card-media" data-overview-diagram="memory">
+          <canvas width="360" height="202" role="img" aria-label="A camera leaves Room A, crosses to Room B, and returns to the same landmark."></canvas>
+        </div>
+        <div class="mw-overview-story-tools" hidden>
+          <div class="mw-overview-story-stages" role="group" aria-label="Camera revisit">
+            <button type="button" data-story-stage aria-label="First look" aria-pressed="false">First</button>
+            <button type="button" data-story-stage aria-label="Look away" aria-pressed="false">Away</button>
+            <button type="button" data-story-stage aria-label="Return to the landmark" aria-pressed="true">Return</button>
+          </div>
+          <button type="button" data-story-replay aria-label="Replay viewpoint memory animation" title="Replay viewpoint memory animation">↻</button>
+        </div>
+      </div>
+      <div class="mw-overview-card-copy">
+        <h3><a href="#stay">Continuity <span aria-hidden="true">→</span></a></h3>
+        <dl class="mw-overview-features">
+          <div><dt><a href="#memory-demo">Viewpoint memory</a></dt><dd>Check which scene details persist when the camera returns.</dd></div>
+          <div><dt><a href="#long-horizon">Long-horizon generation</a></dt><dd>Generate continuous rollouts for minutes offline.</dd></div>
+          <div><dt><a href="#real-time">Real-time VR control</a></dt><dd>Steer the scene live with VR controllers.</dd></div>
+        </dl>
+      </div>
+    </article>
+    <article class="mw-overview-card">
+      <div class="mw-overview-visual">
+        <div class="mw-overview-card-media" data-overview-diagram="robots">
+          <canvas width="360" height="202" role="img" aria-label="An illustrative coding agent builds a grey-box scene, MoraWorld renders the robot camera, and the result supports data generation, policy evaluation in simulation and real-robot trials."></canvas>
+        </div>
+        <div class="mw-overview-story-tools" hidden>
+          <div class="mw-overview-story-stages" role="group" aria-label="Code to robot workflow">
+            <button type="button" data-story-stage aria-label="Coding agent" aria-pressed="false">Code</button>
+            <button type="button" data-story-stage aria-label="Grey-box scene" aria-pressed="false">Scene</button>
+            <button type="button" data-story-stage aria-label="First-person render" aria-pressed="false">Render</button>
+            <button type="button" data-story-stage aria-label="Applications" aria-pressed="true">Uses</button>
+          </div>
+          <button type="button" data-story-replay aria-label="Replay code-to-robot animation" title="Replay code-to-robot animation">↻</button>
+        </div>
+      </div>
+      <div class="mw-overview-card-copy">
+        <h3><a href="#back">Robots <span aria-hidden="true">→</span></a></h3>
+        <dl class="mw-overview-features">
+          <div><dt>Data generation</dt><dd>Vary scene layouts and appearances while keeping the demonstrated actions.</dd></div>
+          <div><dt>Policy evaluation</dt><dd>Compare policy behavior on matched tasks in simulation.</dd></div>
+          <div><dt>Real-robot trials</dt><dd>Compare policies trained on real, generated, or mixed demonstrations.</dd></div>
+        </dl>
+      </div>
+    </article>
+  </div>
 </section>
 
-<div id="moraworld-article" tabindex="-1" style="background: #0B0D10; color: #ECEEF1; font-family: Inter, system-ui, sans-serif; min-height: 100vh">
-<script>
-(() => {
-  const cover = document.getElementById('cover');
-  const article = document.getElementById('moraworld-article');
-  if (!cover || !article) return;
+<section id="data" aria-labelledby="mw-data-title">
+  <div class="mw-training">
+    <div class="mw-scale">
+      <div class="mw-wall-mask"><canvas class="mw-wall" tabindex="0" aria-label="183 training clips across five categories. Hover a tile to highlight its category."></canvas></div>
+      <div class="mw-hero" aria-live="off">
+        <header class="mw-intro"><h2 id="mw-data-title">What it learned from</h2></header>
+        <p class="mw-hero-figure"><strong data-count="5175">5,175</strong><span>hours</span></p>
+        <p class="mw-hero-caption">of human and robot manipulation in pretraining<br><span>8.1M training windows · 8 sources · real and simulated</span></p>
+      </div>
+      <button type="button" class="mw-play" aria-label="Pause all motion" title="Pause all motion"><i aria-hidden="true"></i></button>
+    </div>
 
-  const documentRoot = document.documentElement;
-  const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const entryHash = '#' + article.id;
-  const coverHash = '#' + cover.id;
-  const idleTime = 170;
-  let page = 'article';
-  let version = 0;
-  let lastWheel = -Infinity;
-  let wheelDistance = 0;
-  let wheelTimer;
-  let guardDeadline = 0;
-  let guardMinimum = 0;
-  let swipeStart;
+    <div class="mw-wrap">
+      <p class="mw-legend-hint" id="mw-data-filter-hint">Select a category to highlight its clips.</p>
+      <div class="mw-legend" role="group" aria-label="Training clip categories" aria-describedby="mw-data-filter-hint">
+        <button type="button" data-kind="h" style="--c:#cfabff" aria-pressed="false">
+          <span class="mw-kind"><i></i>Human video</span>
+          <strong><span data-count="754.5" data-decimals="1">754.5</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:0.1707" aria-hidden="true"><i></i></span>
+          <span class="mw-note">Egocentric · EgoDex, EgoVerse</span>
+        </button>
+        <button type="button" data-kind="r" style="--c:#96c8fb" aria-pressed="false">
+          <span class="mw-kind"><i></i>Robot trajectories</span>
+          <strong><span data-count="4420.4" data-decimals="1">4,420.4</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:1.0000" aria-hidden="true"><i></i></span>
+          <span class="mw-note">Six robot datasets, real and simulated</span>
+        </button>
+        <button type="button" data-kind="c" style="--c:#e7d0a4" aria-pressed="false">
+          <span class="mw-kind"><i></i>White clay</span>
+          <strong><span data-count="210.4" data-decimals="1">210.4</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:0.0476" aria-hidden="true"><i></i></span>
+          <span class="mw-note">17,541 episodes, rendered in layers</span>
+        </button>
+        <button type="button" data-kind="m" style="--c:#8bdbcd" aria-pressed="false">
+          <span class="mw-kind"><i></i>Memory revisits</span>
+          <strong><span data-count="583.8" data-decimals="1">583.8</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:0.1321" aria-hidden="true"><i></i></span>
+          <span class="mw-note">Six revisit collections</span>
+        </button>
+        <button type="button" data-kind="f" style="--c:#f7a692" aria-pressed="false">
+          <span class="mw-kind"><i></i>Failures</span>
+          <strong><span data-count="7762" data-decimals="0">7,762</span><small>attempts</small></strong>
+          <span class="mw-bar" style="--v:0.0046" aria-hidden="true"><i></i></span>
+          <span class="mw-note">20.4 h of recorded task failures</span>
+        </button>
+      </div>
+      <p class="mw-footnote">Human and robot hours are distinct footage in the H3 pretraining folds 00–08. White clay, revisits and failures are counted separately and can reuse the same trajectories.</p>
 
-  function targetFor(hash) {
-    if (!hash || hash === entryHash) return article;
-    try {
-      return document.getElementById(decodeURIComponent(hash.slice(1))) || article;
-    } catch {
-      return article;
-    }
-  }
+      <div class="mw-closeup-head"><h3>Up close</h3><p>Examples from four parts of the training mix.</p></div>
+      <nav class="mw-study-nav" aria-label="Training data examples">
+        <a class="mw-study-link" href="#data-white-clay" style="--c:#e7d0a4"><span class="mw-study-art" style="background-image:url('assets-v22/training-data/bowls-head.webp')" aria-hidden="true"></span><i aria-hidden="true"></i>White clay</a>
+        <a class="mw-study-link" href="#data-failure" style="--c:#f7a692"><span class="mw-study-art" style="background-image:url('assets-v22/training-data/stapler-fail.webp')" aria-hidden="true"></span><i aria-hidden="true"></i>Failure</a>
+        <a class="mw-study-link" href="#data-embodiments" style="--c:#96c8fb"><span class="mw-study-art" style="background-image:url('assets-v22/training-data/body-a2d.webp')" aria-hidden="true"></span><i aria-hidden="true"></i>Human + robot</a>
+        <a class="mw-study-link" href="#data-memory" style="--c:#8bdbcd"><span class="mw-study-art" style="background-image:url('assets-v22/training-data/memory.jpg')" aria-hidden="true"></span><i aria-hidden="true"></i>Memory</a>
+      </nav>
+      <div class="mw-training-wall">
+        <figure id="data-white-clay" tabindex="-1" aria-labelledby="data-white-clay-title" class="mw-cell mw-clay" data-camera="head" style="--c:#e7d0a4">
+          <div class="mw-cell-body">
+          <header class="mw-cap"><span class="mw-chip"><i></i>White clay</span><h4 class="mw-title" id="data-white-clay-title">Stacking bowls</h4><p class="mw-desc">The same recording, re-rendered as untextured geometry frame by frame.</p></header>
+          <div class="mw-pair">
+            <div class="mw-window mw-reference">
+              <video class="mw-clay-film" data-file="bowls-head.mp4" poster="assets-v22/training-data/bowls-head.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video>
+              <span class="mw-tag">RGB</span>
+            </div>
+            <div class="mw-window mw-proxy"><canvas width="288" height="216" aria-label="White-clay rendering synchronized with the adjacent recording"></canvas><span class="mw-tag">White clay</span></div>
+          </div>
+          <div class="mw-controls">
+            <div class="mw-segmented" role="group" aria-label="Camera">
+              <button type="button" data-camera="head" aria-pressed="true">Head</button>
+              <button type="button" data-camera="wrist" aria-pressed="false">Right wrist</button>
+            </div>
+            <div class="mw-slider" style="--position: 2; --stops: 3">
+              <span class="mw-thumb" aria-hidden="true"></span>
+              <div class="mw-stops" aria-hidden="true">
+                <span><svg viewBox="0 0 20 20"><path d="M3 17h9M5 16v-3l4-4-3-4m2-1 5 2 2-2m-1 3 3 1 1-2"/><circle cx="6" cy="4" r="2"/><circle cx="10" cy="8" r="1.7"/></svg>Robot</span>
+                <span><svg viewBox="0 0 20 20"><ellipse cx="10" cy="7" rx="7.2" ry="2.4"/><path d="M2.8 7c.4 4.3 3.2 7.1 7.2 7.1s6.8-2.8 7.2-7.1M7.4 15.5h5.2"/></svg>+ Bowls</span>
+                <span><svg viewBox="0 0 20 20"><path d="m2 7 5-3h8l3 3-4 3H6L2 7Zm1 1v5m4-3v6m7-6v6m3-8v5"/></svg>+ Table</span>
+              </div>
+              <input type="range" min="0" max="2" step="1" value="2" aria-label="White-clay detail" aria-valuetext="Robot, bowls and table">
+            </div>
+          </div>
+          </div>
+        </figure>
 
-  function jumpTo(hash) {
-    targetFor(hash).scrollIntoView({ block: 'start', behavior: 'instant' });
-  }
+        <figure id="data-failure" tabindex="-1" aria-labelledby="data-failure-title" class="mw-cell mw-fail" style="--c:#f7a692">
+          <div class="mw-cell-body">
+          <header class="mw-cap"><span class="mw-chip"><i></i>Failure</span><h4 class="mw-title" id="data-failure-title">The grasp that didn't hold</h4><p class="mw-desc">In simulation, the stapler slips as the arm lifts, and the arm arrives empty. Inset: wrist camera.</p></header>
+          <div class="mw-fail-study">
+            <div class="mw-window mw-attempt"><video data-file="stapler-fail.mp4" class="mw-failure-film" poster="assets-v22/training-data/stapler-fail.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag mw-tag-low">Task · move the stapler onto the pad</span><span class="mw-speed">0.75×</span></div>
+            <ol class="mw-steps" aria-label="What happened, step by step">
+              <li><button type="button" data-t="2.9"><span class="mw-label"><b aria-hidden="true">✓</b>Grips it</span></button></li>
+              <li class="mw-step-miss"><button type="button" data-t="4.2"><span class="mw-label"><b aria-hidden="true">✕</b>Slips on lift</span></button></li>
+              <li class="mw-step-miss"><button type="button" data-t="6.6"><span class="mw-label"><b aria-hidden="true">✕</b>Arrives empty</span></button></li>
+            </ol>
+          </div>
+          </div>
+        </figure>
 
-  function releaseWheel() {
-    clearTimeout(wheelTimer);
-    documentRoot.classList.remove('mw-cover-handoff');
-    window.removeEventListener('wheel', onWheel, true);
-  }
+        <figure id="data-embodiments" tabindex="-1" aria-labelledby="data-embodiments-title" class="mw-cell mw-bodies" style="--c:#96c8fb">
+          <div class="mw-cell-body">
+          <header class="mw-cap"><span class="mw-chip"><i style="background:#cfabff"></i>Human <i></i>Robot</span><h4 class="mw-title" id="data-embodiments-title">Eight bodies, one training mix</h4><p class="mw-desc">Human hands and seven robots, four real and three simulated, in one mix.</p></header>
+          <div class="mw-body-grid" role="img" aria-label="Human hands and seven robot embodiments, each doing manipulation at the same time">
+            <div class="mw-body mw-body-human"><video data-file="body-human.mp4" poster="assets-v22/training-data/body-human.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Human hands</span></div>
+            <div class="mw-body"><video data-file="body-aloha.mp4" poster="assets-v22/training-data/body-aloha.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">ALOHA</span></div>
+            <div class="mw-body"><video data-file="body-a2d.mp4" poster="assets-v22/training-data/body-a2d.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">AgiBot A2D</span></div>
+            <div class="mw-body"><video data-file="body-r1lite.mp4" poster="assets-v22/training-data/body-r1lite.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Galaxea R1-Lite</span></div>
+            <div class="mw-body"><video data-file="body-dosw1.mp4" poster="assets-v22/training-data/body-dosw1.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">DOS-W1</span></div>
+            <div class="mw-body"><video data-file="body-genie.mp4" poster="assets-v22/training-data/body-genie.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Genie-1<b>Sim</b></span></div>
+            <div class="mw-body"><video data-file="body-r1pro.mp4" poster="assets-v22/training-data/body-r1pro.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Galaxea R1 Pro<b>Sim</b></span></div>
+            <div class="mw-body"><video data-file="body-g2.mp4" poster="assets-v22/training-data/body-g2.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">AgiBot G2<b>Sim</b></span></div>
+          </div>
+          </div>
+        </figure>
 
-  function guardWheel() {
-    clearTimeout(wheelTimer);
-    const now = performance.now();
-    const quietAt = Math.max(guardMinimum, lastWheel + idleTime);
-    const timeLeft = Math.min(guardDeadline, quietAt) - now;
-    if (timeLeft <= 0) releaseWheel();
-    else wheelTimer = setTimeout(guardWheel, timeLeft);
-  }
+        <figure id="data-memory" tabindex="-1" aria-labelledby="data-memory-title" class="mw-cell mw-memory" style="--c:#8bdbcd">
+          <div class="mw-cell-body">
+          <header class="mw-cap"><span class="mw-chip"><i></i>Memory</span><h4 class="mw-title" id="data-memory-title">Look away, come back</h4><p class="mw-desc">The camera leaves the sofa and comes back. The room has to match.</p></header>
+          <div class="mw-window mw-memory-film"><video class="mw-revisit-film" data-file="memory.mp4" poster="assets-v22/training-data/memory.jpg" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag">Revisit</span><figure class="mw-revisit-inset mw-revisit-back"><img src="assets-v22/training-data/memory-first.webp" alt="The first view of the sofa, for comparison"><figcaption>First look</figcaption></figure></div>
+          <div class="mw-revisit">
+            <div class="mw-revisit-track" style="--p:0"><i></i>
+              <button type="button" data-t="0" style="--at:0">First look</button>
+              <button type="button" data-t="2.5" style="--at:.455">Turn away</button>
+              <button type="button" data-t="5" style="--at:.91">Back</button>
+            </div>
+          </div>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
 
-  function onWheel(event) {
-    if (event.ctrlKey) return;
-    const now = performance.now();
-    if (page === 'article' && (now >= guardDeadline || (now >= guardMinimum && now - lastWheel >= idleTime))) {
-      releaseWheel();
-      return;
-    }
-    event.preventDefault();
-    if (page === 'cover' && event.deltaY > 0 && event.deltaY >= Math.abs(event.deltaX)) {
-      if (now - lastWheel >= idleTime) wheelDistance = 0;
-      const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
-      wheelDistance += event.deltaY * scale;
-      lastWheel = now;
-      if (wheelDistance >= 22) enterArticle(entryHash, true);
-    } else {
-      lastWheel = now;
-      if (page === 'article') guardWheel();
-    }
-  }
-
-  function showCover() {
-    version += 1;
-    page = 'cover';
-    lastWheel = -Infinity;
-    wheelDistance = 0;
-    clearTimeout(wheelTimer);
-    article.inert = true;
-    documentRoot.classList.remove('mw-cover-leaving', 'mw-cover-handoff');
-    documentRoot.classList.add('mw-cover-open');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
-  }
-
-  function showArticle() {
-    page = 'article';
-    documentRoot.classList.remove('mw-cover-open', 'mw-cover-leaving');
-    article.inert = false;
-  }
-
-  function enterArticle(hash, fromWheel) {
-    if (page !== 'cover') return;
-    page = 'leaving';
-    const ticket = ++version;
-    let timeout;
-    function finish() {
-      cover.removeEventListener('transitionend', onEnd);
-      clearTimeout(timeout);
-      if (ticket !== version || page !== 'leaving') return;
-      if (fromWheel) documentRoot.classList.add('mw-cover-handoff');
-      showArticle();
-      history.pushState(null, '', hash);
-      article.focus({ preventScroll: true });
-      jumpTo(hash);
-      if (fromWheel) {
-        const now = performance.now();
-        guardMinimum = now + 150;
-        guardDeadline = now + 620;
-        guardWheel();
-      } else {
-        releaseWheel();
-      }
-    }
-    function onEnd(event) {
-      if (event.target === cover && event.propertyName === 'transform') finish();
-    }
-
-    if (motion.matches) {
-      finish();
-      return;
-    }
-    documentRoot.classList.add('mw-cover-leaving');
-    jumpTo(hash);
-    cover.addEventListener('transitionend', onEnd);
-    timeout = setTimeout(finish, 620);
-  }
-
-  cover.addEventListener('click', event => {
-    const link = event.target.closest('a[href^="#"]');
-    if (!link || link.hash === coverHash || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    enterArticle(link.hash, false);
-  });
-
-  cover.addEventListener('touchstart', event => {
-    const finger = event.touches.length === 1 ? event.touches[0] : null;
-    swipeStart = finger && { x: finger.clientX, y: finger.clientY };
-  }, { passive: true });
-  cover.addEventListener('touchend', event => {
-    if (!swipeStart) return;
-    const finger = event.changedTouches[0];
-    const upward = swipeStart.y - finger.clientY;
-    if (upward >= 45 && upward > Math.abs(finger.clientX - swipeStart.x)) {
-      enterArticle(entryHash, false);
-    }
-    swipeStart = null;
-  }, { passive: true });
-  cover.addEventListener('touchcancel', () => { swipeStart = null; }, { passive: true });
-
-  document.addEventListener('keydown', event => {
-    if (page !== 'cover' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
-    if (!['ArrowDown', 'PageDown', ' '].includes(event.key)) return;
-    if (event.target.closest?.('a, button, input, textarea, select, [contenteditable]')) return;
-    event.preventDefault();
-    enterArticle(entryHash, false);
-  });
-
-  function syncLocation() {
-    const hash = location.hash;
-    if (!hash || hash === coverHash) {
-      if (page !== 'cover') showCover();
-    } else if (page !== 'article') {
-      version += 1;
-      showArticle();
-      releaseWheel();
-      jumpTo(hash);
-    }
-  }
-
-  documentRoot.classList.add('mw-cover-enhanced');
-  syncLocation();
-  window.addEventListener('hashchange', syncLocation);
-  window.addEventListener('popstate', syncLocation);
-})();
-
-</script>
-<header style="border-bottom: 1px solid #1F242B">
-<div style="max-width: 1120px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
-<a href="#top" style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; color: #ECEEF1; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">MoraWorld</a>
-<nav aria-label="Sections" style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px; font-size: 14px">
-<a href="#bring" style="color: #A3AAB5; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">Bring anything</a>
-<a href="#stay" style="color: #A3AAB5; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">Stay in it</a>
-<a href="#back" style="color: #A3AAB5; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">Back to the robot</a>
-<a href="#paper" style="color: #0B0D10; background: #A582FF; text-decoration: none; font-weight: 600; padding: 0 18px; border-radius: 999px; display: inline-flex; align-items: center; min-height: 44px">Read the paper</a>
-</nav>
-</div>
+<section id="bring" class="mw-chapter" aria-labelledby="mw-bring-title">
+<div class="mw-chapter-content">
+<header class="mw-chapter-heading">
+  <p class="mw-chapter-label">Control</p>
+  <h2 id="mw-bring-title">Bring anything</h2>
+  <p class="mw-chapter-deck">One model for many embodiments, from action maps to full grey-box scenes. <strong>Navigate and manipulate in one take.</strong></p>
 </header>
-
-<section id="top" style="max-width: 1120px; margin: 0 auto; padding: 64px 24px 72px">
-<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
-<div style="flex: 1 1 500px; min-width: 0">
-<p style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #A582FF; margin: 0 0 24px">RESEARCH · [RELEASE DATE]</p>
-<h1 style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: clamp(2.75rem, 5vw, 4.5rem); line-height: 1.02; letter-spacing: -0.035em; margin: 0">A world robots can practice in.</h1>
-<p style="font-size: 20px; line-height: 1.6; color: #A3AAB5; margin: 28px 0 0; max-width: 720px">MoraWorld holds together for minutes, takes whatever control you have, from a bare action map to a full grey-box scene, and runs fast enough for a person to step in. That's what makes it useful on real robots.</p>
-<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px">
-<a href="#take" style="color: #0B0D10; background: #A582FF; text-decoration: none; font-weight: 600; font-size: 16px; padding: 0 24px; border-radius: 999px; display: inline-flex; align-items: center; min-height: 48px">Watch the overview</a>
-<a href="#paper" style="color: #ECEEF1; border: 1px solid #3A414B; text-decoration: none; font-weight: 500; font-size: 16px; padding: 0 24px; border-radius: 999px; display: inline-flex; align-items: center; min-height: 48px">Read the paper</a>
-</div>
-</div>
-<div style="flex: 1 1 420px; min-width: 0; max-width: 540px; margin: 0 auto">
-<svg role="img" aria-label="Translucent mobile manipulator robot drawn with simulation overlays: joints, collision boxes and a planned path" viewBox="0 0 560 620" style="width: 100%; height: auto; display: block">
-<defs>
-<linearGradient id="mwStroke" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="560"><stop offset="0" stop-color="#A582FF"></stop><stop offset="0.55" stop-color="#7C9CF5"></stop><stop offset="1" stop-color="#7C9CF5" stop-opacity="0.2"></stop></linearGradient>
-<linearGradient id="mwFill" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="560"><stop offset="0" stop-color="#ECEEF1" stop-opacity="0.10"></stop><stop offset="1" stop-color="#ECEEF1" stop-opacity="0.02"></stop></linearGradient>
-<linearGradient id="mwFloor" gradientUnits="userSpaceOnUse" x1="0" y1="520" x2="0" y2="618"><stop offset="0" stop-color="#A582FF" stop-opacity="0.32"></stop><stop offset="1" stop-color="#A582FF" stop-opacity="0"></stop></linearGradient>
-<radialGradient id="mwGlow" gradientUnits="userSpaceOnUse" cx="280" cy="330" r="280"><stop offset="0" stop-color="#A582FF" stop-opacity="0.16"></stop><stop offset="1" stop-color="#A582FF" stop-opacity="0"></stop></radialGradient>
-<marker id="mwArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#A582FF"></path></marker>
-</defs>
-<circle cx="280" cy="330" r="280" fill="url(#mwGlow)"></circle>
-<g stroke="url(#mwFloor)" stroke-width="1" fill="none">
-<path d="M150 540H410M120 558H440M88 580H472M52 604H508"></path>
-<path d="M280 500L280 618M280 500L196 618M280 500L112 618M280 500L28 618M280 500L364 618M280 500L448 618M280 500L532 618"></path>
-</g>
-<polygon points="280,170 92,330 196,372" fill="rgba(165,130,255,0.05)" stroke="none"></polygon>
-<path d="M280 170L92 330M280 170L196 372" stroke="rgba(165,130,255,0.4)" stroke-width="1" stroke-dasharray="3 5" fill="none"></path>
-<g class="mw-float">
-<g fill="url(#mwFill)" stroke="url(#mwStroke)" stroke-width="1.5">
-<rect x="186" y="468" width="188" height="58" rx="18"></rect>
-<ellipse cx="214" cy="530" rx="24" ry="9"></ellipse>
-<ellipse cx="346" cy="530" rx="24" ry="9"></ellipse>
-<rect x="263" y="262" width="34" height="208" rx="8"></rect>
-<rect x="196" y="228" width="168" height="40" rx="14"></rect>
-<rect x="271" y="194" width="18" height="34" rx="4"></rect>
-<rect x="236" y="128" width="88" height="64" rx="22"></rect>
-<rect x="186" y="250" width="24" height="106" rx="12" transform="rotate(26.9 198 250)"></rect>
-<rect x="139" y="345" width="22" height="84" rx="11" transform="rotate(-25.7 150 345)"></rect>
-<rect x="350" y="250" width="24" height="91" rx="12" transform="rotate(-39.6 362 250)"></rect>
-<rect x="409" y="320" width="22" height="82" rx="11" transform="rotate(-14 420 320)"></rect>
-</g>
-<path d="M206 490H354M270 300H290M270 330H290M270 360H290M270 390H290M270 420H290" stroke="rgba(236,238,241,0.18)" stroke-width="1" fill="none"></path>
-<circle cx="264" cy="160" r="9" fill="rgba(165,130,255,0.22)" stroke="#A582FF" stroke-width="1.5"></circle>
-<circle cx="296" cy="160" r="9" fill="rgba(165,130,255,0.22)" stroke="#A582FF" stroke-width="1.5"></circle>
-<path d="M181 427L177 452M193 425L200 449M434 406L429 430M447 404L453 428" stroke="url(#mwStroke)" stroke-width="5" stroke-linecap="round" fill="none"></path>
-<path d="M441 424L457 433L441 442L425 433Z" fill="rgba(236,238,241,0.38)" stroke="rgba(236,238,241,0.7)" stroke-width="1"></path>
-<path d="M425 433V451L441 460V442Z" fill="rgba(236,238,241,0.2)" stroke="rgba(236,238,241,0.7)" stroke-width="1"></path>
-<path d="M457 433V451L441 460V442Z" fill="rgba(236,238,241,0.1)" stroke="rgba(236,238,241,0.7)" stroke-width="1"></path>
-<g fill="none" stroke="rgba(236,238,241,0.26)" stroke-width="1" stroke-dasharray="4 4">
-<rect x="226" y="118" width="108" height="84" rx="4"></rect>
-<rect x="176" y="458" width="208" height="84" rx="4"></rect>
-<rect x="133" y="339" width="34" height="96" rx="4" transform="rotate(-25.7 150 345)"></rect>
-<rect x="417" y="418" width="48" height="48" rx="4"></rect>
-</g>
-<g fill="#0B0D10" stroke="#A582FF" stroke-width="1.5">
-<circle class="mw-joint" cx="198" cy="250" r="14"></circle>
-<circle class="mw-joint" cx="150" cy="345" r="12" style="animation-delay: -0.6s"></circle>
-<circle class="mw-joint" cx="186" cy="421" r="9" style="animation-delay: -1.2s"></circle>
-<circle class="mw-joint" cx="362" cy="250" r="14" style="animation-delay: -0.3s"></circle>
-<circle class="mw-joint" cx="420" cy="320" r="12" style="animation-delay: -0.9s"></circle>
-<circle class="mw-joint" cx="440" cy="400" r="9" style="animation-delay: -1.5s"></circle>
-</g>
-<path d="M198 250H230" stroke="#A582FF" stroke-width="1.5"></path>
-<path d="M198 250V218" stroke="#ECEEF1" stroke-width="1.5" stroke-opacity="0.8"></path>
-<path d="M198 250L182 266" stroke="#7C9CF5" stroke-width="1.5"></path>
-<circle cx="280" cy="310" r="6" fill="none" stroke="rgba(236,238,241,0.7)" stroke-width="1"></circle>
-<path d="M272 310H288M280 302V318" stroke="rgba(236,238,241,0.7)" stroke-width="1"></path>
-<path class="mw-flow" d="M180 455C152 498 124 512 96 506" stroke="#A582FF" stroke-width="1.5" stroke-dasharray="5 5" fill="none" marker-end="url(#mwArrow)"></path>
-<circle cx="88" cy="505" r="7" fill="none" stroke="#A582FF" stroke-width="1.5"></circle>
-</g>
-<g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="rgba(236,238,241,0.55)">
-<text x="340" y="146">cam_head</text>
-<text x="178" y="226" text-anchor="end">shoulder_l</text>
-<text x="132" y="352" text-anchor="end">elbow_l · [θ]</text>
-<text x="296" y="306">com</text>
-<text x="472" y="446">obj_0 · grey box</text>
-<text x="392" y="508">base_link</text>
-<text x="74" y="530" text-anchor="middle">target</text>
-</g>
-</svg>
-</div>
-</div>
-
-<div id="take" style="margin-top: 64px; position: relative; aspect-ratio: 16 / 9; background: #14171C; border: 1px solid #2A3038; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center">
-  <video controls playsinline preload="none" aria-label="MoraWorld overview" src="assets-v22/MoraWorld-overview-v2.mp4" poster="assets-v22/MoraWorld-overview-v2.jpg" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #0B0D10"></video>
-</div>
-</section>
-
-<section id="overview" style="border-top: 1px solid #1F242B">
-<div style="max-width: 1120px; margin: 0 auto; padding: 112px 24px">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #A582FF">OVERVIEW</p>
-
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.1em; color: #7E8794; margin-top: 28px">WHAT IT TAKES</p>
-<p style="margin: 16px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 500; font-size: 36px; line-height: 1.4; letter-spacing: -0.015em; color: #ECEEF1; max-width: 1072px">A good world model for robots needs three things.<br></p>
-<p style="margin: 12px 0 0; font-size: 14px; color: #7E8794">[placeholder] 这块儿尽量放简洁且一眼能看明白的动画，不放实际生成的 demo</p>
-
-<div style="margin-top: 64px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: stretch">
-
-<article style="flex: 1 1 320px; min-width: 0; background: #12151A; border: 1px solid #23282F; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
-<div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #A582FF">01</span><h3 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Bring anything</h3></div>
-<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #A3AAB5">Any robot, any level of control.</p>
-<div style="border-radius: 10px; overflow: hidden; border: 1px solid #1F242B">
-<svg role="img" aria-label="The same scene shown as an action map, a coarse grey box, a fine grey box and the rendered output, in turn" viewBox="0 0 320 190" style="width: 100%; height: auto; display: block">
-<rect width="320" height="190" fill="#0E1114"></rect>
-<g class="mw-level" style="animation-delay: 0s">
-<path d="M290 18C250 50 214 84 176 104" stroke="#A582FF" stroke-width="2" stroke-dasharray="5 5" fill="none"></path>
-<circle cx="176" cy="104" r="7" fill="none" stroke="#A582FF" stroke-width="1.5"></circle>
-<path d="M176 104H196" stroke="#A582FF" stroke-width="1.5"></path><path d="M176 104V84" stroke="#ECEEF1" stroke-width="1.5"></path><path d="M176 104L164 116" stroke="#7C9CF5" stroke-width="1.5"></path>
-<text x="14" y="182" font-family="'JetBrains Mono', monospace" font-size="10" fill="#A582FF">LEVEL 1 · ACTION MAP</text>
-</g>
-<g class="mw-level" style="animation-delay: -6s">
-<path d="M290 18C250 50 214 84 176 104" stroke="rgba(165,130,255,0.35)" stroke-width="1.5" stroke-dasharray="5 5" fill="none"></path>
-<g fill="none" stroke="rgba(236,238,241,0.65)" stroke-width="1.2" stroke-dasharray="4 4">
-<rect x="40" y="118" width="240" height="44"></rect>
-<rect x="160" y="86" width="30" height="32"></rect>
-<polygon points="304.6,12.5 295.4,-0.5 241.4,37.5 250.6,50.5"></polygon>
-<polygon points="250.7,49.1 241.3,38.9 191.3,84.9 200.7,95.1"></polygon>
-</g>
-<text x="14" y="182" font-family="'JetBrains Mono', monospace" font-size="10" fill="#A582FF">LEVEL 2 · COARSE GREY BOX</text>
-</g>
-<g class="mw-level" style="animation-delay: -4s">
-<path d="M30 124H290L304 166H16Z" fill="#3A3F47" stroke="#6B7280" stroke-width="1"></path>
-<rect x="162" y="90" width="26" height="30" rx="3" fill="#8A9099"></rect>
-<ellipse cx="175" cy="90" rx="13" ry="4" fill="#A3AAB5"></ellipse>
-<path d="M300 6L246 44L196 90" stroke="#9AA1AB" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-<path d="M192 94L186 106M202 98L200 110" stroke="#9AA1AB" stroke-width="4" stroke-linecap="round"></path>
-<text x="14" y="182" font-family="'JetBrains Mono', monospace" font-size="10" fill="#A582FF">LEVEL 3 · FINE GREY BOX</text>
-</g>
-<g class="mw-level mw-level-last" style="animation-delay: -2s">
-<rect width="320" height="190" fill="#17120E"></rect>
-<path d="M30 124H290L304 166H16Z" fill="#6B4226" stroke="#8A5A36" stroke-width="1"></path>
-<path d="M40 131H282" stroke="rgba(255,220,180,0.25)" stroke-width="2"></path>
-<rect x="162" y="90" width="26" height="30" rx="3" fill="rgba(229,154,58,0.78)"></rect>
-<ellipse cx="175" cy="90" rx="13" ry="4" fill="rgba(255,220,170,0.6)"></ellipse>
-<path d="M300 6L246 44L196 90" stroke="#24272C" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-<path d="M192 94L186 106M202 98L200 110" stroke="#33373D" stroke-width="4" stroke-linecap="round"></path>
-<circle cx="246" cy="44" r="3" fill="#A582FF"></circle>
-<text x="14" y="182" font-family="'JetBrains Mono', monospace" font-size="10" fill="#ECEEF1">OUTPUT · MORAWORLD</text>
-</g>
-</svg>
-</div>
-
-<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Multi embodiments</span>Single arms, dual arms,&nbsp; human hands and wheeled bases share one set of weights.</li>
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Multi level of control</span>An action map, a coarse grey box or a fine one: the more structure you give, the less it has to guess.</li>
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Mobile manipulation</span>Base motion and arm actions in one model, so moving and handling happen in the same take.</li>
-</ul>
-<a href="#bring" style="margin-top: auto; font-size: 14px; color: #A582FF; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">Details ↓</a>
-</article>
-
-<article style="flex: 1 1 320px; min-width: 0; background: #12151A; border: 1px solid #23282F; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
-<div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #A582FF">02</span><h3 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Stay in it</h3></div>
-<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #A3AAB5">One world you can stay inside for minutes.</p>
-<div style="border-radius: 10px; overflow: hidden; border: 1px solid #1F242B">
-<svg role="img" aria-label="A robot drives from room A to room B and back; the object it left in room A is still there" viewBox="0 0 320 190" style="width: 100%; height: auto; display: block">
-<rect width="320" height="190" fill="#0E1114"></rect>
-<path d="M148 64H16V164H148V140M148 120V64" stroke="rgba(236,238,241,0.28)" stroke-width="1.5" fill="none"></path>
-<path d="M172 16H304V116H172V80M172 60V16" stroke="rgba(236,238,241,0.28)" stroke-width="1.5" fill="none"></path>
-<text x="24" y="156" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(236,238,241,0.5)">ROOM A</text>
-<text x="252" y="108" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(236,238,241,0.5)">ROOM B</text>
-<path d="M50 130H160V70H262" stroke="rgba(165,130,255,0.35)" stroke-width="1.5" stroke-dasharray="3 4" fill="none"></path>
-<rect class="mw-remember" x="30" y="78" width="14" height="14" fill="rgba(165,130,255,0.25)" stroke="#A582FF" stroke-width="1.5"></rect>
-<text class="mw-remember-label" x="52" y="90" font-family="'JetBrains Mono', monospace" font-size="10" fill="#A582FF">still here</text>
-<g class="mw-rover"><circle cx="50" cy="130" r="14" fill="none" stroke="rgba(165,130,255,0.4)" stroke-width="1.5"></circle><circle cx="50" cy="130" r="7" fill="#A582FF"></circle></g>
-<text x="304" y="182" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(236,238,241,0.5)">[N] MIN · ONE TAKE · [X] MS / FRAME</text>
-</svg>
-</div>
-<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Minutes, not seconds</span>One continuous take of [N] minutes, no cuts, and the world stays consistent to the end.</li>
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Memory</span>Look away and come back; the room is just as you left it, down to the mug on the counter.</li>
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Real-time</span>Distilled to [k] steps, so the next frame lands [X] ms after the controller moves.</li>
-</ul>
-<a href="#stay" style="margin-top: auto; font-size: 14px; color: #A582FF; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">Details ↓</a>
-</article>
-
-<article style="flex: 1 1 320px; min-width: 0; background: #12151A; border: 1px solid #23282F; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
-<div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #A582FF">03</span><h3 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.02em">Take it back to the robot</h3></div>
-<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #A3AAB5">A training and evaluation ground.</p>
-<div style="border-radius: 10px; overflow: hidden; border: 1px solid #1F242B">
-<svg role="img" aria-label="MoraWorld feeds closed-loop training, scalable evaluation and data, which all lead to the real robot" viewBox="0 0 320 190" style="width: 100%; height: auto; display: block">
-<rect width="320" height="190" fill="#0E1114"></rect>
-<g class="mw-flow" fill="none" stroke="rgba(165,130,255,0.55)" stroke-width="1.2" stroke-dasharray="4 4">
-<path d="M92 95C106 95 104 40 118 40"></path><path d="M92 95H118"></path><path d="M92 95C106 95 104 150 118 150"></path>
-<path d="M202 40C216 40 214 95 228 95"></path><path d="M202 95H228"></path><path d="M202 150C216 150 214 95 228 95"></path>
-</g>
-<rect x="8" y="71" width="84" height="48" rx="8" fill="rgba(165,130,255,0.14)" stroke="#A582FF" stroke-width="1.5"></rect>
-<text x="50" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#ECEEF1">MoraWorld</text>
-<rect x="228" y="71" width="84" height="48" rx="8" fill="none" stroke="rgba(236,238,241,0.7)" stroke-width="1.5"></rect>
-<text x="270" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#ECEEF1">Real robot</text>
-<rect class="mw-app" x="118" y="25" width="84" height="30" rx="15" stroke-width="1.2" style="animation-delay: 0s"></rect>
-<rect class="mw-app" x="118" y="80" width="84" height="30" rx="15" stroke-width="1.2" style="animation-delay: -4s"></rect>
-<rect class="mw-app" x="118" y="135" width="84" height="30" rx="15" stroke-width="1.2" style="animation-delay: -2s"></rect>
-<g font-family="'JetBrains Mono', monospace" font-size="11" fill="#ECEEF1" text-anchor="middle">
-<text x="160" y="44">Train</text><text x="160" y="99">Evaluate</text><text x="160" y="154">Data</text>
-</g>
-</svg>
-</div>
-<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Closed-loop training</span>The policy acts inside MoraWorld and learns from what happens, through rewards (RL) or a person stepping in (DAgger).</li>
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Scalable evaluation</span>A lightweight stand-in for real-robot testing: screen checkpoints here, save robot hours for the few that matter.</li>
-<li style="font-size: 15px; line-height: 1.6; color: #C9CED6"><span style="display: inline-block; font-weight: 600; font-size: 13px; color: #0B0D10; background: #A582FF; border-radius: 4px; padding: 1px 7px; margin-right: 8px">Data Engine</span>One real demo becomes [M] new rooms with the same actions.</li>
-</ul>
-<a href="#back" style="margin-top: auto; font-size: 14px; color: #A582FF; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px">Details ↓</a>
-</article>
-
-</div>
-</div>
-</section>
-
-<section id="bring" style="border-top: 1px solid #1F242B">
-<div style="max-width: 1120px; margin: 0 auto; padding: 120px 24px">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; letter-spacing: 0.1em; color: #A582FF">01</p>
-<h2 style="margin: 12px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: clamp(2.25rem, 4.5vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em">Bring anything</h2>
-<p style="margin: 16px 0 0; font-size: 22px; line-height: 1.5; color: #A3AAB5; max-width: 760px">Any robot, any level of control.</p>
 
 <div style="margin-top: 64px; padding-top: 40px; border-top: 1px solid #1F242B">
 <div class="mw-feature" style="display: grid; gap: 32px; align-items: stretch">
@@ -1229,7 +1266,7 @@ html.mw-cover-handoff {
 <link rel="stylesheet" href="assets/showcase/mobile-rollouts/controls.cpfs-20261125.css?v=8">
 <link rel="stylesheet" href="assets/showcase/navigation/controls.css?rev=roaming-cards">
 <link rel="stylesheet" href="assets/showcase/track-overlay.css">
-<link rel="stylesheet" href="assets/showcase/mobile-rollouts/feature.css?v=15">
+<link rel="stylesheet" href="assets/showcase/mobile-rollouts/feature.css?v=16">
 <section id="mobile-showcase" class="motion-gallery" data-rollout-focus data-loop-previews data-translucent-tracks data-route-carousel aria-labelledby="motion-title">
   <header class="mg-heading mw-feature-heading">
     <p class="mw-feature-count">3 / 3</p>
@@ -1243,15 +1280,22 @@ html.mw-cover-handoff {
       <button id="mg-tab-nav" role="tab" aria-selected="false" aria-controls="mg-panel" tabindex="-1" data-group="nav"><span class="mg-symbol" data-icon="path"></span>Navigation</button>
       <button id="mg-tab-mobile" role="tab" aria-selected="true" aria-controls="mg-panel" data-group="mobile"><span class="mg-symbol" data-icon="robot"></span>Mobile manipulation</button>
     </div>
-    <div class="mg-layout-options" role="group" aria-label="Gallery layout for all motion types" hidden>
-      <span class="mg-layout-label" aria-hidden="true">View</span>
-      <button type="button" data-rollout-layout="focus" aria-controls="mg-grid" aria-pressed="true">Focus</button>
-      <button type="button" data-rollout-layout="grid" aria-controls="mg-grid" aria-pressed="false">Grid</button>
-    </div>
   </div>
 
   <div id="mg-panel" role="tabpanel" aria-labelledby="mg-tab-mobile">
     <div class="mg-caption">
+      <div class="mg-layout-options" data-layout-group="manip" role="group" aria-label="Manipulation view" hidden>
+        <button type="button" data-rollout-layout="focus" aria-controls="mg-grid" aria-pressed="false">Focus</button>
+        <button type="button" data-rollout-layout="grid" aria-controls="mg-grid" aria-pressed="true">Grid</button>
+      </div>
+      <div class="mg-layout-options" data-layout-group="nav" role="group" aria-label="Navigation view" hidden>
+        <button type="button" data-rollout-layout="focus" aria-controls="mg-grid" aria-pressed="false">Focus</button>
+        <button type="button" data-rollout-layout="grid" aria-controls="mg-grid" aria-pressed="true">Grid</button>
+      </div>
+      <div class="mg-layout-options" data-layout-group="mobile" role="group" aria-label="Mobile manipulation view" hidden>
+        <button type="button" data-rollout-layout="focus" aria-controls="mg-grid" aria-pressed="true">Focus</button>
+        <button type="button" data-rollout-layout="grid" aria-controls="mg-grid" aria-pressed="false">Grid</button>
+      </div>
       <span class="mg-label mg-rollout-caption">Generated rollouts</span>
       <div class="mg-nav-intro">
         <span class="mg-label">Out-of-distribution (OOD) navigation</span>
@@ -1290,32 +1334,33 @@ html.mw-cover-handoff {
       <div id="mg-lab" class="mg-lab" hidden><div id="mg-lab-view"></div>
         <div class="mg-lab-footer"><span id="mg-lab-instruction">Drag to orbit</span></div>
       </div></div>
-    <div class="mg-dialog-tools"><button type="button" id="mg-compare" aria-pressed="false">Compare source</button></div>
     <p class="mg-detail-note" id="mg-detail-note"></p>
     <details class="mg-dialog-prompt" id="mg-detail-prompt" hidden>
       <summary>Rollout prompt</summary>
       <p></p>
     </details>
   </dialog>
-  <script id="mg-data" type="application/json">{"covers":{"mobile":"assets/motion/field-room.jpg","nav":"assets/motion/field-scan.jpg","manip":"assets/motion/field-wrists.jpg"},"cases":[{"id":"2d287dfce7","group":"manip","title":"Slide a plate into the microwave","dataset":"AgiBot","model":"SGF EMA500","note":"The right gripper carries the blue plate through the open door and withdraws, leaving the plate inside.","duration":13.6,"video":"assets/rollouts/2d287dfce7-prediction-rollout.mp4","reference":"assets/rollouts/2d287dfce7-prediction-source.mp4","poster":"assets/rollouts/2d287dfce7-prediction.jpg","posterTime":2.3},{"id":"1ef2e6ba60","group":"manip","title":"Cover the middle steamer","dataset":"Galaxea","model":"SGF+ EMA700","note":"The right gripper lifts a woven lid from the stack on the right, sets it on the middle steamer and releases it.","duration":13.6,"video":"assets/rollouts/1ef2e6ba60-sgfplus700-rollout.mp4","reference":"assets/rollouts/1ef2e6ba60-sgfplus700-source.mp4","poster":"assets/rollouts/1ef2e6ba60-sgfplus700.jpg","posterTime":3.6},{"id":"93b0532b80","group":"manip","title":"Fit a printed lid onto a box","dataset":"RoboChallenge","model":"SGF EMA500","note":"The grippers guide opposite edges of the printed lid until it sits on the white box, then draw away.","duration":13.6,"video":"assets/rollouts/93b0532b80-prediction-rollout.mp4","reference":"assets/rollouts/93b0532b80-prediction-source.mp4","poster":"assets/rollouts/93b0532b80-prediction.jpg","posterTime":2.8},{"id":"22620a6cb0","group":"manip","title":"Cross the ends of a red cord","dataset":"AgiBot","model":"SGF EMA500","note":"The grippers draw the two ends across the top of the box, changing the shape of the red loop.","duration":13.6,"video":"assets/rollouts/22620a6cb0-prediction-rollout.mp4","reference":"assets/rollouts/22620a6cb0-prediction-source.mp4","poster":"assets/rollouts/22620a6cb0-prediction.jpg","posterTime":7.5},{"id":"long-5b3365e5a571","group":"manip","title":"Slide open a glass display cabinet","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The gripper meets the edge of the glass door and slides it aside, revealing the contents of the display cabinet.","duration":20.0,"video":"assets/showcase/manipulation/open-display-cabinet-rollout.mp4","reference":"assets/showcase/manipulation/open-display-cabinet-source.mp4","poster":"assets/showcase/manipulation/open-display-cabinet.jpg","posterTime":14},{"id":"mobile-ec866b7fd645","group":"manip","title":"Set a bottle on the table","dataset":"AgiBot","model":"SGF EMA700 + Memory 2019","note":"The right gripper carries a bottle from the nearby pack, sets it upright on the table, and withdraws.","duration":18.7,"video":"assets/showcase/manipulation/set-down-bottle-rollout.mp4","reference":"assets/showcase/manipulation/set-down-bottle-source.mp4","poster":"assets/showcase/manipulation/set-down-bottle.jpg","posterTime":8},{"id":"sekai2-035-forward","group":"nav","title":"Window corridor · forward","dataset":"Sekai2","model":"SGF EMA500 + Memory 2019","note":"The camera continues down the corridor toward the windows.","duration":12.466666666666667,"video":"assets/rollouts/sekai2-035-forward-sgf500_mem-rollout.mp4","reference":"assets/rollouts/sekai2-035-forward-sgf500_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-035-first-frame.jpg","posterTime":0},{"id":"sekai2-035-reverse","group":"nav","title":"Window corridor · reverse","dataset":"Sekai2","model":"SGF EMA700 + Memory 2019","note":"The camera turns toward the white wall and heads back along the corridor.","duration":12.466666666666667,"video":"assets/rollouts/sekai2-035-reverse-sgf700_mem-rollout.mp4","reference":"assets/rollouts/sekai2-035-reverse-sgf700_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-035-first-frame.jpg","posterTime":0},{"id":"sekai2-001","group":"nav","title":"Round a pillar in the metro","dataset":"Sekai2","model":"SGF EMA700 + Memory 2019","note":"The camera passes the advertisement pillar and turns into a blue-lined passage. Watch the poster wall slide into view.","duration":24.933333333333334,"video":"assets/rollouts/sekai2-001-sgf700_mem-rollout.mp4","reference":"assets/rollouts/sekai2-001-sgf700_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-001-first-frame.jpg","posterTime":0},{"id":"sekai2-025","group":"nav","title":"Turn through a museum gallery","dataset":"Sekai2","model":"SGF+ EMA700 + Memory 2019","note":"Lit display cases pass on either side as the camera rounds a dark partition and turns back toward the exhibits.","duration":24.933333333333334,"video":"assets/rollouts/sekai2-025-sgfplus700_mem-rollout.mp4","reference":"assets/rollouts/sekai2-025-sgfplus700_mem-source.mp4","poster":"assets/showcase/navigation/sekai2-025-first-frame.jpg","posterTime":0},{"id":"long-685650b57c3d","group":"mobile","page":"long","title":"Draw the curtain from two positions","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot moves along the window and reaches for the curtain twice, with a release and repositioning between pulls.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/two-curtain-pulls-rollout.mp4","reference":"assets/showcase/mobile-rollouts/two-curtain-pulls-source.mp4","poster":"assets/showcase/mobile-rollouts/two-curtain-pulls.jpg","posterTime":19,"previewLabel":"Draw the curtain","taskDescription":"Approach the window and pull the curtain. Release it, move along the window, and pull again from the new position."},{"id":"sofa-wide-start-013","group":"mobile","page":"long","title":"Approach the sofa and rearrange cushions","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"Starting with the full sofa in view, the robot moves closer to lift a floral cushion, then shifts along the sofa to handle another cushion.","duration":56.666666666666664,"video":"assets/showcase/mobile-rollouts/approach-sofa-rollout.mp4","reference":"assets/showcase/mobile-rollouts/approach-sofa-source.mp4","poster":"assets/showcase/mobile-rollouts/approach-sofa.jpg","posterTime":17,"previewLabel":"Arrange the cushions","rolloutPrompt":"A light gray sofa with a wooden floor beneath it holds three pillows: two with a blue background and white daisies, and one white pillow with a cartoon cactus face and orange trim. In the background, a bed with white bedding and a person are visible, along with a curtain and a dark object on the floor to the right.","taskDescription":"Approach the sofa, move alongside it, and rearrange the cushions."},{"id":"long-2fc4e86c310d","group":"mobile","page":"long","title":"Move along the bed with a cleaning cloth","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The robot approaches the bed, picks up a cloth, shifts position while working along the floor, and lowers the cloth again.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/wipe-bedside-rollout.mp4","reference":"assets/showcase/mobile-rollouts/wipe-bedside-source.mp4","poster":"assets/showcase/mobile-rollouts/wipe-bedside.jpg","posterTime":37,"previewLabel":"Wipe beside the bed","taskDescription":"Pick up the cleaning cloth and wipe the floor while moving alongside the bed."},{"id":"long-e6edc18b1bd5","group":"mobile","page":"long","title":"Carry a bowl and return to the table","dataset":"Galaxea","model":"SGF+ EMA700 + Memory 2019","note":"The robot picks up a bowl, turns away from the round table, then returns to the sofa area.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/carry-bowl-rollout.mp4","reference":"assets/showcase/mobile-rollouts/carry-bowl-source.mp4","poster":"assets/showcase/mobile-rollouts/carry-bowl.jpg","posterTime":34,"previewLabel":"Carry a bowl","taskDescription":"Pick up the bowl at the round table, turn away with it, and return to the seating area."},{"id":"doll-wide-f30-s101","group":"mobile","page":"long","title":"Put a toy away, then return","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot picks up a toy, moves around the bed to the basket, then returns to the bed.","duration":60.0,"video":"assets/showcase/mobile-rollouts/bedside-toys-rollout.mp4","reference":"assets/showcase/mobile-rollouts/bedside-toys-source.mp4","poster":"assets/showcase/mobile-rollouts/bedside-toys.jpg","posterTime":11,"previewLabel":"Put away a toy","rolloutPrompt":"A large bed with a white sheet and pillows is positioned against a wooden headboard. On the bed, a yellow plush toy and a green plush toy are visible. A round, woven basket containing various colorful toys sits on the floor beside the bed. A shopping cart is located near the basket. A person is seated on a chair to the right of the bed. A lamp is mounted on the wall next to the bed. A blue bag rests on the bed near the headboard. A plastic bag is on the floor near the shopping cart. The room has blue curtains and a wooden floor.","taskDescription":"Pick up a toy, carry it to the basket, and return to the bed."},{"id":"long-a2b05075e306","group":"mobile","page":"long","title":"Open a washer and turn toward the basket","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot repositions between two washers, opens a drum door, and turns toward the laundry basket.","duration":44,"video":"assets/showcase/mobile-rollouts/washer-to-basket-rollout.mp4","reference":"assets/showcase/mobile-rollouts/washer-to-basket-source.mp4","poster":"assets/showcase/mobile-rollouts/washer-to-basket.jpg","posterTime":28,"previewLabel":"Open the washer","taskDescription":"Move between the two washing machines, open a drum door, and turn toward the laundry basket."},{"id":"mobile-1aa8f2df1802","group":"mobile","page":"short","title":"Carry a tray to a trolley","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"Both grippers carry a green tray and set it on the trolley before withdrawing.","duration":17.0,"video":"assets/showcase/mobile-rollouts/carry-tray-rollout.mp4","reference":"assets/showcase/mobile-rollouts/carry-tray-source.mp4","poster":"assets/showcase/mobile-rollouts/carry-tray.jpg","posterTime":5,"previewLabel":"Carry the tray","taskDescription":"Carry the green tray with both grippers and set it on the trolley."},{"id":"mobile-c95bd41c4685","group":"mobile","page":"short","title":"Set an orange cloth on the side table","dataset":"Galaxea","model":"SGF+ EMA700 + Memory 2019","note":"The robot approaches the round table, places the orange cloth, and backs away with the cloth still visible on the tabletop.","duration":23.8,"video":"assets/showcase/mobile-rollouts/place-orange-cloth-rollout.mp4","reference":"assets/showcase/mobile-rollouts/place-orange-cloth-source.mp4","poster":"assets/showcase/mobile-rollouts/place-orange-cloth.jpg","posterTime":17,"previewLabel":"Set down the cloth","rolloutPrompt":"A light-colored sofa with multiple cushions is positioned against a wall, adjacent to a round wooden side table. A floor lamp with a black base and circular shades stands near the sofa. A glass door or window is visible, reflecting an interior space, and is framed by curtains. An orange cloth and a black device are placed on the side table, and the orange cloth is also seen on the sofa. A black cable extends from the device on the table.","taskDescription":"Approach the side table, set down the orange cloth, and back away."},{"id":"mobile-5d2560347ee9","group":"mobile","page":"short","title":"Reach for a bowl by the microwave","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot shifts along the counter toward the pink bowl beside the open microwave.","duration":17.0,"video":"assets/showcase/mobile-rollouts/reach-microwave-rollout.mp4","reference":"assets/showcase/mobile-rollouts/reach-microwave-source.mp4","poster":"assets/showcase/mobile-rollouts/reach-microwave.jpg","posterTime":15,"previewLabel":"Reach for the bowl","taskDescription":"Move along the counter and reach for the pink bowl beside the open microwave."},{"id":"mobile-42861afcb295","group":"mobile","page":"short","title":"Open the drawer for a hair dryer","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The camera lowers from the counter as the gripper opens the drawer beside the hair dryer.","duration":17.0,"video":"assets/showcase/mobile-rollouts/store-hair-dryer-rollout.mp4","reference":"assets/showcase/mobile-rollouts/store-hair-dryer-source.mp4","poster":"assets/showcase/mobile-rollouts/store-hair-dryer.jpg","posterTime":10,"previewLabel":"Open the drawer","taskDescription":"Reach down and open the drawer beside the hair dryer."},{"id":"mobile-8773eab7d6b7","group":"mobile","page":"short","title":"Drop a garment into a hamper","dataset":"ManipArena","model":"SGF EMA500 + Memory 2019","note":"The gripper brings a black garment over the hamper, releases it and moves away.","duration":16.15,"video":"assets/showcase/mobile-rollouts/load-hamper-rollout.mp4","reference":"assets/showcase/mobile-rollouts/load-hamper-source.mp4","poster":"assets/showcase/mobile-rollouts/load-hamper.jpg","posterTime":9,"previewLabel":"Load the hamper","rolloutPrompt":"Put the clothes in the laundry basket","taskDescription":"Carry the garment to the hamper, release it, and move away."},{"id":"mobile-cdfaab0e0320","group":"mobile","page":"short","title":"Set down a sign beside the steamers","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The right gripper carries a small sign along the counter and releases it beside the steamers.","duration":17.0,"video":"assets/showcase/mobile-rollouts/place-sign-rollout.mp4","reference":"assets/showcase/mobile-rollouts/place-sign-source.mp4","poster":"assets/showcase/mobile-rollouts/place-sign.jpg","posterTime":9,"previewLabel":"Set down the sign","taskDescription":"Carry the sign along the counter with the right gripper and set it beside the steamers."},{"id":"sekai2-027-forward","group":"nav","title":"Perforated wall corner · forward","dataset":"Sekai2","model":"SGF+ EMA700","note":"The camera passes the perforated wall and moves toward the bright landing.","duration":12.466666666666667,"video":"assets/showcase/navigation/sekai2-027-forward-rollout.mp4","reference":"assets/showcase/navigation/sekai2-027-forward-source.mp4","poster":"assets/showcase/navigation/sekai2-027-first-frame.jpg","posterTime":0},{"id":"sekai2-027-reverse","group":"nav","title":"Perforated wall corner · reverse","dataset":"Sekai2","model":"SGF+ EMA700 + Memory 2019","note":"The camera follows the railing back toward the stairs.","duration":12.466666666666667,"video":"assets/showcase/navigation/sekai2-027-reverse-rollout.mp4","reference":"assets/showcase/navigation/sekai2-027-reverse-source.mp4","poster":"assets/showcase/navigation/sekai2-027-first-frame.jpg","posterTime":0}],"replays":[{"category":"combined","name":"A robot in its room","short":"GALAXEA · 55.7 s","video":"assets/mobile/galaxea-room-gt.mp4","poster":"assets/mobile/galaxea-room.jpg","meta":"GT + RGB RECONSTRUCTION · 2× · 55.7 s","kicker":"01 / MOBILE + MANIPULATION","title":"A room to move in. A sofa to work on.","description":"Follow the recorded camera and hand motion through a reconstructed room, with the source view synchronized beside the robot.","watch":"The sofa, changing viewpoint and hand motion stay in one spatial overview. Geometry is estimated from RGB; the robot body and base are schematic."},{"category":"mobile","name":"A room, remembered in 3D","short":"MATTERPORT3D · 15 s","video":"assets/mobile/matterport-spatial-gt.mp4","poster":"assets/mobile/matterport-spatial.jpg","meta":"RGB-D SPATIAL REPLAY · 2× · 15 s","kicker":"02 / MOBILE · SPATIAL VIEW","title":"Turn away. See the room again.","description":"A colored RGB-D point cloud, current and historical view frusta, and a synchronized source window reveal the surrounding space.","watch":"This example rotates at a fixed camera center. The overhead orbit is for presentation; it does not represent robot translation."},{"category":"interaction","name":"Fridge to countertop","short":"AGIBOT · 16.1 s","video":"assets/mobile/agibot-fridge-gt.mp4","poster":"assets/mobile/agibot-fridge-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 4× · 16.1 s","kicker":"03 / INTERACTION","title":"Open. Retrieve. Close.","description":"Follow the gripper from the fridge handle to a boxed item, then to the countertop and back to the door.","watch":"A continuous action chain, with recorded wrist paths and gripper state beside the source video."},{"category":"interaction","name":"Pack the shopping bag","short":"AGIBOT · 15.6 s","video":"assets/mobile/agibot-packing-gt.mp4","poster":"assets/mobile/agibot-packing-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 3× · 15.6 s","kicker":"04 / INTERACTION","title":"Two hands, one shopping bag.","description":"One hand holds the red bag open while the other puts successive items inside.","watch":"Different roles for the two hands: holding the bag versus reaching, grasping and releasing."},{"category":"interaction","name":"Unlock and open","short":"AGIBOT · 15.1 s","video":"assets/mobile/agibot-key-gt.mp4","poster":"assets/mobile/agibot-key-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 4× · 15.1 s","kicker":"05 / INTERACTION","title":"A small key. A precise interaction.","description":"The robot brings a key to the lock, turns it and opens the door.","watch":"Contact-rich manipulation: key alignment, the turn, and the door opening in one continuous clip."}],"spatial":{"poses":"assets/motion/poses.json","landmarks":"assets/motion/landmarks.json","loops":{"mobile":"assets/motion/field-room-loop.mp4","nav":"assets/motion/field-scan-loop.mp4","manip":"assets/motion/field-wrists-loop.mp4"},"maps":{"multiple-sofa-cushions":["assets/motion/multiple-sofa-cushions-action.mp4","assets/motion/multiple-sofa-cushions-action.jpg"],"agi25_236970b9cbda":["assets/rollouts/agi25_236970b9cbda-action.mp4","assets/rollouts/agi25_236970b9cbda-action.jpg"],"2d287dfce7":["assets/rollouts/2d287dfce7-action.mp4","assets/rollouts/2d287dfce7-action.jpg"],"1ef2e6ba60":["assets/motion/1ef2e6ba60-action.mp4","assets/motion/1ef2e6ba60-action.jpg"],"93b0532b80":["assets/rollouts/93b0532b80-action.mp4","assets/rollouts/93b0532b80-action.jpg"],"22620a6cb0":["assets/rollouts/22620a6cb0-action.mp4","assets/rollouts/22620a6cb0-action.jpg"],"mobile-b870e2f1904c":["assets/movement/mobile-manipulation/curtain-action.mp4","assets/movement/mobile-manipulation/curtain-action.jpg"],"mobile-fe719b48fd27":["assets/movement/mobile-manipulation/push-chair-action.mp4","assets/movement/mobile-manipulation/push-chair-action.jpg"]}},"navigationRows":[{"title":"Metro concourse","anchor":"assets/showcase/navigation/sekai2-001-first-frame.jpg","ids":["sekai2-001"],"description":"Round the advertising pillar into a blue-lined passage."},{"title":"Museum gallery","anchor":"assets/showcase/navigation/sekai2-025-first-frame.jpg","ids":["sekai2-025"],"description":"Turn around a dark partition to reveal the lit display cases."},{"title":"Window corridor","anchor":"assets/showcase/navigation/sekai2-035-first-frame.jpg","ids":["sekai2-035-forward","sekai2-035-reverse"],"description":"Turn toward the windows or retrace the corridor along the white wall."},{"title":"Perforated wall corner","anchor":"assets/showcase/navigation/sekai2-027-first-frame.jpg","ids":["sekai2-027-forward","sekai2-027-reverse"],"description":"Round the partition toward the bright landing or head back along the stair rail."}]}</script>
+  <script id="mg-data" type="application/json">{"covers":{"mobile":"assets/motion/field-room.jpg","nav":"assets/motion/field-scan.jpg","manip":"assets/motion/field-wrists.jpg"},"cases":[{"id":"2d287dfce7","group":"manip","title":"Slide a plate into the microwave","dataset":"AgiBot","model":"SGF EMA500","note":"The right gripper carries the blue plate through the open door and withdraws, leaving the plate inside.","duration":13.6,"video":"assets/rollouts/2d287dfce7-prediction-rollout.mp4","poster":"assets/rollouts/2d287dfce7-prediction.jpg","posterTime":2.3},{"id":"1ef2e6ba60","group":"manip","title":"Cover the middle steamer","dataset":"Galaxea","model":"SGF+ EMA700","note":"The right gripper lifts a woven lid from the stack on the right, sets it on the middle steamer and releases it.","duration":13.6,"video":"assets/rollouts/1ef2e6ba60-sgfplus700-rollout.mp4","poster":"assets/rollouts/1ef2e6ba60-sgfplus700.jpg","posterTime":3.6},{"id":"93b0532b80","group":"manip","title":"Fit a printed lid onto a box","dataset":"RoboChallenge","model":"SGF EMA500","note":"The grippers guide opposite edges of the printed lid until it sits on the white box, then draw away.","duration":13.6,"video":"assets/rollouts/93b0532b80-prediction-rollout.mp4","poster":"assets/rollouts/93b0532b80-prediction.jpg","posterTime":2.8},{"id":"22620a6cb0","group":"manip","title":"Cross the ends of a red cord","dataset":"AgiBot","model":"SGF EMA500","note":"The grippers draw the two ends across the top of the box, changing the shape of the red loop.","duration":13.6,"video":"assets/rollouts/22620a6cb0-prediction-rollout.mp4","poster":"assets/rollouts/22620a6cb0-prediction.jpg","posterTime":7.5},{"id":"long-5b3365e5a571","group":"manip","title":"Slide open a glass display cabinet","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The gripper meets the edge of the glass door and slides it aside, revealing the contents of the display cabinet.","duration":20.0,"video":"assets/showcase/manipulation/open-display-cabinet-rollout.mp4","poster":"assets/showcase/manipulation/open-display-cabinet.jpg","posterTime":14},{"id":"mobile-ec866b7fd645","group":"manip","title":"Set a bottle on the table","dataset":"AgiBot","model":"SGF EMA700 + Memory 2019","note":"The right gripper carries a bottle from the nearby pack, sets it upright on the table, and withdraws.","duration":18.7,"video":"assets/showcase/manipulation/set-down-bottle-rollout.mp4","poster":"assets/showcase/manipulation/set-down-bottle.jpg","posterTime":8},{"id":"sekai2-035-forward","group":"nav","title":"Window corridor · forward","dataset":"Sekai2","model":"SGF EMA500 + Memory 2019","note":"The camera continues down the corridor toward the windows.","duration":12.466666666666667,"video":"assets/rollouts/sekai2-035-forward-sgf500_mem-rollout.mp4","poster":"assets/showcase/navigation/sekai2-035-first-frame.jpg","posterTime":0},{"id":"sekai2-035-reverse","group":"nav","title":"Window corridor · reverse","dataset":"Sekai2","model":"SGF EMA700 + Memory 2019","note":"The camera turns toward the white wall and heads back along the corridor.","duration":12.466666666666667,"video":"assets/rollouts/sekai2-035-reverse-sgf700_mem-rollout.mp4","poster":"assets/showcase/navigation/sekai2-035-first-frame.jpg","posterTime":0},{"id":"sekai2-001","group":"nav","title":"Round a pillar in the metro","dataset":"Sekai2","model":"SGF EMA700 + Memory 2019","note":"The camera passes the advertisement pillar and turns into a blue-lined passage. Watch the poster wall slide into view.","duration":24.933333333333334,"video":"assets/rollouts/sekai2-001-sgf700_mem-rollout.mp4","poster":"assets/showcase/navigation/sekai2-001-first-frame.jpg","posterTime":0},{"id":"sekai2-025","group":"nav","title":"Turn through a museum gallery","dataset":"Sekai2","model":"SGF+ EMA700 + Memory 2019","note":"Lit display cases pass on either side as the camera rounds a dark partition and turns back toward the exhibits.","duration":24.933333333333334,"video":"assets/rollouts/sekai2-025-sgfplus700_mem-rollout.mp4","poster":"assets/showcase/navigation/sekai2-025-first-frame.jpg","posterTime":0},{"id":"long-685650b57c3d","group":"mobile","page":"long","title":"Draw the curtain from two positions","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot moves along the window and reaches for the curtain twice, with a release and repositioning between pulls.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/two-curtain-pulls-rollout.mp4","poster":"assets/showcase/mobile-rollouts/two-curtain-pulls.jpg","posterTime":19,"previewLabel":"Draw the curtain","taskDescription":"Approach the window and pull the curtain. Release it, move along the window, and pull again from the new position."},{"id":"sofa-wide-start-013","group":"mobile","page":"long","title":"Approach the sofa and rearrange cushions","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"Starting with the full sofa in view, the robot moves closer to lift a floral cushion, then shifts along the sofa to handle another cushion.","duration":56.666666666666664,"video":"assets/showcase/mobile-rollouts/approach-sofa-rollout.mp4","poster":"assets/showcase/mobile-rollouts/approach-sofa.jpg","posterTime":17,"previewLabel":"Arrange the cushions","rolloutPrompt":"A light gray sofa with a wooden floor beneath it holds three pillows: two with a blue background and white daisies, and one white pillow with a cartoon cactus face and orange trim. In the background, a bed with white bedding and a person are visible, along with a curtain and a dark object on the floor to the right.","taskDescription":"Approach the sofa, move alongside it, and rearrange the cushions."},{"id":"long-2fc4e86c310d","group":"mobile","page":"long","title":"Move along the bed with a cleaning cloth","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The robot approaches the bed, picks up a cloth, shifts position while working along the floor, and lowers the cloth again.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/wipe-bedside-rollout.mp4","poster":"assets/showcase/mobile-rollouts/wipe-bedside.jpg","posterTime":37,"previewLabel":"Wipe beside the bed","taskDescription":"Pick up the cleaning cloth and wipe the floor while moving alongside the bed."},{"id":"long-e6edc18b1bd5","group":"mobile","page":"long","title":"Carry a bowl and return to the table","dataset":"Galaxea","model":"SGF+ EMA700 + Memory 2019","note":"The robot picks up a bowl, turns away from the round table, then returns to the sofa area.","duration":55.53333333333333,"video":"assets/showcase/mobile-rollouts/carry-bowl-rollout.mp4","poster":"assets/showcase/mobile-rollouts/carry-bowl.jpg","posterTime":34,"previewLabel":"Carry a bowl","taskDescription":"Pick up the bowl at the round table, turn away with it, and return to the seating area."},{"id":"doll-wide-f30-s101","group":"mobile","page":"long","title":"Put a toy away, then return","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot picks up a toy, moves around the bed to the basket, then returns to the bed.","duration":60.0,"video":"assets/showcase/mobile-rollouts/bedside-toys-rollout.mp4","poster":"assets/showcase/mobile-rollouts/bedside-toys.jpg","posterTime":11,"previewLabel":"Put away a toy","rolloutPrompt":"A large bed with a white sheet and pillows is positioned against a wooden headboard. On the bed, a yellow plush toy and a green plush toy are visible. A round, woven basket containing various colorful toys sits on the floor beside the bed. A shopping cart is located near the basket. A person is seated on a chair to the right of the bed. A lamp is mounted on the wall next to the bed. A blue bag rests on the bed near the headboard. A plastic bag is on the floor near the shopping cart. The room has blue curtains and a wooden floor.","taskDescription":"Pick up a toy, carry it to the basket, and return to the bed."},{"id":"long-a2b05075e306","group":"mobile","page":"long","title":"Open a washer and turn toward the basket","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot repositions between two washers, opens a drum door, and turns toward the laundry basket.","duration":44,"video":"assets/showcase/mobile-rollouts/washer-to-basket-rollout.mp4","poster":"assets/showcase/mobile-rollouts/washer-to-basket.jpg","posterTime":28,"previewLabel":"Open the washer","taskDescription":"Move between the two washing machines, open a drum door, and turn toward the laundry basket."},{"id":"mobile-1aa8f2df1802","group":"mobile","page":"short","title":"Carry a tray to a trolley","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"Both grippers carry a green tray and set it on the trolley before withdrawing.","duration":17.0,"video":"assets/showcase/mobile-rollouts/carry-tray-rollout.mp4","poster":"assets/showcase/mobile-rollouts/carry-tray.jpg","posterTime":5,"previewLabel":"Carry the tray","taskDescription":"Carry the green tray with both grippers and set it on the trolley."},{"id":"mobile-c95bd41c4685","group":"mobile","page":"short","title":"Set an orange cloth on the side table","dataset":"Galaxea","model":"SGF+ EMA700 + Memory 2019","note":"The robot approaches the round table, places the orange cloth, and backs away with the cloth still visible on the tabletop.","duration":23.8,"video":"assets/showcase/mobile-rollouts/place-orange-cloth-rollout.mp4","poster":"assets/showcase/mobile-rollouts/place-orange-cloth.jpg","posterTime":17,"previewLabel":"Set down the cloth","rolloutPrompt":"A light-colored sofa with multiple cushions is positioned against a wall, adjacent to a round wooden side table. A floor lamp with a black base and circular shades stands near the sofa. A glass door or window is visible, reflecting an interior space, and is framed by curtains. An orange cloth and a black device are placed on the side table, and the orange cloth is also seen on the sofa. A black cable extends from the device on the table.","taskDescription":"Approach the side table, set down the orange cloth, and back away."},{"id":"mobile-5d2560347ee9","group":"mobile","page":"short","title":"Reach for a bowl by the microwave","dataset":"Galaxea","model":"SGF EMA500 + Memory 2019","note":"The robot shifts along the counter toward the pink bowl beside the open microwave.","duration":17.0,"video":"assets/showcase/mobile-rollouts/reach-microwave-rollout.mp4","poster":"assets/showcase/mobile-rollouts/reach-microwave.jpg","posterTime":15,"previewLabel":"Reach for the bowl","taskDescription":"Move along the counter and reach for the pink bowl beside the open microwave."},{"id":"mobile-42861afcb295","group":"mobile","page":"short","title":"Open the drawer for a hair dryer","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The camera lowers from the counter as the gripper opens the drawer beside the hair dryer.","duration":17.0,"video":"assets/showcase/mobile-rollouts/store-hair-dryer-rollout.mp4","poster":"assets/showcase/mobile-rollouts/store-hair-dryer.jpg","posterTime":10,"previewLabel":"Open the drawer","taskDescription":"Reach down and open the drawer beside the hair dryer."},{"id":"mobile-8773eab7d6b7","group":"mobile","page":"short","title":"Drop a garment into a hamper","dataset":"ManipArena","model":"SGF EMA500 + Memory 2019","note":"The gripper brings a black garment over the hamper, releases it and moves away.","duration":16.15,"video":"assets/showcase/mobile-rollouts/load-hamper-rollout.mp4","poster":"assets/showcase/mobile-rollouts/load-hamper.jpg","posterTime":9,"previewLabel":"Load the hamper","rolloutPrompt":"Put the clothes in the laundry basket","taskDescription":"Carry the garment to the hamper, release it, and move away."},{"id":"mobile-cdfaab0e0320","group":"mobile","page":"short","title":"Set down a sign beside the steamers","dataset":"Galaxea","model":"SGF EMA700 + Memory 2019","note":"The right gripper carries a small sign along the counter and releases it beside the steamers.","duration":17.0,"video":"assets/showcase/mobile-rollouts/place-sign-rollout.mp4","poster":"assets/showcase/mobile-rollouts/place-sign.jpg","posterTime":9,"previewLabel":"Set down the sign","taskDescription":"Carry the sign along the counter with the right gripper and set it beside the steamers."},{"id":"sekai2-027-forward","group":"nav","title":"Perforated wall corner · forward","dataset":"Sekai2","model":"SGF+ EMA700","note":"The camera passes the perforated wall and moves toward the bright landing.","duration":12.466666666666667,"video":"assets/showcase/navigation/sekai2-027-forward-rollout.mp4","poster":"assets/showcase/navigation/sekai2-027-first-frame.jpg","posterTime":0},{"id":"sekai2-027-reverse","group":"nav","title":"Perforated wall corner · reverse","dataset":"Sekai2","model":"SGF+ EMA700 + Memory 2019","note":"The camera follows the railing back toward the stairs.","duration":12.466666666666667,"video":"assets/showcase/navigation/sekai2-027-reverse-rollout.mp4","poster":"assets/showcase/navigation/sekai2-027-first-frame.jpg","posterTime":0}],"replays":[{"category":"combined","name":"A robot in its room","short":"GALAXEA · 55.7 s","video":"assets/mobile/galaxea-room-gt.mp4","poster":"assets/mobile/galaxea-room.jpg","meta":"GT + RGB RECONSTRUCTION · 2× · 55.7 s","kicker":"01 / MOBILE + MANIPULATION","title":"A room to move in. A sofa to work on.","description":"Follow the recorded camera and hand motion through a reconstructed room, with the source view synchronized beside the robot.","watch":"The sofa, changing viewpoint and hand motion stay in one spatial overview. Geometry is estimated from RGB; the robot body and base are schematic."},{"category":"mobile","name":"A room, remembered in 3D","short":"MATTERPORT3D · 15 s","video":"assets/mobile/matterport-spatial-gt.mp4","poster":"assets/mobile/matterport-spatial.jpg","meta":"RGB-D SPATIAL REPLAY · 2× · 15 s","kicker":"02 / MOBILE · SPATIAL VIEW","title":"Turn away. See the room again.","description":"A colored RGB-D point cloud, current and historical view frusta, and a synchronized source window reveal the surrounding space.","watch":"This example rotates at a fixed camera center. The overhead orbit is for presentation; it does not represent robot translation."},{"category":"interaction","name":"Fridge to countertop","short":"AGIBOT · 16.1 s","video":"assets/mobile/agibot-fridge-gt.mp4","poster":"assets/mobile/agibot-fridge-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 4× · 16.1 s","kicker":"03 / INTERACTION","title":"Open. Retrieve. Close.","description":"Follow the gripper from the fridge handle to a boxed item, then to the countertop and back to the door.","watch":"A continuous action chain, with recorded wrist paths and gripper state beside the source video."},{"category":"interaction","name":"Pack the shopping bag","short":"AGIBOT · 15.6 s","video":"assets/mobile/agibot-packing-gt.mp4","poster":"assets/mobile/agibot-packing-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 3× · 15.6 s","kicker":"04 / INTERACTION","title":"Two hands, one shopping bag.","description":"One hand holds the red bag open while the other puts successive items inside.","watch":"Different roles for the two hands: holding the bag versus reaching, grasping and releasing."},{"category":"interaction","name":"Unlock and open","short":"AGIBOT · 15.1 s","video":"assets/mobile/agibot-key-gt.mp4","poster":"assets/mobile/agibot-key-gt.jpg","meta":"RECORDED GT + WRIST TRACKS · 4× · 15.1 s","kicker":"05 / INTERACTION","title":"A small key. A precise interaction.","description":"The robot brings a key to the lock, turns it and opens the door.","watch":"Contact-rich manipulation: key alignment, the turn, and the door opening in one continuous clip."}],"spatial":{"poses":"assets/motion/poses.json","landmarks":"assets/motion/landmarks.json","loops":{"mobile":"assets/motion/field-room-loop.mp4","nav":"assets/motion/field-scan-loop.mp4","manip":"assets/motion/field-wrists-loop.mp4"},"maps":{"multiple-sofa-cushions":["assets/motion/multiple-sofa-cushions-action.mp4","assets/motion/multiple-sofa-cushions-action.jpg"],"agi25_236970b9cbda":["assets/rollouts/agi25_236970b9cbda-action.mp4","assets/rollouts/agi25_236970b9cbda-action.jpg"],"2d287dfce7":["assets/rollouts/2d287dfce7-action.mp4","assets/rollouts/2d287dfce7-action.jpg"],"1ef2e6ba60":["assets/motion/1ef2e6ba60-action.mp4","assets/motion/1ef2e6ba60-action.jpg"],"93b0532b80":["assets/rollouts/93b0532b80-action.mp4","assets/rollouts/93b0532b80-action.jpg"],"22620a6cb0":["assets/rollouts/22620a6cb0-action.mp4","assets/rollouts/22620a6cb0-action.jpg"],"mobile-b870e2f1904c":["assets/movement/mobile-manipulation/curtain-action.mp4","assets/movement/mobile-manipulation/curtain-action.jpg"],"mobile-fe719b48fd27":["assets/movement/mobile-manipulation/push-chair-action.mp4","assets/movement/mobile-manipulation/push-chair-action.jpg"]}},"navigationRows":[{"title":"Metro concourse","anchor":"assets/showcase/navigation/sekai2-001-first-frame.jpg","ids":["sekai2-001"],"description":"Round the advertising pillar into a blue-lined passage."},{"title":"Museum gallery","anchor":"assets/showcase/navigation/sekai2-025-first-frame.jpg","ids":["sekai2-025"],"description":"Turn around a dark partition to reveal the lit display cases."},{"title":"Window corridor","anchor":"assets/showcase/navigation/sekai2-035-first-frame.jpg","ids":["sekai2-035-forward","sekai2-035-reverse"],"description":"Turn toward the windows or retrace the corridor along the white wall."},{"title":"Perforated wall corner","anchor":"assets/showcase/navigation/sekai2-027-first-frame.jpg","ids":["sekai2-027-forward","sekai2-027-reverse"],"description":"Round the partition toward the bright landing or head back along the stair rail."}]}</script>
   <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/rollouts/track-data.js"></script>
   <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/navigation/track-data.js?v=3"></script>
   <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/manipulation/track-data.js"></script>
   <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/mobile-rollouts/track-data.js?v=3"></script>
   <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/motion/motion-space.cpfs-20261125.js?v=route-wipe"></script>
-  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/mobile-rollouts/feature.js?v=12"></script>
-  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/motion/movement.cpfs-20261125.js?rev=nav-tagline"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/showcase/mobile-rollouts/feature.js?v=13"></script>
+  <script type="text/plain" data-mw-near="mobile-showcase" data-mw-src="assets/motion/movement.cpfs-20261125.js?rev=per-mode-layout"></script>
 </section>
 
 <!-- movement gallery ends -->
 </div>
 </section>
 
-<section id="stay" style="border-top: 1px solid #1F242B">
-<div style="max-width: 1120px; margin: 0 auto; padding: 120px 24px">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; letter-spacing: 0.1em; color: #A582FF">02</p>
-<h2 style="margin: 12px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: clamp(2.25rem, 4.5vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em">Stay in it</h2>
-<p style="margin: 16px 0 0; font-size: 22px; line-height: 1.5; color: #A3AAB5; max-width: 760px">Minutes in one take, with memory, in real time.</p>
+<section id="stay" class="mw-chapter" aria-labelledby="mw-stay-title">
+<div class="mw-chapter-content">
+<header class="mw-chapter-heading">
+  <p class="mw-chapter-label">Continuity</p>
+  <h2 id="mw-stay-title">Stay in it</h2>
+  <p class="mw-chapter-deck">Minutes in one take, with memory, in real time.</p>
+</header>
 
 <div id="memory-demo" class="mx stay-feature">
 <header class="stay-feature-heading stay-memory-heading">
@@ -1796,16 +1841,18 @@ warmMemory.observe(q('#memory-gallery'));
 <aside id="extended-rollouts" aria-labelledby="er-heading">
 <link rel="stylesheet" href="assets/showcase/long-horizon-lyx-20261125/extended.css">
 <div class="er-grid"><div class="er-media"><div class="er-stage"><video id="er-video" controls muted playsinline loop preload="none" poster="assets/showcase/long-horizon-lyx-20261125/posters/m3_4_14.webp" src="assets/showcase/long-horizon-lyx-20261125/videos/m3_4_14.mp4" aria-label="From sofa to clothes rack generated video"></video><span class="er-badge">8× playback</span><div class="er-meter"><i></i></div></div><div class="er-time"><span>Original video timeline</span><span class="er-elapsed">0:00 / 3:08</span></div></div>
-<div class="er-copy"><span class="er-label">Extended rollouts</span><h4 id="er-heading">Stay a little longer.</h4><p>Beyond live control, explore continuous offline rollouts from a single initial frame.</p><p class="er-case-title">From sofa to clothes rack</p><p class="er-task">Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.</p><p class="er-length">3:08 continuous video · AgiBot</p><div class="er-modes" role="group" aria-label="Playback mode"><button type="button" data-rate="8" aria-pressed="true">Quick look · 8×</button><button type="button" data-rate="1" aria-pressed="false">Full pace · 1×</button><button type="button" class="er-play">Play</button></div><p class="er-note">Playback is accelerated, not inference. These are offline generated videos, not live VR recordings. Full pace uses the original 24 fps playback.</p></div></div>
+<div class="er-copy"><span class="er-label">Long-horizon generation</span><h4 id="er-heading">Stay a little longer.</h4><p>Beyond live control, explore continuous offline rollouts from a single initial frame.</p><p class="er-case-title">From sofa to clothes rack</p><p class="er-task">Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.</p><p class="er-length">3:08 continuous video · AgiBot</p><div class="er-modes" role="group" aria-label="Playback mode"><button type="button" data-rate="8" aria-pressed="true">Quick look · 8×</button><button type="button" data-rate="1" aria-pressed="false">Full pace · 1×</button><button type="button" class="er-play">Play</button></div><p class="er-note">Playback is accelerated, not inference. These are offline generated videos, not live VR recordings. Full pace uses the original 24 fps playback.</p></div></div>
 <details><summary>Explore all 5 long rollouts</summary><div class="er-picker" role="group" aria-label="More rollout examples"></div></details><p class="er-error" hidden>Video could not be loaded. Please reload or choose another example.</p><script class="er-data" type="application/json">[{"id": "m3_4_14", "title": "From sofa to clothes rack", "shortTitle": "Sofa & clothes rack", "description": "Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.", "dataset": "AgiBot", "duration": 188.625, "frames": 4527, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m3_4_14.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m3_4_14.webp"}, {"id": "m2_3_11", "title": "Handling clothes by the sofa", "shortTitle": "Clothes by the sofa", "description": "Move between the sofa and the nearby rack while handling clothing and a cap, keeping the surrounding room in view.", "dataset": "AgiBot", "duration": 169.5, "frames": 4068, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m2_3_11.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m2_3_11.webp"}, {"id": "m2_3_01", "title": "Open and close the refrigerator", "shortTitle": "Refrigerator interaction", "description": "Approach the refrigerator, interact with its door, and move through the surrounding counter area.", "dataset": "Galaxea", "duration": 141.166667, "frames": 3388, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m2_3_01.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m2_3_01.webp"}, {"id": "m1_2_03", "title": "Pack items at the table", "shortTitle": "Packing at the table", "description": "Coordinate two grippers around a tablet and packaging on a patterned tabletop.", "dataset": "RoboChallenge", "duration": 99.375, "frames": 2385, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m1_2_03.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m1_2_03.webp"}, {"id": "m1_2_19", "title": "Move through a bathroom", "shortTitle": "Bathroom navigation", "description": "Follow the camera and gripper motion through a bathroom, from the toilet area toward the shower enclosure.", "dataset": "Galaxea", "duration": 90.166667, "frames": 2164, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m1_2_19.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m1_2_19.webp"}]</script><script src="assets/showcase/long-horizon-lyx-20261125/extended.js"></script></aside>
 </section>
 </div>
 </section>
 
-<section id="back" style="border-top: 1px solid #1F242B">
-<div style="max-width: 1120px; margin: 0 auto; padding: 120px 24px">
-<p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; letter-spacing: 0.1em; color: #A582FF">03</p>
-<h2 style="margin: 12px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: clamp(2.25rem, 4.5vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em">Take it back to the robot</h2>
+<section id="back" class="mw-chapter" aria-labelledby="mw-back-title">
+<div class="mw-chapter-content">
+<header class="mw-chapter-heading">
+  <p class="mw-chapter-label">Robots</p>
+  <h2 id="mw-back-title">Take it back to the robot</h2>
+</header>
 
 <style>
 #omp-introduction .omp-description{max-width:none;margin:14px 0 0;padding-bottom:3px;color:#A6ACB8;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(0.9rem,1.4vw,1rem);line-height:1.65;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#443a56 transparent}
@@ -1885,6 +1932,11 @@ warmMemory.observe(q('#memory-gallery'));
 #policy-real-sim .prs-tabs button[aria-selected=true]{background:#30273f;color:#d9c7ff}
 #policy-real-sim .prs-arrow{width:34px;height:34px;flex:none;border:1px solid #2a2e37;border-radius:8px;background:#111418;color:#eceef1;font:20px/1 Inter,sans-serif;cursor:pointer}
 #policy-real-sim .prs-arrow:hover{background:#23212b}
+@media (max-width:420px) {
+  #policy-real-sim .prs-navigation { gap:6px; }
+  #policy-real-sim .prs-tabs { min-width:0; }
+  #policy-real-sim .prs-tabs button { min-width:0; padding-inline:5px; }
+}
 #policy-real-sim .prs-navigation button:focus-visible{outline:2px solid #b497ff;outline-offset:3px}
 #policy-real-sim [role=tabpanel][hidden]{display:none}
 
@@ -1990,149 +2042,13 @@ warmMemory.observe(q('#memory-gallery'));
 </div>
 </section>
 
-<section id="data" style="border-top: 1px solid #1F242B">
-  <div class="mw-training">
-    <header class="mw-wrap mw-intro">
-      <p class="mw-eyebrow">DATA</p>
-      <h2>What it learned from</h2>
-      <p class="mw-lede">Thousands of hours of hands, robots and rooms. Every tile below is a different training clip, playing at once.</p>
-    </header>
-
-    <div class="mw-scale">
-      <div class="mw-wall-mask"><canvas class="mw-wall" tabindex="0" aria-label="183 training clips from five data sources, playing together. Hover a tile to highlight its source."></canvas></div>
-      <div class="mw-hero" aria-live="off">
-        <p class="mw-hero-figure"><strong data-count="5175">5,175</strong><span>hours</span></p>
-        <p class="mw-hero-caption">of human and robot manipulation in pretraining<br><span>8.1M training windows · 8 sources · real and simulated</span></p>
-      </div>
-      <button type="button" class="mw-play" aria-label="Pause all motion" title="Pause all motion"><i aria-hidden="true"></i></button>
-    </div>
-
-    <div class="mw-wrap">
-      <div class="mw-legend" role="group" aria-label="Highlight a data source">
-        <button type="button" data-kind="h" style="--c:#cfabff" aria-pressed="false">
-          <span class="mw-kind"><i></i>Human video</span>
-          <strong><span data-count="754.5" data-decimals="1">754.5</span><small>h</small></strong>
-          <span class="mw-bar" style="--v:0.1707" aria-hidden="true"><i></i></span>
-          <span class="mw-note">Egocentric · EgoDex, EgoVerse</span>
-        </button>
-        <button type="button" data-kind="r" style="--c:#96c8fb" aria-pressed="false">
-          <span class="mw-kind"><i></i>Robot trajectories</span>
-          <strong><span data-count="4420.4" data-decimals="1">4,420.4</span><small>h</small></strong>
-          <span class="mw-bar" style="--v:1.0000" aria-hidden="true"><i></i></span>
-          <span class="mw-note">Six robot datasets, real and simulated</span>
-        </button>
-        <button type="button" data-kind="c" style="--c:#e7d0a4" aria-pressed="false">
-          <span class="mw-kind"><i></i>White clay</span>
-          <strong><span data-count="210.4" data-decimals="1">210.4</span><small>h</small></strong>
-          <span class="mw-bar" style="--v:0.0476" aria-hidden="true"><i></i></span>
-          <span class="mw-note">17,541 episodes, rendered in layers</span>
-        </button>
-        <button type="button" data-kind="m" style="--c:#8bdbcd" aria-pressed="false">
-          <span class="mw-kind"><i></i>Memory revisits</span>
-          <strong><span data-count="583.8" data-decimals="1">583.8</span><small>h</small></strong>
-          <span class="mw-bar" style="--v:0.1321" aria-hidden="true"><i></i></span>
-          <span class="mw-note">Six revisit collections</span>
-        </button>
-        <button type="button" data-kind="f" style="--c:#f7a692" aria-pressed="false">
-          <span class="mw-kind"><i></i>Failures</span>
-          <strong><span data-count="7762" data-decimals="0">7,762</span><small>attempts</small></strong>
-          <span class="mw-bar" style="--v:0.0046" aria-hidden="true"><i></i></span>
-          <span class="mw-note">20.4 h of recorded task failures</span>
-        </button>
-      </div>
-      <p class="mw-footnote">Human and robot hours are distinct footage in the H3 pretraining folds 00–08. White clay, revisits and failures are counted separately and can reuse the same trajectories.</p>
-
-      <div class="mw-closeup-head"><h3>Up close</h3><p>One clip per kind of signal. Open a panel to look closer.</p></div>
-      <div class="mw-training-wall">
-        <figure class="mw-cell mw-open mw-clay" data-camera="head" style="--c:#e7d0a4">
-          <button type="button" class="mw-tab mw-tab-strip" aria-expanded="true"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/bowls-head.webp')" aria-hidden="true"></span><span class="mw-chip"><i></i>White clay</span><b>Stacking bowls</b></button>
-          <div class="mw-cell-body">
-          <div class="mw-cap"><span class="mw-chip"><i></i>White clay</span><span class="mw-title">Stacking bowls</span></div>
-          <div class="mw-pair">
-            <div class="mw-window mw-reference">
-              <video class="mw-clay-film" data-file="bowls-head.mp4" poster="assets-v22/training-data/bowls-head.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video>
-              <span class="mw-tag">RGB</span>
-            </div>
-            <div class="mw-window mw-proxy"><canvas width="288" height="216" aria-label="White-clay rendering synchronized with the adjacent recording"></canvas><span class="mw-tag">White clay</span></div>
-          </div>
-          <div class="mw-controls">
-            <div class="mw-segmented" role="group" aria-label="Camera">
-              <button type="button" data-camera="head" aria-pressed="true">Head</button>
-              <button type="button" data-camera="wrist" aria-pressed="false">Right wrist</button>
-            </div>
-            <div class="mw-slider" style="--position: 2; --stops: 3">
-              <span class="mw-thumb" aria-hidden="true"></span>
-              <div class="mw-stops" aria-hidden="true">
-                <span><svg viewBox="0 0 20 20"><path d="M3 17h9M5 16v-3l4-4-3-4m2-1 5 2 2-2m-1 3 3 1 1-2"/><circle cx="6" cy="4" r="2"/><circle cx="10" cy="8" r="1.7"/></svg>Robot</span>
-                <span><svg viewBox="0 0 20 20"><ellipse cx="10" cy="7" rx="7.2" ry="2.4"/><path d="M2.8 7c.4 4.3 3.2 7.1 7.2 7.1s6.8-2.8 7.2-7.1M7.4 15.5h5.2"/></svg>+ Bowls</span>
-                <span><svg viewBox="0 0 20 20"><path d="m2 7 5-3h8l3 3-4 3H6L2 7Zm1 1v5m4-3v6m7-6v6m3-8v5"/></svg>+ Table</span>
-              </div>
-              <input type="range" min="0" max="2" step="1" value="2" aria-label="White-clay detail" aria-valuetext="Robot, bowls and table">
-            </div>
-          </div>
-          <p class="mw-desc">The same recording, re-rendered as untextured geometry frame by frame.</p>
-          </div>
-        </figure>
-
-        <figure class="mw-cell mw-fail" style="--c:#f7a692">
-          <button type="button" class="mw-tab" aria-expanded="false"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/stapler-fail.webp')" aria-hidden="true"></span><span class="mw-chip"><i></i>Failure</span><b>The grasp that didn’t hold</b></button>
-          <div class="mw-cell-body">
-          <div class="mw-cap"><span class="mw-chip"><i></i>Failure</span><span class="mw-title">The grasp that didn't hold</span></div>
-          <div class="mw-fail-study">
-            <div class="mw-window mw-attempt"><video data-file="stapler-fail.mp4" class="mw-failure-film" poster="assets-v22/training-data/stapler-fail.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag mw-tag-low">Task · move the stapler onto the pad</span><span class="mw-speed">0.75×</span></div>
-            <ol class="mw-steps" aria-label="What happened, step by step">
-              <li><button type="button" data-t="2.9"><span class="mw-label"><b aria-hidden="true">✓</b>Grips it</span></button></li>
-              <li class="mw-step-miss"><button type="button" data-t="4.2"><span class="mw-label"><b aria-hidden="true">✕</b>Slips on lift</span></button></li>
-              <li class="mw-step-miss"><button type="button" data-t="6.6"><span class="mw-label"><b aria-hidden="true">✕</b>Arrives empty</span></button></li>
-            </ol>
-          </div>
-          <p class="mw-desc">In simulation, the stapler slips as the arm lifts, and the arm arrives empty. Inset: wrist camera.</p>
-          </div>
-        </figure>
-
-        <figure class="mw-cell mw-bodies" style="--c:#96c8fb">
-          <button type="button" class="mw-tab" aria-expanded="false"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/body-a2d.webp')" aria-hidden="true"></span><span class="mw-chip"><i></i>Human + robot</span><b>Eight bodies</b></button>
-          <div class="mw-cell-body">
-          <div class="mw-cap"><span class="mw-chip"><i style="background:#cfabff"></i>Human <i></i>Robot</span><span class="mw-title">Eight bodies, one training mix</span></div>
-          <div class="mw-body-grid" role="img" aria-label="Human hands and seven robot embodiments, each doing manipulation at the same time">
-            <div class="mw-body mw-body-human"><video data-file="body-human.mp4" poster="assets-v22/training-data/body-human.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Human hands</span></div>
-            <div class="mw-body"><video data-file="body-aloha.mp4" poster="assets-v22/training-data/body-aloha.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">ALOHA</span></div>
-            <div class="mw-body"><video data-file="body-a2d.mp4" poster="assets-v22/training-data/body-a2d.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">AgiBot A2D</span></div>
-            <div class="mw-body"><video data-file="body-r1lite.mp4" poster="assets-v22/training-data/body-r1lite.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Galaxea R1-Lite</span></div>
-            <div class="mw-body"><video data-file="body-dosw1.mp4" poster="assets-v22/training-data/body-dosw1.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">DOS-W1</span></div>
-            <div class="mw-body"><video data-file="body-genie.mp4" poster="assets-v22/training-data/body-genie.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Genie-1<b>Sim</b></span></div>
-            <div class="mw-body"><video data-file="body-r1pro.mp4" poster="assets-v22/training-data/body-r1pro.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Galaxea R1 Pro<b>Sim</b></span></div>
-            <div class="mw-body"><video data-file="body-g2.mp4" poster="assets-v22/training-data/body-g2.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">AgiBot G2<b>Sim</b></span></div>
-          </div>
-          <p class="mw-desc">Human hands and seven robots, four real and three simulated, in one mix.</p>
-          </div>
-        </figure>
-
-        <figure class="mw-cell mw-memory" style="--c:#8bdbcd">
-          <button type="button" class="mw-tab" aria-expanded="false"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/memory.jpg')" aria-hidden="true"></span><span class="mw-chip"><i></i>Memory</span><b>Look away, come back</b></button>
-          <div class="mw-cell-body">
-          <div class="mw-cap"><span class="mw-chip"><i></i>Memory</span><span class="mw-title">Look away, come back</span></div>
-          <div class="mw-window mw-memory-film"><video class="mw-revisit-film" data-file="memory.mp4" poster="assets-v22/training-data/memory.jpg" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag">Revisit</span><figure class="mw-revisit-inset mw-revisit-back"><img src="assets-v22/training-data/memory-first.webp" alt="The first view of the sofa, for comparison"><figcaption>First look</figcaption></figure></div>
-          <div class="mw-revisit">
-            <div class="mw-revisit-track" style="--p:0"><i></i>
-              <button type="button" data-t="0" style="--at:0">First look</button>
-              <button type="button" data-t="2.5" style="--at:.455">Turn away</button>
-              <button type="button" data-t="5" style="--at:.91">Back</button>
-            </div>
-          </div>
-          <p class="mw-desc">The camera leaves the sofa and comes back. The room has to match.</p>
-          </div>
-        </figure>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="how" class="h3-method" aria-labelledby="h3-method-title">
+<section id="how" class="h3-method mw-chapter" aria-labelledby="h3-method-title">
   <div class="h3-wrap">
-    <header class="h3-heading"><h2 id="h3-method-title">How it works</h2></header>
+    <header class="h3-heading mw-chapter-heading">
+      <p class="mw-chapter-label">Architecture</p>
+      <h2 id="h3-method-title">How it works</h2>
+    </header>
     <figure class="h3-figure" data-h3-method data-level="1">
-      <header class="mw-head"><h3>Turn toward the cart with a toy basket</h3></header>
       <div class="h3-main">
         <div class="h3-input">
           <div class="mw-title"><h3>Robot motion reference</h3><span class="mw-view-mode" data-ref-views>Head + both wrists</span><button data-auto type="button" aria-pressed="true" title="Cycle reference levels automatically">Auto</button></div>
@@ -2229,5 +2145,44 @@ warmMemory.observe(q('#memory-gallery'));
 </section>
 </div>
 
+<script>
+(() => {
+  const nav = document.querySelector('.mw-cover__nav');
+  const article = document.getElementById('moraworld-article');
+  const menu = nav.querySelector('.mw-sections-menu');
+  menu.querySelector('nav').addEventListener('click', event => {
+    if (event.target.closest('a')) menu.open = false;
+  });
+
+  const linksById = new Map();
+  for (const link of nav.querySelectorAll('nav a[href^="#"]')) {
+    const id = link.hash.slice(1);
+    if (!linksById.has(id)) linksById.set(id, []);
+    linksById.get(id).push(link);
+  }
+  const chapters = [...article.querySelectorAll(':scope > section')].filter(section => linksById.has(section.id));
+  let current;
+  let frame;
+
+  function update() {
+    frame = 0;
+    const readingLine = nav.getBoundingClientRect().bottom + 24;
+    const next = chapters.findLast(section => section.getBoundingClientRect().top <= readingLine);
+    if (next === current) return;
+    if (current) linksById.get(current.id).forEach(link => link.removeAttribute('aria-current'));
+    if (next) linksById.get(next.id).forEach(link => link.setAttribute('aria-current', 'location'));
+    current = next;
+  }
+
+  function scheduleUpdate() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  if ('ResizeObserver' in window) new ResizeObserver(scheduleUpdate).observe(article);
+  scheduleUpdate();
+})();
+</script>
 </body>
 </html>

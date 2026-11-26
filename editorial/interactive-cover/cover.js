@@ -302,13 +302,9 @@
   };
   window.MWCover = api;
 
-  function boot() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-        (location.hash && location.hash !== '#cover')) return;
-    var els = document.querySelectorAll('[data-mw-cover]');
-    for (var i = 0; i < els.length; i++) if (!els[i].__mwCover) els[i].__mwCover = api.init(els[i]);
-  }
-  boot();
-  window.addEventListener('hashchange', boot);
-  window.addEventListener('popstate', boot);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // The script can finish loading after leaving the cover. The renderer's
+  // visibility and resize observers will resume it if the cover returns.
+  var els = document.querySelectorAll('[data-mw-cover]');
+  for (var i = 0; i < els.length; i++) if (!els[i].__mwCover) els[i].__mwCover = api.init(els[i]);
 })();

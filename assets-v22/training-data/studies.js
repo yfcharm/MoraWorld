@@ -164,28 +164,3 @@ export function initializeFilms(wall, sync) {
     if (attempt.readyState >= 1) attempt.currentTime = Number(step.querySelector('button').dataset.t);
   }));
 }
-
-// Up close folds like an accordion: one panel open, the others collapse to labelled strips.
-{
-  const fold = document.querySelector('.mw-training-wall');
-  const panels = [...fold.querySelectorAll(':scope > .mw-cell')];
-  const OPEN = 7.8;
-  function measure() {
-    const gaps = parseFloat(getComputedStyle(fold).columnGap) || 0;
-    const free = fold.clientWidth - gaps * (panels.length - 1);
-    fold.style.setProperty('--open-w', Math.round(free * OPEN / (OPEN + panels.length - 1)) + 'px');
-  }
-  function open(panel) {
-    panels.forEach(p => {
-      const isOpen = p === panel;
-      p.classList.toggle('mw-open', isOpen);
-      p.querySelector('.mw-tab').setAttribute('aria-expanded', String(isOpen));
-      p.querySelector('.mw-cell-body').inert = !isOpen;
-    });
-    fold.dispatchEvent(new Event('mw-fold'));
-  }
-  panels.forEach(p => p.querySelector('.mw-tab').addEventListener('click', () => open(p)));
-  new ResizeObserver(measure).observe(fold);
-  measure();
-  open(panels.find(p => p.classList.contains('mw-open')) || panels[0]);
-}

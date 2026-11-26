@@ -1,0 +1,118 @@
+/* Chapter palettes put the strongest color at each opening and settle into a reading surface. */
+#bring {
+  --chapter-light: 155 126 232;
+  --chapter-label: #cdb8fb;
+  --chapter-top: #171421;
+  --chapter-base: #101018;
+}
+
+#stay {
+  --chapter-light: 105 182 190;
+  --chapter-label: #a0d8d9;
+  --chapter-top: #111d23;
+  --chapter-base: #0d1418;
+}
+
+#back {
+  --chapter-light: 198 139 156;
+  --chapter-label: #e2b9c8;
+  --chapter-top: #1d151e;
+  --chapter-base: #141116;
+}
+
+#how {
+  --chapter-light: 128 158 232;
+  --chapter-label: #b3c7f1;
+  --chapter-top: #141c2a;
+  --chapter-base: #10131c;
+}
+
+#moraworld-article > .mw-chapter {
+  position: relative;
+  --chapter-depth: clamp(310px, 31vw, 510px);
+  --chapter-inset: clamp(58px, 7vw, 108px);
+  border-top: 1px solid rgb(var(--chapter-light) / 14%);
+  background:
+    linear-gradient(90deg, transparent 10%, rgb(var(--chapter-light) / 26%) 75%, transparent) top / 100% 1px no-repeat,
+    radial-gradient(ellipse 48% 75% at 82% 4%, rgb(var(--chapter-light) / 24%), transparent 100%) top / 100% var(--chapter-depth) no-repeat,
+    linear-gradient(180deg, var(--chapter-top), var(--chapter-base) var(--chapter-depth));
+}
+
+.mw-chapter::before {
+  position: absolute;
+  inset: 0 0 auto auto;
+  width: min(62%, 1000px);
+  height: var(--chapter-depth);
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(var(--chapter-light) / 15%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--chapter-light) / 15%) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse 75% 85% at 70% 0, #000 10%, transparent 91%);
+  content: '';
+}
+
+.mw-chapter-content {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--chapter-inset) 24px clamp(70px, 8vw, 120px);
+}
+
+.mw-chapter-heading { position: relative; }
+
+.mw-chapter-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  color: var(--chapter-label);
+  font: 500 12px/1.25 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.mw-chapter-label::before {
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+  opacity: .62;
+  content: '';
+}
+
+#moraworld-article .mw-chapter-heading h2 {
+  margin: 0;
+  color: #eceef1;
+  font: 600 clamp(2.25rem, 4.5vw, 3.75rem)/1.05 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.mw-chapter-deck {
+  max-width: 64ch;
+  margin: 17px 0 0;
+  color: #b3b8c5;
+  font-size: clamp(1.03rem, 1.55vw, 1.28rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.mw-chapter-deck strong { color: #ece9f3; font-weight: 600; }
+
+#how .h3-wrap { padding-top: var(--chapter-inset); }
+#how .h3-heading { display: block; margin-bottom: 26px; }
+
+#data .mw-training { background: #0e1218; }
+#data .mw-scale { --mw-bg: #0e1218; }
+#data .mw-scale::after {
+  background:
+    linear-gradient(90deg, rgb(14 18 24 / 92%), rgb(14 18 24 / 60%) 34%, transparent 77%),
+    linear-gradient(0deg, #0e1218, rgb(14 18 24 / 8%) 40%, transparent 70%);
+}
+
+@media (max-width: 720px) {
+  .mw-chapter::before { width: 78%; background-size: 34px 34px; opacity: .6; }
+
+  #data .mw-scale::after {
+    background: linear-gradient(0deg, #0e1218, rgb(14 18 24 / 83%) 28%, rgb(14 18 24 / 37%) 59%, transparent 88%);
+  }
+}
