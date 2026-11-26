@@ -14,17 +14,17 @@
 }
 
 #back {
-  --chapter-light: 198 139 156;
+  --chapter-light: 128 158 232;
   --chapter-label: #e2b9c8;
-  --chapter-top: #1d151e;
-  --chapter-base: #141116;
+  --chapter-top: #141c2a;
+  --chapter-base: #10131c;
 }
 
 #how {
-  --chapter-light: 128 158 232;
+  --chapter-light: 198 139 156;
   --chapter-label: #b3c7f1;
-  --chapter-top: #141c2a;
-  --chapter-base: #10131c;
+  --chapter-top: #1d151e;
+  --chapter-base: #141116;
 }
 
 #moraworld-article > .mw-chapter {
