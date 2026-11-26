@@ -435,6 +435,24 @@
     label(ctx, 'Rendered camera view', 268, 163, { align: 'center', size: 11, color: '#edd4bd' });
   }
 
+  function applicationSignal(ctx, destination, accent, travel) {
+    const branchLength = Math.abs(destination - 180);
+    const direction = Math.sign(destination - 180);
+
+    ctx.save();
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = 8;
+    for (let trail = 4; trail >= 0; trail--) {
+      const distance = (travel - trail * .025) * (19 + branchLength);
+      if (distance < 0) continue;
+      const x = 180 + direction * Math.min(branchLength, Math.max(0, distance - 10));
+      const y = 109 + Math.min(distance, 10) + Math.max(0, distance - 10 - branchLength);
+      ctx.globalAlpha = (1 - trail * .19) * Math.min(1, travel * 12, (1 - travel) * 20);
+      dot(ctx, x, y, 2.1 - trail * .28, accent);
+    }
+    ctx.restore();
+  }
+
   function policyLoop(ctx, progress) {
     const applications = [
       ['Data synthesis', '#bd9df1'],
@@ -471,11 +489,21 @@
 
     for (const [index, [title, accent]] of applications.entries()) {
       const x = 15 + 112 * index;
-      ctx.save();
-      ctx.globalAlpha = .56 + .44 * ease(progress * 2 - index * .28);
+      const phase = progress - index * .28;
+      const travel = phase / .20;
+      const pulse = Math.sin(Math.PI * clamp((phase - .17) / .25));
+      if (travel > 0 && travel < 1) applicationSignal(ctx, x + 53, accent, travel);
+
       panel(ctx, x, 128, 106, 25, 8, '#252237', accent);
+      if (pulse > .001) {
+        ctx.save();
+        ctx.globalAlpha = pulse * .65;
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 12;
+        panel(ctx, x, 128, 106, 25, 8, accent + '55', '#f5edff');
+        ctx.restore();
+      }
       label(ctx, title, x + 53, 140.5, { align: 'center', color: ink, size: 10.5, weight: 650 });
-      ctx.restore();
     }
   }
 
@@ -509,15 +537,15 @@
       },
     },
     robots: {
-      times: [2250, 1450, 1550, 1900],
+      times: [2250, 1450, 1550, 2200],
+      finalStageHold: 0,
+      playFromFinalSelection: true,
       draw: drawRobots,
     },
   };
 
-  const finalStageHold = 1000;
-
   document.querySelectorAll('[data-overview-diagram]').forEach((root) => {
-    const { times, draw } = diagrams[root.dataset.overviewDiagram];
+    const { times, draw, finalStageHold = 1000, playFromFinalSelection } = diagrams[root.dataset.overviewDiagram];
     const canvas = root.querySelector('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -614,10 +642,12 @@
 
     for (const [index, button] of actions.entries()) {
       button.addEventListener('click', () => {
-        play = false;
         cancel();
+        elapsed = 0;
+        play = playFromFinalSelection && index === lastStage && !reducedMotion.matches;
         select(index);
-        paint();
+        paint(play ? 0 : 1, !play);
+        start();
       });
     }
     replay.addEventListener('click', reset);

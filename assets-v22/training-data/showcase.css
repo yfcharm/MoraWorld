@@ -82,7 +82,6 @@
 }
 .mw-hero-figure span { font-size: .25em; letter-spacing: -.02em; color: var(--mw-accent); }
 .mw-hero-caption {
-  max-width: 42ch;
   margin: 16px 0 0;
   font: 500 clamp(15px, 1.5vw, 20px)/1.45 'Space Grotesk', sans-serif;
   letter-spacing: -.01em;
