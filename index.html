@@ -537,7 +537,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 </style>
 <link rel="stylesheet" href="editorial/overview-cards.css?v=10">
 <link rel="stylesheet" href="editorial/chapter-backgrounds.css?v=3">
-<script defer src="editorial/overview-cards.js?v=10"></script>
+<script defer src="editorial/overview-cards.js?v=loop-preview"></script>
 </head>
 <body>
   <div class="mw-cover__nav">
@@ -641,14 +641,14 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
     <article class="mw-overview-card">
       <div class="mw-overview-visual">
         <div class="mw-overview-card-media" data-overview-diagram="robots">
-          <canvas width="360" height="202" role="img" aria-label="An illustrative coding agent builds a grey-box scene, MoraWorld renders the robot camera, and the result supports data generation, policy evaluation in simulation and real-robot trials."></canvas>
+          <canvas width="360" height="202" role="img" aria-label="A coding agent builds a grey-box scene. MoraWorld renders visual rollouts from scene and action inputs. Robot policy actions feed back into the next rollout. Applications include data synthesis, policy evaluation, and real-robot trials."></canvas>
         </div>
         <div class="mw-overview-story-tools" hidden>
           <div class="mw-overview-story-stages" role="group" aria-label="Code to robot workflow">
             <button type="button" data-story-stage aria-label="Coding agent" aria-pressed="false">Code</button>
             <button type="button" data-story-stage aria-label="Grey-box scene" aria-pressed="false">Scene</button>
             <button type="button" data-story-stage aria-label="First-person render" aria-pressed="false">Render</button>
-            <button type="button" data-story-stage aria-label="Applications" aria-pressed="true">Uses</button>
+            <button type="button" data-story-stage aria-label="World model loop" aria-pressed="true">Loop</button>
           </div>
           <button type="button" data-story-replay aria-label="Replay code-to-robot animation" title="Replay code-to-robot animation">↻</button>
         </div>

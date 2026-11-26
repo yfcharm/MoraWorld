@@ -357,7 +357,7 @@
       { align: 'center', color: '#a8e0d8', weight: 600 });
   }
 
-  const storyboardTitles = ['Coding agent', 'Grey-box scene', 'First-person render', 'Applications'];
+  const storyboardTitles = ['Coding agent', 'Grey-box scene', 'First-person render', 'World model loop'];
 
   function codePreview(ctx, progress) {
     panel(ctx, 16, 40, 159, 123, 8, '#1b1b2a', '#6b577a');
@@ -435,34 +435,46 @@
     label(ctx, 'Rendered camera view', 268, 163, { align: 'center', size: 11, color: '#edd4bd' });
   }
 
-  function useCases(ctx, progress) {
-    const columnLabels = ['Data synthesis', 'Policy evaluation', 'Real-robot trials'];
-    const accents = ['#bd9df1', '#9ad5cf', '#edbea2'];
-    firstPerson(ctx, 145, 34, .45);
-    line(ctx, [[180, 78], [180, 93], [70, 93], [70, 112]], '#8b729e', 1.4);
-    line(ctx, [[180, 93], [290, 93], [290, 112]], '#8b729e', 1.4);
-    line(ctx, [[180, 93], [180, 112]], '#8b729e', 1.4);
-    for (const [index, title] of columnLabels.entries()) {
-      const x = 19 + 110 * index;
-      const center = x + 51;
-      const accent = accents[index];
-      const revealed = clamp(progress * 2 - index * .33);
+  function policyLoop(ctx, progress) {
+    const applications = [
+      ['Data synthesis', '#bd9df1'],
+      ['Policy evaluation', '#9ad5cf'],
+      ['Real-robot trials', '#edbea2'],
+    ];
+
+    ctx.save();
+    ctx.globalAlpha = .48 + .52 * ease((progress - .3) / .7);
+    ctx.setLineDash([3, 4]);
+    line(ctx, [[344, 77], [351, 77], [351, 183], [9, 183], [9, 77], [16, 77]], '#a294bd', 1.2);
+    ctx.setLineDash([]);
+    line(ctx, [[12, 74], [16, 77], [12, 80]], '#a294bd', 1.2);
+    label(ctx, 'Policy actions', 180, 173, { align: 'center', color: '#c7bbda', size: 10 });
+    ctx.restore();
+
+    line(ctx, [[96, 77], [116, 77]], '#bb9de9', 1.4);
+    line(ctx, [[111, 73], [116, 77], [111, 81]], '#bb9de9', 1.4);
+    line(ctx, [[244, 77], [264, 77]], '#bb9de9', 1.4);
+    line(ctx, [[259, 73], [264, 77], [259, 81]], '#bb9de9', 1.4);
+    line(ctx, [[180, 109], [180, 119], [68, 119], [68, 128]], '#78638e', 1.2);
+    line(ctx, [[180, 119], [292, 119], [292, 128]], '#78638e', 1.2);
+    line(ctx, [[180, 119], [180, 128]], '#78638e', 1.2);
+
+    panel(ctx, 16, 53, 80, 48, 8, '#202132', '#625879');
+    label(ctx, 'Grey box', 56, 70, { align: 'center', color: ink, size: 10.5, weight: 650 });
+    label(ctx, '+ actions', 56, 85, { align: 'center', size: 9 });
+    panel(ctx, 116, 45, 128, 64, 10, gradient(ctx, 45, 109, '#3b2c55', '#292238'), '#bca1ee');
+    label(ctx, 'MoraWorld', 180, 69, { align: 'center', color: '#f2e8ff', size: 17, weight: 700 });
+    label(ctx, 'Photorealistic rollouts', 180, 89, { align: 'center', color: '#dbc8f3', size: 9.5 });
+    panel(ctx, 264, 53, 80, 48, 8, '#202132', '#625879');
+    label(ctx, 'Robot policy', 304, 70, { align: 'center', color: ink, size: 10.5, weight: 650 });
+    label(ctx, 'Next action', 304, 85, { align: 'center', size: 9 });
+
+    for (const [index, [title, accent]] of applications.entries()) {
+      const x = 15 + 112 * index;
       ctx.save();
-      ctx.globalAlpha = .44 + .56 * revealed;
-      panel(ctx, x, 110, 102, 62, 9, gradient(ctx, 110, 172, '#2d273a', '#1d1c29'), accent);
-      if (index === 0) {
-        for (const [dx, dy] of [[-10, -7], [2, -7], [-10, 3], [2, 3]]) {
-          panel(ctx, center + dx, 130 + dy, 8, 7, 2, '#4a3a61', accent);
-        }
-      } else if (index === 1) {
-        for (const y of [124, 131, 138]) line(ctx, [[center - 11, y], [center - 2, y]], accent);
-        line(ctx, [[center + 1, 131], [center + 5, 135], [center + 12, 125]], accent, 1.6);
-      } else {
-        panel(ctx, center - 10, 122, 20, 13, 4, '#574537', accent);
-        dot(ctx, center + 3, 128, 2, accent);
-        line(ctx, [[center, 135], [center, 141], [center - 9, 141], [center + 9, 141]], accent, 1.4);
-      }
-      label(ctx, title, center, 157, { align: 'center', color: ink, size: 10.5, weight: 650 });
+      ctx.globalAlpha = .56 + .44 * ease(progress * 2 - index * .28);
+      panel(ctx, x, 128, 106, 25, 8, '#252237', accent);
+      label(ctx, title, x + 53, 140.5, { align: 'center', color: ink, size: 10.5, weight: 650 });
       ctx.restore();
     }
   }
@@ -481,7 +493,7 @@
       label(ctx, 'Robot + geometry + camera', 161, 193, { align: 'center', size: 11, color: lavender });
     }
     if (stage === 2) renderPreview(ctx, progress);
-    if (stage === 3) useCases(ctx, progress);
+    if (stage === 3) policyLoop(ctx, progress);
   }
 
   const diagrams = {
