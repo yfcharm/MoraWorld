@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preload" as="image" href="editorial/interactive-cover/poster.jpg" fetchpriority="high">
-<link rel="stylesheet" href="assets-v22/training-data/showcase.css" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="assets-v22/training-data/showcase.css"></noscript>
-<script type="module" src="assets-v22/training-data/showcase.js"></script>
+<link rel="stylesheet" href="assets-v22/training-data/showcase.css?v=1126a" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="assets-v22/training-data/showcase.css?v=1126a"></noscript>
+<script type="module" src="assets-v22/training-data/showcase.js?v=1126a"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MoraWorld · A world robots can practice in</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" media="print" onload="this.onload=null;this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap"></noscript>
@@ -62,8 +62,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   line-height: 1.65;
 }
 #stay .stay-feature-heading {margin-bottom: 20px}
-#stay #long-horizon {margin-top: 32px; padding-top: 20px}
-#stay #long-horizon + .stay-feature {margin-top: 32px}
+#stay #memory-demo {margin-top: 32px}
 .stay-memory-heading {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1318,30 +1317,10 @@ html.mw-cover-handoff {
 <h2 style="margin: 12px 0 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 600; font-size: clamp(2.25rem, 4.5vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em">Stay in it</h2>
 <p style="margin: 16px 0 0; font-size: 22px; line-height: 1.5; color: #A3AAB5; max-width: 760px">Minutes in one take, with memory, in real time.</p>
 
-<div id="long-horizon" class="stay-feature" aria-labelledby="lh-heading">
-  <link rel="stylesheet" href="assets/showcase/long-horizon-lyx-20261125/gallery.css?v=1">
-  <div class="mw-feature-heading">
-    <p class="mw-feature-count">1 / 3</p>
-    <h3 id="lh-heading"><span>Minutes</span>, not seconds</h3>
-    <p class="lh-deck">MoraWorld rolls the scene forward one video chunk at a time. Starting from a single frame, these continuous, action-conditioned videos span everyday interactions across more than three minutes.</p>
-  </div>
-  <div class="lh-bar"><span class="lh-kicker">Long-horizon generated rollouts</span><label class="lh-speed">Playback <select aria-label="Long-horizon playback speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label></div>
-  <article class="lh-feature">
-    <div class="lh-stage"><video id="lh-video" controls playsinline muted loop preload="none" poster="assets/showcase/long-horizon-lyx-20261125/posters/m3_4_14.webp" src="assets/showcase/long-horizon-lyx-20261125/videos/m3_4_14.mp4" aria-label="From sofa to clothes rack — generated rollout"></video><span class="lh-duration">3:08 · full rollout</span></div>
-    <div class="lh-copy"><div><h4 class="lh-title">From sofa to clothes rack</h4><p class="lh-meta">AgiBot · 4,527 frames</p></div><div class="lh-task"><span>Task description</span><p class="lh-description">Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.</p></div></div>
-  </article>
-  <div class="lh-picker" role="group" aria-label="Choose a long-horizon rollout"></div>
-  <p class="lh-footnote">Five full-length generated videos · 24 fps playback. Select a scene to explore its complete rollout.</p>
-  <p class="lh-error" role="status" hidden></p>
-  <noscript><p>Enable JavaScript to switch between the five videos. The first video can still be played above.</p></noscript>
-  <script type="application/json" class="lh-data">[{"id": "m3_4_14", "title": "From sofa to clothes rack", "shortTitle": "Sofa & clothes rack", "description": "Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.", "dataset": "AgiBot", "duration": 188.625, "frames": 4527, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m3_4_14.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m3_4_14.webp"}, {"id": "m2_3_11", "title": "Handling clothes by the sofa", "shortTitle": "Clothes by the sofa", "description": "Move between the sofa and the nearby rack while handling clothing and a cap, keeping the surrounding room in view.", "dataset": "AgiBot", "duration": 169.5, "frames": 4068, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m2_3_11.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m2_3_11.webp"}, {"id": "m2_3_01", "title": "Open and close the refrigerator", "shortTitle": "Refrigerator interaction", "description": "Approach the refrigerator, interact with its door, and move through the surrounding counter area.", "dataset": "Galaxea", "duration": 141.166667, "frames": 3388, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m2_3_01.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m2_3_01.webp"}, {"id": "m1_2_03", "title": "Pack items at the table", "shortTitle": "Packing at the table", "description": "Coordinate two grippers around a tablet and packaging on a patterned tabletop.", "dataset": "RoboChallenge", "duration": 99.375, "frames": 2385, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m1_2_03.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m1_2_03.webp"}, {"id": "m1_2_19", "title": "Move through a bathroom", "shortTitle": "Bathroom navigation", "description": "Follow the camera and gripper motion through a bathroom, from the toilet area toward the shower enclosure.", "dataset": "Galaxea", "duration": 90.166667, "frames": 2164, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m1_2_19.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m1_2_19.webp"}]</script>
-  <script src="assets/showcase/long-horizon-lyx-20261125/gallery.js?v=1"></script>
-</div>
-
 <div id="memory-demo" class="mx stay-feature">
 <header class="stay-feature-heading stay-memory-heading">
   <div class="mw-feature-heading">
-    <p class="mw-feature-count">2 / 3</p>
+    <p class="mw-feature-count">1 / 2</p>
     <h3 id="mem-title"><span>Look away</span> and come back</h3>
     <p class="stay-feature-copy">Watch the shoe cabinet leave the camera’s view and come back. Compare the same trajectory with memory on and off to see which details carry over.</p>
   </div>
@@ -1785,27 +1764,15 @@ warmMemory.observe(q('#memory-gallery'));
 
 <section id="real-time" class="stay-feature" aria-labelledby="realtime-title">
   <header class="mw-feature-heading stay-feature-heading">
-    <p class="mw-feature-count">3 / 3</p>
+    <p class="mw-feature-count">2 / 2</p>
     <h3 id="realtime-title"><span>Real-time</span>: fast enough to drive</h3>
     <p class="stay-feature-copy">MoraWorld turns controller input into visible motion in <strong>about two-thirds of a second even at P95</strong> (669 ms, software estimate), while processing 17-frame chunks in a median of <strong>262 ms</strong>.</p>
   </header>
-<div class="tele-sections" role="group" aria-label="Teleoperation collections"><button type="button" data-collection="long" aria-pressed="true">Long rollouts</button><button type="button" data-collection="roaming" aria-pressed="false">Roaming</button><button type="button" data-collection="robot" aria-pressed="false">Robot manipulation</button><button type="button" data-collection="novel" aria-pressed="false">New scenes</button></div>
-  <iframe id="showcase-teleop" src="assets/showcase/colleague-demos/teleop/long.html?player=2" loading="lazy" title="Synchronized VR teleoperation recordings" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="showcase-teleop" src="assets/showcase/colleague-demos/teleop/long.html?player=5" loading="lazy" title="Synchronized VR teleoperation recordings" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <script>
   (() => {
     const frame = document.getElementById('showcase-teleop');
-    const collections = document.querySelector('.tele-sections');
-    const playerURL = frame.getAttribute('src');
     let sizeObserver;
-    collections.addEventListener('click', event => {
-      const button = event.target.closest('button[data-collection]');
-      if (!button || button.getAttribute('aria-pressed') === 'true') return;
-      collections.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed',String(b === button)));
-      sizeObserver?.disconnect();
-      const url = new URL(playerURL, document.baseURI);
-      url.searchParams.set('section', button.dataset.collection);
-      frame.src = url.href;
-    });
     let visible = false;
     function sendVisibility() {
       frame.contentWindow?.postMessage({type:'teleop-visible', visible}, location.origin);
@@ -1825,6 +1792,12 @@ warmMemory.observe(q('#memory-gallery'));
     });
   })();
   </script>
+<div id="long-horizon" aria-hidden="true"></div>
+<aside id="extended-rollouts" aria-labelledby="er-heading">
+<link rel="stylesheet" href="assets/showcase/long-horizon-lyx-20261125/extended.css">
+<div class="er-grid"><div class="er-media"><div class="er-stage"><video id="er-video" controls muted playsinline loop preload="none" poster="assets/showcase/long-horizon-lyx-20261125/posters/m3_4_14.webp" src="assets/showcase/long-horizon-lyx-20261125/videos/m3_4_14.mp4" aria-label="From sofa to clothes rack generated video"></video><span class="er-badge">8× playback</span><div class="er-meter"><i></i></div></div><div class="er-time"><span>Original video timeline</span><span class="er-elapsed">0:00 / 3:08</span></div></div>
+<div class="er-copy"><span class="er-label">Extended rollouts</span><h4 id="er-heading">Stay a little longer.</h4><p>Beyond live control, explore continuous offline rollouts from a single initial frame.</p><p class="er-case-title">From sofa to clothes rack</p><p class="er-task">Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.</p><p class="er-length">3:08 continuous video · AgiBot</p><div class="er-modes" role="group" aria-label="Playback mode"><button type="button" data-rate="8" aria-pressed="true">Quick look · 8×</button><button type="button" data-rate="1" aria-pressed="false">Full pace · 1×</button><button type="button" class="er-play">Play</button></div><p class="er-note">Playback is accelerated, not inference. These are offline generated videos, not live VR recordings. Full pace uses the original 24 fps playback.</p></div></div>
+<details><summary>Explore all 5 long rollouts</summary><div class="er-picker" role="group" aria-label="More rollout examples"></div></details><p class="er-error" hidden>Video could not be loaded. Please reload or choose another example.</p><script class="er-data" type="application/json">[{"id": "m3_4_14", "title": "From sofa to clothes rack", "shortTitle": "Sofa & clothes rack", "description": "Follow the grippers between a sofa and a clothes rack as they handle a cap and clothing across a continuous rollout.", "dataset": "AgiBot", "duration": 188.625, "frames": 4527, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m3_4_14.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m3_4_14.webp"}, {"id": "m2_3_11", "title": "Handling clothes by the sofa", "shortTitle": "Clothes by the sofa", "description": "Move between the sofa and the nearby rack while handling clothing and a cap, keeping the surrounding room in view.", "dataset": "AgiBot", "duration": 169.5, "frames": 4068, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m2_3_11.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m2_3_11.webp"}, {"id": "m2_3_01", "title": "Open and close the refrigerator", "shortTitle": "Refrigerator interaction", "description": "Approach the refrigerator, interact with its door, and move through the surrounding counter area.", "dataset": "Galaxea", "duration": 141.166667, "frames": 3388, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m2_3_01.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m2_3_01.webp"}, {"id": "m1_2_03", "title": "Pack items at the table", "shortTitle": "Packing at the table", "description": "Coordinate two grippers around a tablet and packaging on a patterned tabletop.", "dataset": "RoboChallenge", "duration": 99.375, "frames": 2385, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m1_2_03.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m1_2_03.webp"}, {"id": "m1_2_19", "title": "Move through a bathroom", "shortTitle": "Bathroom navigation", "description": "Follow the camera and gripper motion through a bathroom, from the toilet area toward the shower enclosure.", "dataset": "Galaxea", "duration": 90.166667, "frames": 2164, "video": "assets/showcase/long-horizon-lyx-20261125/videos/m1_2_19.mp4", "poster": "assets/showcase/long-horizon-lyx-20261125/posters/m1_2_19.webp"}]</script><script src="assets/showcase/long-horizon-lyx-20261125/extended.js"></script></aside>
 </section>
 </div>
 </section>
@@ -2038,36 +2011,43 @@ warmMemory.observe(q('#memory-gallery'));
       <div class="mw-legend" role="group" aria-label="Highlight a data source">
         <button type="button" data-kind="h" style="--c:#cfabff" aria-pressed="false">
           <span class="mw-kind"><i></i>Human video</span>
-          <strong>754.5<small>h</small></strong>
+          <strong><span data-count="754.5" data-decimals="1">754.5</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:0.1707" aria-hidden="true"><i></i></span>
           <span class="mw-note">Egocentric · EgoDex, EgoVerse</span>
         </button>
         <button type="button" data-kind="r" style="--c:#96c8fb" aria-pressed="false">
           <span class="mw-kind"><i></i>Robot trajectories</span>
-          <strong>4,420.4<small>h</small></strong>
+          <strong><span data-count="4420.4" data-decimals="1">4,420.4</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:1.0000" aria-hidden="true"><i></i></span>
           <span class="mw-note">Six robot datasets, real and simulated</span>
         </button>
         <button type="button" data-kind="c" style="--c:#e7d0a4" aria-pressed="false">
           <span class="mw-kind"><i></i>White clay</span>
-          <strong>210.4<small>h</small></strong>
+          <strong><span data-count="210.4" data-decimals="1">210.4</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:0.0476" aria-hidden="true"><i></i></span>
           <span class="mw-note">17,541 episodes, rendered in layers</span>
         </button>
         <button type="button" data-kind="m" style="--c:#8bdbcd" aria-pressed="false">
           <span class="mw-kind"><i></i>Memory revisits</span>
-          <strong>583.8<small>h</small></strong>
+          <strong><span data-count="583.8" data-decimals="1">583.8</span><small>h</small></strong>
+          <span class="mw-bar" style="--v:0.1321" aria-hidden="true"><i></i></span>
           <span class="mw-note">Six revisit collections</span>
         </button>
         <button type="button" data-kind="f" style="--c:#f7a692" aria-pressed="false">
           <span class="mw-kind"><i></i>Failures</span>
-          <strong>7,762<small>attempts</small></strong>
+          <strong><span data-count="7762" data-decimals="0">7,762</span><small>attempts</small></strong>
+          <span class="mw-bar" style="--v:0.0046" aria-hidden="true"><i></i></span>
           <span class="mw-note">20.4 h of recorded task failures</span>
         </button>
       </div>
       <p class="mw-footnote">Human and robot hours are distinct footage in the H3 pretraining folds 00–08. White clay, revisits and failures are counted separately and can reuse the same trajectories.</p>
 
-      <div class="mw-closeup-head"><h3>Up close</h3><p>Four clips from the mix, one per kind of signal.</p></div>
+      <div class="mw-closeup-head"><h3>Up close</h3><p>One clip per kind of signal. Open a panel to look closer.</p></div>
       <div class="mw-training-wall">
-        <figure class="mw-cell mw-clay" data-camera="head" style="--c:#e7d0a4">
-          <figcaption><span class="mw-chip"><i></i>White clay</span><span class="mw-title">Stacking bowls</span><p class="mw-desc">The same recording, re-rendered as untextured geometry. Peel away the table and bowls until only the robot is left.</p></figcaption>
+        <figure class="mw-cell mw-open mw-clay" data-camera="head" style="--c:#e7d0a4">
+          <button type="button" class="mw-tab mw-tab-strip" aria-expanded="true"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/bowls-head.webp')" aria-hidden="true"></span><span class="mw-chip"><i></i>White clay</span><b>Stacking bowls</b></button>
+          <div class="mw-cell-body">
+          <div class="mw-cap"><span class="mw-chip"><i></i>White clay</span><span class="mw-title">Stacking bowls</span></div>
           <div class="mw-pair">
             <div class="mw-window mw-reference">
               <video class="mw-clay-film" data-file="bowls-head.mp4" poster="assets-v22/training-data/bowls-head.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video>
@@ -2080,7 +2060,7 @@ warmMemory.observe(q('#memory-gallery'));
               <button type="button" data-camera="head" aria-pressed="true">Head</button>
               <button type="button" data-camera="wrist" aria-pressed="false">Right wrist</button>
             </div>
-            <div class="mw-slider" style="--position: 2">
+            <div class="mw-slider" style="--position: 2; --stops: 3">
               <span class="mw-thumb" aria-hidden="true"></span>
               <div class="mw-stops" aria-hidden="true">
                 <span><svg viewBox="0 0 20 20"><path d="M3 17h9M5 16v-3l4-4-3-4m2-1 5 2 2-2m-1 3 3 1 1-2"/><circle cx="6" cy="4" r="2"/><circle cx="10" cy="8" r="1.7"/></svg>Robot</span>
@@ -2090,57 +2070,57 @@ warmMemory.observe(q('#memory-gallery'));
               <input type="range" min="0" max="2" step="1" value="2" aria-label="White-clay detail" aria-valuetext="Robot, bowls and table">
             </div>
           </div>
+          <p class="mw-desc">The same recording, re-rendered as untextured geometry frame by frame.</p>
+          </div>
         </figure>
 
         <figure class="mw-cell mw-fail" style="--c:#f7a692">
-          <figcaption><span class="mw-chip"><i></i>Failure</span><span class="mw-title">Dropped block</span><p class="mw-desc">In simulation, the gripper opens mid-transport and the block falls. Failures stay in the mix, so the model also sees how a task goes wrong.</p></figcaption>
+          <button type="button" class="mw-tab" aria-expanded="false"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/stapler-fail.webp')" aria-hidden="true"></span><span class="mw-chip"><i></i>Failure</span><b>The grasp that didn’t hold</b></button>
+          <div class="mw-cell-body">
+          <div class="mw-cap"><span class="mw-chip"><i></i>Failure</span><span class="mw-title">The grasp that didn't hold</span></div>
           <div class="mw-fail-study">
-            <div class="mw-window mw-attempt"><video data-file="dropped-block.mp4" class="mw-failure-film" poster="assets-v22/training-data/dropped-block.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag">Attempt</span></div>
-            <div class="mw-drop-pair">
-              <figure><img src="assets-v22/training-data/grip-held.webp" alt="Purple block held between the gripper jaws" loading="lazy"><figcaption>Held</figcaption></figure>
-              <span aria-hidden="true">→</span>
-              <figure class="mw-dropped"><img src="assets-v22/training-data/grip-released.webp" alt="Block on the tabletop below the empty gripper" loading="lazy"><figcaption>Dropped</figcaption></figure>
-            </div>
+            <div class="mw-window mw-attempt"><video data-file="stapler-fail.mp4" class="mw-failure-film" poster="assets-v22/training-data/stapler-fail.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag mw-tag-low">Task · move the stapler onto the pad</span><span class="mw-speed">0.75×</span></div>
+            <ol class="mw-steps" aria-label="What happened, step by step">
+              <li><button type="button" data-t="2.9"><span class="mw-label"><b aria-hidden="true">✓</b>Grips it</span></button></li>
+              <li class="mw-step-miss"><button type="button" data-t="4.2"><span class="mw-label"><b aria-hidden="true">✕</b>Slips on lift</span></button></li>
+              <li class="mw-step-miss"><button type="button" data-t="6.6"><span class="mw-label"><b aria-hidden="true">✕</b>Arrives empty</span></button></li>
+            </ol>
+          </div>
+          <p class="mw-desc">In simulation, the stapler slips as the arm lifts, and the arm arrives empty. Inset: wrist camera.</p>
           </div>
         </figure>
 
         <figure class="mw-cell mw-bodies" style="--c:#96c8fb">
-          <figcaption><span class="mw-chip"><i style="background:#cfabff"></i>Human <i></i>Robot</span><span class="mw-title">Same tasks, many bodies</span><p class="mw-desc">Human hands next to seven robot arms, real and simulated. Pick one, or let the clip cycle through them.</p></figcaption>
-          <div class="mw-pair mw-body-pair">
-            <div class="mw-window mw-human"><video data-file="human.mp4" poster="assets-v22/training-data/human.jpg" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag">Human</span></div>
-            <div class="mw-window mw-robot"><video class="mw-robot-film" data-file="embodiments.mp4" poster="assets-v22/training-data/embodiments.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video>
-              <span class="mw-tag mw-model-name">ALOHA</span>
-            </div>
+          <button type="button" class="mw-tab" aria-expanded="false"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/body-a2d.webp')" aria-hidden="true"></span><span class="mw-chip"><i></i>Human + robot</span><b>Eight bodies</b></button>
+          <div class="mw-cell-body">
+          <div class="mw-cap"><span class="mw-chip"><i style="background:#cfabff"></i>Human <i></i>Robot</span><span class="mw-title">Eight bodies, one training mix</span></div>
+          <div class="mw-body-grid" role="img" aria-label="Human hands and seven robot embodiments, each doing manipulation at the same time">
+            <div class="mw-body mw-body-human"><video data-file="body-human.mp4" poster="assets-v22/training-data/body-human.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Human hands</span></div>
+            <div class="mw-body"><video data-file="body-aloha.mp4" poster="assets-v22/training-data/body-aloha.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">ALOHA</span></div>
+            <div class="mw-body"><video data-file="body-a2d.mp4" poster="assets-v22/training-data/body-a2d.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">AgiBot A2D</span></div>
+            <div class="mw-body"><video data-file="body-r1lite.mp4" poster="assets-v22/training-data/body-r1lite.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Galaxea R1-Lite</span></div>
+            <div class="mw-body"><video data-file="body-dosw1.mp4" poster="assets-v22/training-data/body-dosw1.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">DOS-W1</span></div>
+            <div class="mw-body"><video data-file="body-genie.mp4" poster="assets-v22/training-data/body-genie.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Genie-1<b>Sim</b></span></div>
+            <div class="mw-body"><video data-file="body-r1pro.mp4" poster="assets-v22/training-data/body-r1pro.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Galaxea R1 Pro<b>Sim</b></span></div>
+            <div class="mw-body"><video data-file="body-g2.mp4" poster="assets-v22/training-data/body-g2.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">AgiBot G2<b>Sim</b></span></div>
           </div>
-          <div class="mw-bodies-picker" role="group" aria-label="Robot body">
-            <div class="mw-body-group"><small>Real</small><div>
-              <button type="button" data-chapter="0" aria-pressed="true">ALOHA</button>
-              <button type="button" data-chapter="1" aria-pressed="false">A2D</button>
-              <button type="button" data-chapter="2" aria-pressed="false">R1-Lite</button>
-              <button type="button" data-chapter="3" aria-pressed="false">DOS-W1</button>
-            </div></div>
-            <div class="mw-body-group"><small>Simulated</small><div>
-              <button type="button" data-chapter="4" aria-pressed="false">Genie-1</button>
-              <button type="button" data-chapter="5" aria-pressed="false">R1 Pro</button>
-              <button type="button" data-chapter="6" aria-pressed="false">G2</button>
-            </div></div>
+          <p class="mw-desc">Human hands and seven robots, four real and three simulated, in one mix.</p>
           </div>
         </figure>
 
         <figure class="mw-cell mw-memory" style="--c:#8bdbcd">
-          <figcaption><span class="mw-chip"><i></i>Memory</span><span class="mw-title">Look away, come back</span><p class="mw-desc">The camera leaves the sofa, turns to the fireplace, then returns. The room has to look the same when it does.</p></figcaption>
-          <div class="mw-window mw-memory-film"><video class="mw-revisit-film" data-file="memory.mp4" poster="assets-v22/training-data/memory.jpg" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag">Revisit</span></div>
+          <button type="button" class="mw-tab" aria-expanded="false"><span class="mw-tab-art" style="background-image:url('assets-v22/training-data/memory.jpg')" aria-hidden="true"></span><span class="mw-chip"><i></i>Memory</span><b>Look away, come back</b></button>
+          <div class="mw-cell-body">
+          <div class="mw-cap"><span class="mw-chip"><i></i>Memory</span><span class="mw-title">Look away, come back</span></div>
+          <div class="mw-window mw-memory-film"><video class="mw-revisit-film" data-file="memory.mp4" poster="assets-v22/training-data/memory.jpg" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-tag">Revisit</span><figure class="mw-revisit-inset mw-revisit-back"><img src="assets-v22/training-data/memory-first.webp" alt="The first view of the sofa, for comparison"><figcaption>First look</figcaption></figure></div>
           <div class="mw-revisit">
             <div class="mw-revisit-track" style="--p:0"><i></i>
               <button type="button" data-t="0" style="--at:0">First look</button>
               <button type="button" data-t="2.5" style="--at:.455">Turn away</button>
               <button type="button" data-t="5" style="--at:.91">Back</button>
             </div>
-            <div class="mw-revisit-frames">
-              <figure><img src="assets-v22/training-data/memory-first.webp" alt="First view of the sofa by the window"><figcaption>0.0 s</figcaption></figure>
-              <span aria-hidden="true">=</span>
-              <figure class="mw-revisit-back"><img src="assets-v22/training-data/memory-back.webp" alt="The same view after the camera returns"><figcaption>5.0 s</figcaption></figure>
-            </div>
+          </div>
+          <p class="mw-desc">The camera leaves the sofa and comes back. The room has to match.</p>
           </div>
         </figure>
       </div>

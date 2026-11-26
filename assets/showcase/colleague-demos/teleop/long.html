@@ -3,573 +3,278 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MoraWorld · Long rollouts</title>
-
-<link rel="stylesheet" href="video-browse.css">
-
+<title>MoraWorld · Live VR teleoperation</title>
 <style>
 :root {
   color-scheme: dark;
-  --page: #0b0d10;
-  --surface: #14171c;
-  --line: #2a3038;
-  --white: #eceef1;
-  --muted: #a3aab5;
-  --accent: #a582ff;
+  --page: #0b0d10; --surface: #14171c; --line: #262b33; --white: #eceef1; --muted: #9aa1ac;
+  --accent: #a582ff; --accent-soft: #c9b5ff; --live: #ff6b6b;
   --mono: "JetBrains Mono", ui-monospace, monospace;
   --heading: "Space Grotesk", Inter, system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
-body { margin: 0; color: var(--white); background: var(--page); font: 16px/1.5 Inter, system-ui, sans-serif; }
-.site-header { border-bottom: 1px solid #1f242b; }
-.site-nav {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px 20px;
-  flex-wrap: wrap; max-width: 1168px; margin: auto; padding: 12px 24px;
-}
-.site-brand {
-  font: 600 20px/1.4 var(--heading); text-decoration: none; color: var(--white);
-}
-.section-nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
-.section-nav a { color: var(--muted); font-size: 13px; text-decoration: none; padding: 5px 0; }
-.section-nav a:hover, .section-nav a[aria-current="page"] { color: #d8c6ff; }
-main { max-width: 1128px; padding: clamp(24px, 3vw, 40px) 24px 48px; margin: auto; }
-.eyebrow, figcaption { font: 500 11px/1.5 var(--mono); }
-.eyebrow { margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: .13em; }
-h1 {
-  margin: 8px 0 0; font: 600 clamp(32px, 3.7vw, 48px)/1.06 var(--heading);
-  letter-spacing: -.035em;
-}
-.scene-description { color: var(--muted); margin: 12px 0 16px; max-width: 30ch; font-size: 15px; }
-.scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 360px; user-select: none; }
-button { font: inherit; cursor: pointer; }
-button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.scene {
-  position: relative; display: block; overflow: hidden;
-  padding: 0; aspect-ratio: 2.35;
-  background: var(--surface); border: 1px solid #47414e; border-radius: 6px;
-  transition: border-color 180ms, box-shadow 180ms;
-}
-.scene img {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; transition: transform 260ms ease-out;
-}
-.scene:hover { border-color: #c9b5ff; }
-.scene:hover img { transform: scale(1.07); }
-.scene[aria-pressed="true"] {
-  border-color: var(--accent); outline: 1px solid var(--accent);
-}
-.viewer { margin: 0; }
-.views {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr);
-  grid-template-rows: 1fr auto;
-  grid-template-areas: "overview generated" "operator generated"; gap: 18px 22px;
-}
-.overview { grid-area: overview; }
-.view { min-width: 0; margin: 0; }
-.operator-view { grid-area: operator; }
-.generated-view { grid-area: generated; align-self: start; }
-figcaption { margin-bottom: 9px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
-.generated-view figcaption { color: #c9b5ff; }
-video {
-  display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--line);
-  background: var(--surface); border-radius: 8px; object-fit: contain;
-}
-.generated-view video { aspect-ratio: 832 / 480; }
-.generated-frame { position: relative; }
-.rollout-clock {
-  position: absolute; top: clamp(8px, 2vw, 16px); left: clamp(8px, 2vw, 16px); z-index: 1;
-  display: grid; gap: 3px; padding: 8px 12px; border-radius: 7px;
-  border: 1px solid rgb(201 181 255 / 27%); background: rgb(11 13 16 / 90%);
-  font-family: var(--mono); font-variant-numeric: tabular-nums; pointer-events: none;
-}
-.rollout-clock[hidden] { display: none; }
-.clock-label { color: #c9b5ff; font-size: clamp(8px, 1.1vw, 10px); letter-spacing: .11em; line-height: 1.3; }
-.clock-value { display: flex; align-items: baseline; gap: 7px; line-height: 1; }
-.clock-elapsed { font-size: clamp(21px, 3vw, 37px); font-weight: 500; }
-.clock-total { color: #b5bdc8; font-size: clamp(11px, 1.3vw, 16px); }
-.scene-preview {
-  position: absolute; inset: 1px; overflow: hidden; border-radius: 7px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 180ms ease;
-}
-.scene-preview[data-visible="true"] { opacity: 1; }
-.scene-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-@media (prefers-reduced-motion: reduce) {
-  .scene, .scene img, .scene-preview { transition: none; }
-  .scene:hover img { transform: none; }
-}
-.controls {
-  margin-top: 12px; display: flex; align-items: center; gap: 10px;
-}
-.play {
-  min-width: 68px; min-height: 40px; border: 0; border-radius: 5px;
-  background: var(--accent); color: var(--page); font-size: 13px; font-weight: 600;
-}
-.play:hover { background: #bc9fff; }
-.play:disabled { opacity: .6; cursor: wait; }
-.play-icon { display: none; }
-.long-rollout .play {
-  display: grid; place-items: center; width: 44px; height: 44px; min-width: 0;
-  background: var(--surface); color: #e0d1ff; border: 1px solid var(--line); border-radius: 50%;
-}
-.long-rollout .play:hover { background: #201a2b; border-color: #7963a3; }
-.long-rollout .play-label { display: none; }
-.long-rollout .play-icon {
-  display: block; width: 14px; height: 14px; background: currentColor;
-  clip-path: polygon(25% 6%, 91% 50%, 25% 94%);
-}
-.long-rollout .play[data-playing="true"] .play-icon {
-  width: 11px; height: 12px; clip-path: none;
-  background: linear-gradient(to right, currentColor 0 28%, transparent 28% 72%, currentColor 72% 100%);
-}
-.speed-select {
-  min-height: 34px; padding: 0 6px; color: var(--muted); background: transparent;
-  border: 1px solid transparent; border-radius: 6px; font: 500 11px/1.3 var(--mono);
-}
-.speed-select:hover { background: var(--surface); border-color: var(--line); }
-.speed-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.task-browser { margin-top: 22px; }
-.task-browser-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
-.task-browser h2 { margin: 0; font: 600 16px/1.4 var(--heading); }
-.task-count { margin-right: 5px; color: var(--muted); font: 500 11px/1.5 var(--mono); }
-.task-rail {
-  position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: clamp(132px, 15vw, 184px);
-  gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; padding: 4px 4px 10px;
-  scrollbar-color: #574476 var(--surface);
-}
-.task-rail .scene { min-height: 76px; scroll-snap-align: start; }
-#status { color: #e7c9bb; font-size: 13px; }
+body { margin: 0; color: var(--white); background: var(--page); font: 15px/1.5 Inter, system-ui, sans-serif; }
+main { padding: 0 0 4px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Collections */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 14px; }
+.tabs { display: inline-grid; grid-auto-flow: column; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 22px; background: #0e1014; }
+.tabs button { min-height: 34px; padding: 0 16px; border: 0; border-radius: 18px; background: none; color: #a8adb6; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.tabs button[aria-pressed="true"] { background: #2d2440; color: #ece2ff; box-shadow: inset 0 0 0 1px #5a4778; }
+.tabs button:not([aria-pressed="true"]):hover { color: #e5e8ec; }
+.caption { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+/* Stage: picture in picture. The operator fills the frame, the generated view floats in the corner; click it to swap. */
+.stage { --pw: 30%; --ph: calc(var(--pw) * 2.25 / 1.7333); --gap: 14px; position: relative; aspect-ratio: 2.25; border-radius: 14px; background: var(--surface); }
+.frame { position: absolute; overflow: hidden; background: #111418; transition: left .55s cubic-bezier(.2,.8,.2,1), top .55s cubic-bezier(.2,.8,.2,1), width .55s cubic-bezier(.2,.8,.2,1), height .55s cubic-bezier(.2,.8,.2,1), border-radius .55s, box-shadow .3s; }
+.frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .35s, transform .55s; }
+.frame.loading video { opacity: .7; }
+.frame.main { z-index: 1; left: 0; top: 0; width: 100%; height: 100%; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--line); }
+.frame.pip { z-index: 3; left: var(--gap); top: calc(100% - var(--ph) - var(--gap)); width: var(--pw); height: var(--ph); border-radius: 10px; cursor: pointer; box-shadow: 0 0 0 1px rgb(255 255 255 / 20%), 0 16px 40px rgb(0 0 0 / 65%); }
+.frame.pip:hover, .frame.pip:focus-visible { box-shadow: 0 0 0 2px var(--accent), 0 16px 40px rgb(0 0 0 / 65%); outline: none; }
+.frame.pip::after { content: "⇄"; position: absolute; z-index: 2; right: 6px; top: 6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: rgb(10 12 15 / 75%); color: #fff; font-size: 12px; opacity: 0; transition: opacity .2s; }
+.frame.pip:hover::after, .frame.pip:focus-visible::after { opacity: 1; }
+.operator.main video { object-position: var(--focus, 50% 10%); transform: scale(1.06); transform-origin: var(--focus, 50% 20%); }
+.chip { position: absolute; z-index: 2; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 7px; padding: 5px 9px; border-radius: 6px; background: rgb(10 12 15 / 78%); backdrop-filter: blur(6px); color: #eef0f3; font: 500 11px/1.2 var(--mono); letter-spacing: .04em; white-space: nowrap; transition: font-size .3s; }
+.pip .chip { top: 6px; left: 6px; padding: 3px 6px; font-size: 9.5px; }
+.generated .chip { color: var(--accent-soft); }
+.chip.rate { left: auto; right: 10px; gap: 6px; color: #fff; background: rgb(45 36 64 / 85%); box-shadow: inset 0 0 0 1px rgb(165 130 255 / 45%); font-weight: 600; }
+.chip.rate small { color: #b9a6e0; font-weight: 500; font-size: .85em; letter-spacing: .06em; text-transform: uppercase; }
+.pip .chip.rate { left: auto; right: 6px; }
+.frame.pip::after { top: auto; bottom: 6px; }
+.chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--live); animation: live 1.6s ease-out infinite; }
+@keyframes live { 0% { box-shadow: 0 0 0 0 rgb(255 107 107 / 60%); } 70%, 100% { box-shadow: 0 0 0 7px rgb(255 107 107 / 0%); } }
+.clock { z-index: 4; left: auto; right: 10px; font-variant-numeric: tabular-nums; color: #d9ccff; }
+.clock[hidden] { display: none; }
+.pause { position: absolute; z-index: 4; right: 12px; bottom: 12px; display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgb(10 12 15 / 70%); backdrop-filter: blur(6px); color: #eef0f3; opacity: .7; transition: opacity .2s; }
+.pause:hover, .pause:focus-visible { opacity: 1; }
+.pause i { width: 9px; height: 10px; background: linear-gradient(90deg, currentColor 0 32%, transparent 32% 68%, currentColor 68%); }
+.pause[data-paused="true"] i { width: 11px; height: 12px; background: currentColor; clip-path: polygon(18% 4%, 96% 50%, 18% 96%); }
+.variants { position: absolute; z-index: 4; top: 10px; right: 10px; display: flex; gap: 2px; padding: 2px; border-radius: 15px; background: rgb(10 12 15 / 75%); backdrop-filter: blur(6px); }
+.variants[hidden] { display: none; }
+.variants button { min-height: 26px; padding: 0 11px; border: 0; border-radius: 13px; background: none; color: #a8adb6; font-size: 12px; }
+.variants button[aria-pressed="true"] { background: #2d2440; color: #ece2ff; }
+
+/* Film strip: keeps drifting, so the collection reads as open-ended */
+.strip { position: relative; margin-top: 12px; overflow: hidden; -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.reel { display: flex; gap: 8px; width: max-content; padding: 3px 0; animation: drift var(--dur, 60s) linear infinite; }
+.strip:hover .reel, .strip:focus-within .reel { animation-play-state: paused; }
+@keyframes drift { to { transform: translateX(calc(-50% - 4px)); } }
+.clip { position: relative; flex: none; width: 128px; aspect-ratio: 1.6; padding: 0; overflow: hidden; border: 0; border-radius: 8px; background: var(--surface); opacity: .6; transition: opacity .25s, box-shadow .25s; box-shadow: inset 0 0 0 1px var(--line); }
+.clip img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s; }
+.clip:hover { opacity: 1; }
+.clip:hover img { transform: scale(1.07); }
+.clip[aria-current="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--accent); }
+.strip.still { -webkit-mask: none; mask: none; }
+.strip.still .reel { animation: none; width: auto; }
+.strip.still .clip { width: 180px; }
+
+#status { margin: 6px 0 0; color: #e7c9bb; font-size: 13px; }
 #status:empty { display: none; }
-@media (max-width: 880px) {
-  .views { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: "overview" "generated" "operator"; gap: 16px; }
-  .operator-view { width: min(60%, 324px); min-width: 184px; }
+
+@media (max-width: 860px) {
+  .stage { --pw: 38%; --ph: calc(var(--pw) * 1.6 / 1.7333); --gap: 10px; aspect-ratio: 1.6; }
 }
-@media (max-width: 650px) {
-  main { padding-inline: 16px; }
-  .site-nav { padding-inline: 16px; }
+@media (max-width: 560px) {
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+  .tabs button { min-height: 40px; padding: 4px 6px; font-size: 12px; line-height: 1.2; white-space: normal; }
+  .stage { --pw: 44%; --gap: 8px; }
+  .chip { top: 6px; left: 6px; padding: 3px 6px; font-size: 9.5px; }
+  .pip .chip:not(.rate) { display: none; }
+  .chip.rate small { display: none; }
+  .clock { left: auto; right: 6px; }
+  .variants { top: 6px; right: 6px; }
+  .variants button { min-height: 22px; padding: 0 8px; font-size: 11px; }
+  .pause { right: 8px; bottom: 8px; width: 28px; height: 28px; }
+  .clip { width: 104px; }
+  .strip.still .clip { width: calc(50% - 4px); }
 }
-main{padding:0}.scenes{grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px}
-.scene{aspect-ratio:1.65}.scene span{position:absolute;bottom:0;inset-inline:0;text-align:left;padding:.9rem .45rem .3rem;color:white;background:linear-gradient(transparent,#101014ed);font-weight:600;font-size:13px}
-#seek{min-width:0;flex:1;accent-color:#bd9bff}
-.controls{max-width:none;gap:14px}h1{font-size:clamp(24px,2.8vw,35px)}.scene-description{max-width:34ch}
-@media(max-width:650px){.views{gap:12px}.scenes{max-width:250px}.scene{aspect-ratio:2.2}.scene span{font-size:11px}.operator-view{width:55%}}
-.many-scenes {grid-template-columns:repeat(3,minmax(0,1fr));max-height:226px;overflow:auto;align-content:start}
-.tele-variants {display:flex;gap:4px;margin:10px 0}.tele-variants[hidden]{display:none}.tele-variants button{color:#c6c3cf;background:#15171e;border:1px solid #36363e;border-radius:5px;padding:5px 9px}.tele-variants button[aria-pressed=true]{color:#e6d8ff;background:#31263f;border-color:#a88bcf}
-@media(max-width:650px){.scenes.many-scenes{max-width:none;max-height:145px}}
+@media (prefers-reduced-motion: reduce) {
+  .chip i { animation: none; }
+  .reel { animation: none; } .strip { overflow-x: auto; }
+}
 </style>
 </head>
-<body class="long-rollout">
-
+<body>
 <main>
-  <section class="viewer" aria-label="Synchronized VR teleoperation demo">
-    <div class="views">
-      <div class="overview">
-        <p class="eyebrow">VR teleoperation</p>
-        <h1>10-minute generation demo.</h1>
-        <p class="scene-description" id="caption">Watch the operator and the generated view on the same 24 fps timeline.</p>
-        <div class="scenes" role="group" aria-label="Choose a scene">
-        </div>
-        <div class="tele-variants" role="group" aria-label="Embodiment" hidden><button data-variant="human">Human hands</button><button data-variant="robot">Robot arms</button></div>
-      </div>
-      <figure class="view generated-view">
-        <figcaption id="generated-label">MoraWorld · Generated view</figcaption>
-        <div class="generated-frame video-browse" role="group" tabindex="0" aria-labelledby="generated-label" aria-describedby="swipe-hint">
-          <video id="generated" aria-labelledby="generated-label" playsinline muted preload="metadata"
-                 poster="long/coastal-boardwalk-10min-generated.jpg"></video>
-          <div class="scene-preview" aria-hidden="true"><img alt=""></div>
-          <div class="rollout-clock">
-            <span class="clock-label">PLAYBACK TIME</span>
-            <div class="clock-value"><span class="clock-elapsed" id="clock-elapsed">00:00</span><span class="clock-total" id="clock-total"></span></div>
-          </div>
-        </div>
-        <div class="browse-footer">
-          <p class="swipe-hint" id="swipe-hint">
-            <span class="swipe-hint-icon" aria-hidden="true">↕</span>
-            <span><span class="touch-hint">Swipe up or down</span><span class="wheel-hint">Scroll on the video</span> to switch clips · Hold center to speed up</span>
-          </p>
-          <div class="browse-buttons" role="group" aria-label="Browse videos">
-            <button class="browse-button" type="button" data-direction="-1" aria-label="Previous video" title="Previous video"></button>
-            <button class="browse-button" type="button" data-direction="1" aria-label="Next video" title="Next video"></button>
-          </div>
-        </div>
-      </figure>
-      <figure class="view operator-view">
-        <figcaption id="operator-label">VR operator</figcaption>
-        <video id="operator" aria-labelledby="operator-label" playsinline muted preload="metadata"
-               poster="long/coastal-boardwalk-10min-operator.jpg"></video>
-      </figure>
+  <div class="top">
+    <div class="tabs" role="group" aria-label="Collections">
+      <button type="button" data-group="novel" aria-pressed="true">Novel scenes</button>
+      <button type="button" data-group="robot" aria-pressed="false">Robot manipulation</button>
+      <button type="button" data-group="long" aria-pressed="false">Long rollouts</button>
     </div>
-    <div class="controls">
-      <button class="play" id="play" type="button" aria-label="Play" disabled>
-        <span class="play-label">Play</span><span class="play-icon" aria-hidden="true"></span>
-      </button>
-      <input id="seek" aria-label="Seek both recordings" type="range" min="0" max="600" step="0.1" value="0" disabled>
-      <select class="speed-select" id="speed" aria-label="Playback speed">
-        <option value="auto">Auto speed</option>
-        <option value="1">1×</option>
-        <option value="2">2×</option>
-        <option value="4">4×</option>
-        <option value="8">8×</option>
-        <option value="16" selected>16×</option>
-      </select>
-    </div>
-    <p id="status" role="status"></p>
+    <p class="caption" id="caption"></p>
+  </div>
 
+  <section class="stage" aria-label="Synchronized VR teleoperation recording">
+    <div class="frame operator main">
+      <video id="operator" playsinline muted preload="metadata" aria-label="The VR operator"></video>
+      <span class="chip"><i aria-hidden="true"></i>VR operator · live</span>
+    </div>
+    <div class="frame generated pip" role="button" tabindex="0" aria-label="Swap the two views">
+      <video id="generated" playsinline muted preload="metadata" aria-label="What MoraWorld generates for the operator"></video>
+      <span class="chip">MoraWorld · generated</span>
+      <span class="chip rate" title="17 frames denoised and decoded in 262 ms (median)">15 ms / frame<small>inference</small></span>
+    </div>
+    <span class="chip clock" id="clock" hidden>00:00 / 10:00</span>
+    <div class="variants" role="group" aria-label="Embodiment" hidden>
+      <button type="button" data-variant="human">Hands</button>
+      <button type="button" data-variant="robot">Robot arms</button>
+    </div>
+    <button class="pause" id="pause" type="button" aria-label="Pause" data-paused="false"><i aria-hidden="true"></i></button>
   </section>
+
+  <div class="strip" role="group" aria-label="More recordings"><div class="reel"></div></div>
+  <p id="status" role="status"></p>
+
 </main>
-<script src="video-browse.js"></script>
-<script src="video-effects.js"></script>
 <script>
-const generated = document.querySelector('#generated');
-const operator = document.querySelector('#operator');
-const videos = [generated, operator];
-const play = document.querySelector('#play');
-const playLabel = play.querySelector('.play-label');
-const clockElapsed = document.querySelector('#clock-elapsed');
-const clockTotal = document.querySelector('#clock-total');
-const speed = document.querySelector('#speed');
-const status = document.querySelector('#status');
-const generatedFrame = document.querySelector('.generated-frame');
-const setNormalRate = bindVideoEffects(generatedFrame, videos);
-const preview = document.querySelector('.scene-preview');
-const rolloutMinutes = 10;
-const seek = document.querySelector('#seek');
-const browseButtons = document.querySelector('.browse-buttons');
-let playbackRequest = 0;
+// Order matters: the crispest generations lead, softer ones sit at the end.
+const groups = {
+  novel: ['novel/wukong', 'novel/driving', 'novel/doudizhu', 'novel/eggs', 'novel/tug', 'classroom', 'conference',
+          'novel/cake', 'novel/pool', 'novel/blanket', 'titanic', 'castle', 'tokyo', 'novel/lipstick', 'novel/pet-cat', 'novel/door'],
+  robot: ['robot/toaster', 'robot/packing', 'robot/laundry', 'robot/washer', 'robot/name-card', 'robot/storage', 'robot/checkout',
+          'robot/hang-shirt', 'robot/fridge', 'robot/fold-shirt', 'robot/shoelaces'],
+  long: ['long/coastal-boardwalk-10min', 'long/case318-232008-10min']
+};
+// Where to anchor the operator crop when the default (upper body, standing) misses the person.
+const focus = { 'long/coastal-boardwalk-10min': '50% 80%' };
+const names = { 'long/coastal-boardwalk-10min': 'Coastal boardwalk', 'long/case318-232008-10min': 'Tabletop manipulation' };
+const captions = {
+  novel: 'Step into a generated scene and act in it from a VR headset.',
+  robot: 'Each rollout starts from a frame of a robot dataset; the operator drives the arms.',
+  long: 'Ten minutes of continuous generation, played back faster.'
+};
+const paired = new Set(['novel/lipstick', 'novel/blanket', 'novel/eggs', 'novel/pool', 'novel/doudizhu']);
+const choices = new Map();
+const variantFor = key => choices.get(key) || (key === 'novel/lipstick' ? 'robot' : 'human');
+const stem = key => paired.has(key) ? key + '-' + variantFor(key) : key;
+const label = key => names[key] || key.split('/').pop().replace(/-/g, ' ');
+
+const $ = s => document.querySelector(s);
+const generated = $('#generated'), operator = $('#operator'), videos = [generated, operator];
+const pause = $('#pause'), clock = $('#clock'), status = $('#status');
+const strip = $('.strip'), reel = $('.reel'), variants = $('.variants'), tabs = [...document.querySelectorAll('.tabs button')];
+const frames = [...document.querySelectorAll('.stage .frame')];
+function swap() {
+  frames.forEach(f => {
+    const nowMain = f.classList.contains('pip');
+    f.classList.toggle('main', nowMain); f.classList.toggle('pip', !nowMain);
+    if (nowMain) { f.removeAttribute('role'); f.removeAttribute('tabindex'); f.removeAttribute('aria-label'); }
+    else { f.setAttribute('role', 'button'); f.tabIndex = 0; f.setAttribute('aria-label', 'Swap the two views'); }
+  });
+}
+frames.forEach(f => {
+  f.addEventListener('click', () => { if (f.classList.contains('pip')) swap(); });
+  f.addEventListener('keydown', e => { if (f.classList.contains('pip') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); swap(); } });
+});
+let group = new URLSearchParams(location.search).get('section');
+if (group === 'roaming') group = 'novel';
+if (!groups[group]) group = 'novel';
+let current = null, request = 0;
 let autoplay = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 let hostVisible = window === parent;
-const groups = {
-  "long": [
-    [
-      "long/coastal-boardwalk-10min",
-      "Coastal boardwalk"
-    ],
-    [
-      "long/case318-232008-10min",
-      "Tabletop manipulation"
-    ]
-  ],
-  "roaming": [
-    [
-      "tokyo",
-      "Tokyo"
-    ],
-    [
-      "castle",
-      "Castle"
-    ],
-    [
-      "conference",
-      "Conference"
-    ],
-    [
-      "titanic",
-      "Titanic"
-    ],
-    [
-      "classroom",
-      "Classroom"
-    ],
-    [
-      "chongqing",
-      "Chongqing"
-    ]
-  ],
-  "robot": [
-    [
-      "robot/storage",
-      "Storage"
-    ],
-    [
-      "robot/washer",
-      "Washer"
-    ],
-    [
-      "robot/fold-shirt",
-      "Fold shirt"
-    ],
-    [
-      "robot/shoelaces",
-      "Shoelaces"
-    ],
-    [
-      "robot/laundry",
-      "Laundry"
-    ],
-    [
-      "robot/hang-shirt",
-      "Hang shirt"
-    ],
-    [
-      "robot/toaster",
-      "Toaster"
-    ],
-    [
-      "robot/fridge",
-      "Fridge"
-    ],
-    [
-      "robot/packing",
-      "Packing"
-    ],
-    [
-      "robot/name-card",
-      "Name card"
-    ],
-    [
-      "robot/checkout",
-      "Checkout"
-    ]
-  ],
-  "novel": [
-    [
-      "novel/lipstick",
-      "Lipstick"
-    ],
-    [
-      "novel/blanket",
-      "Blanket"
-    ],
-    [
-      "novel/eggs",
-      "Eggs"
-    ],
-    [
-      "novel/pool",
-      "Pool"
-    ],
-    [
-      "novel/cat",
-      "Cat"
-    ],
-    [
-      "novel/doudizhu",
-      "Doudizhu"
-    ],
-    [
-      "novel/wukong",
-      "Wukong"
-    ],
-    [
-      "novel/driving",
-      "Driving"
-    ],
-    [
-      "novel/cake",
-      "Cake"
-    ],
-    [
-      "novel/door",
-      "Door"
-    ],
-    [
-      "novel/pet-cat",
-      "Pet cat"
-    ],
-    [
-      "novel/tug",
-      "Tug"
-    ]
-  ]
-};
-const requested = new URLSearchParams(location.search).get('section');
-const group = Object.hasOwn(groups, requested) ? requested : 'long';
-const paired = new Set(['novel/lipstick','novel/blanket','novel/eggs','novel/pool','novel/cat','novel/doudizhu']);
-const variants = document.querySelector('.tele-variants');
-const choices = new Map();
-function variantFor(key) { return choices.get(key) || (key === 'novel/lipstick' ? 'robot' : 'human'); }
-function fileStem(key) { return paired.has(key) ? key + '-' + variantFor(key) : key; }
-const picker = document.querySelector('.scenes');
-for (const [key,name] of groups[group]) {
-  const button = document.createElement('button');
-  button.type = 'button'; button.className = 'scene'; button.dataset.scene = key;
-  button.setAttribute('aria-label', name); button.setAttribute('aria-pressed','false');
-  const image = document.createElement('img'); image.alt = ''; image.loading = 'lazy'; image.src = fileStem(key)+'-generated.jpg';
-  const label = document.createElement('span'); label.textContent = name; button.append(image,label); picker.append(button);
-}
-const headings = {roaming:['Move and look around.','Follow the VR operator through six environments.'],robot:['Robot manipulation','Each rollout starts from a frame sampled from a robot dataset.'],novel:['New scenes','Explore the generated scene alongside the VR operator.']};
-if (group !== 'long') {
-  picker.classList.add('many-scenes');
-  document.querySelector('h1').textContent = headings[group][0];
-  document.querySelector('#caption').textContent = headings[group][1];
-  speed.value = '1';
-}
-variants.addEventListener('click', event => {
-  const option = event.target.closest('button[data-variant]');
-  if (!option) return;
-  const button = picker.querySelector('[aria-pressed=true]');
-  choices.set(button.dataset.scene,option.dataset.variant);
-  button.setAttribute('aria-pressed','false');
-  button.querySelector('img').src=fileStem(button.dataset.scene)+'-generated.jpg';
-  selectScene(button);
-});
-const scenes = Array.from(document.querySelectorAll('.scene'));
 
-function formatTime(seconds) {
-  const whole = Math.floor(Math.max(0, seconds || 0));
-  return Math.floor(whole / 60) + ':' + String(whole % 60).padStart(2, '0');
-}
-
-function syncRate(seconds) {
-  let rate = Number(speed.value);
-  if (speed.value === 'auto') {
-    if (seconds < 10) rate = 1;
-    else if (seconds < 60 || seconds >= rolloutMinutes * 60 - 15) rate = 4;
-    else rate = 16;
-  }
-  setNormalRate(rate);
-}
-
-function updateTime() {
-  const ready = videos.every(video => Number.isFinite(video.duration));
-  play.disabled = !ready;
-  seek.disabled = !ready;
-  if (!ready) return;
-  const duration = Math.min(generated.duration, operator.duration);
-  const at = Math.min(generated.currentTime, duration);
-  syncRate(at);
-  seek.max = duration;
-  seek.value = at;
-  clockElapsed.textContent = formatTime(at).padStart(5, '0');
-  clockTotal.textContent = '/ ' + formatTime(duration).padStart(5, '0');
-}
-
-function showPlaybackState(playing) {
-  const label = playing ? 'Pause' : 'Play';
-  playLabel.textContent = label;
-  play.setAttribute('aria-label', label);
-  play.title = label;
-  play.dataset.playing = String(playing);
-}
-
-function pauseBoth() {
-  playbackRequest += 1;
-  videos.forEach(video => video.pause());
-  showPlaybackState(false);
-}
-
-function rewind() {
-  videos.forEach(video => { video.currentTime = 0; });
-  updateTime();
-}
-
-async function startPlayback() {
+const pad = s => { s = Math.floor(Math.max(0, s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const end = () => Math.min(generated.duration, operator.duration);
+// Long rollouts always play at 16× so the full ten minutes reads in under a minute.
+const rate = () => group === 'long' ? 16 : 1;
+function showPaused(paused) { pause.dataset.paused = String(paused); pause.setAttribute('aria-label', paused ? 'Play' : 'Pause'); }
+function pauseBoth() { request++; videos.forEach(v => v.pause()); showPaused(true); }
+async function start() {
   if (!autoplay || !hostVisible || document.hidden) return;
-  preview.dataset.visible = 'false';
-  if (Number.isFinite(generated.duration)) {
-    if (generated.ended) rewind();
-    operator.currentTime = generated.currentTime;
-  }
-  const request = ++playbackRequest;
+  if (Number.isFinite(generated.duration)) operator.currentTime = generated.currentTime;
+  const mine = ++request;
   status.textContent = '';
-  showPlaybackState(true);
-  try {
-    await Promise.all(videos.map(video => video.play()));
-  } catch (error) {
-    if (request !== playbackRequest || error.name === 'AbortError') return;
-    autoplay = false;
-    pauseBoth();
-    status.textContent = 'Playback could not start. Try pressing Play again.';
+  showPaused(false);
+  try { await Promise.all(videos.map(v => v.play())); }
+  catch (error) {
+    if (mine !== request || error.name === 'AbortError') return;
+    autoplay = false; pauseBoth(); status.textContent = 'Playback could not start. Press play to try again.';
   }
 }
+function update() {
+  if (!videos.every(v => Number.isFinite(v.duration))) return;
+  const at = Math.min(generated.currentTime, end()), r = rate(at);
+  videos.forEach(v => { if (v.playbackRate !== r) v.playbackRate = r; });
+  if (group === 'long') clock.textContent = pad(at) + ' / ' + pad(end()) + (r > 1 ? ' · ' + r + '×' : '');
+}
 
-play.addEventListener('click', () => {
-  if (!generated.paused) {
-    autoplay = false;
-    pauseBoth();
-  } else {
-    autoplay = true;
-    startPlayback();
-  }
-});
+function markCurrent() {
+  reel.querySelectorAll('.clip').forEach(c => c.setAttribute('aria-current', String(c.dataset.key === current)));
+}
+function load(key) {
+  current = key;
+  pauseBoth();
+  markCurrent();
+  variants.hidden = !paired.has(key);
+  variants.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === variantFor(key))));
+  const base = stem(key);
+  operator.parentElement.style.setProperty('--focus', focus[key] || '50% 10%');
+  frames.forEach(f => f.classList.add('loading'));
+  for (const v of videos) { v.poster = base + '-' + v.id + '.jpg'; v.src = base + '-' + v.id + '.mp4'; v.load(); }
+  start();
+}
+function clipButton(key, copy) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'clip'; b.dataset.key = key;
+  b.setAttribute('aria-label', label(key));
+  if (copy) { b.tabIndex = -1; b.setAttribute('aria-hidden', 'true'); }
+  const img = document.createElement('img'); img.alt = ''; img.loading = 'lazy'; img.src = stem(key) + '-generated.jpg';
+  b.append(img);
+  b.addEventListener('click', () => { autoplay = true; if (current !== key) load(key); else start(); });
+  return b;
+}
+function show(name) {
+  group = name;
+  tabs.forEach(t => t.setAttribute('aria-pressed', String(t.dataset.group === name)));
+  $('#caption').textContent = captions[name];
+  clock.hidden = name !== 'long';
+  const keys = groups[name], still = keys.length < 4;
+  strip.classList.toggle('still', still);
+  // The reel holds the list twice so the drift can loop without a seam.
+  reel.replaceChildren(...keys.map(k => clipButton(k, false)), ...(still ? [] : keys.map(k => clipButton(k, true))));
+  reel.style.setProperty('--dur', keys.length * 4.5 + 's');
+  load(keys[0]);
+}
+function advance() {
+  const keys = groups[group];
+  load(keys[(keys.indexOf(current) + 1) % keys.length]);
+}
 
-seek.addEventListener('input', () => {
-  for (const video of videos) video.currentTime = Number(seek.value);
+tabs.forEach(t => t.addEventListener('click', () => { if (t.dataset.group !== group) { autoplay = true; show(t.dataset.group); } }));
+variants.addEventListener('click', e => {
+  const b = e.target.closest('button[data-variant]');
+  if (!b || b.dataset.variant === variantFor(current)) return;
+  choices.set(current, b.dataset.variant);
+  reel.querySelectorAll(`[data-key="${current}"] img`).forEach(img => { img.src = stem(current) + '-generated.jpg'; });
+  load(current);
 });
-speed.addEventListener('change', () => syncRate(generated.currentTime));
+pause.addEventListener('click', () => { if (generated.paused) { autoplay = true; start(); } else { autoplay = false; pauseBoth(); } });
 generated.addEventListener('timeupdate', () => {
-  updateTime();
-  const syncTolerance = Math.max(0.12, generated.playbackRate * 0.075);
-  if (!generated.paused && !operator.seeking && Math.abs(operator.currentTime - generated.currentTime) > syncTolerance) {
-    operator.currentTime = generated.currentTime;
-  }
+  update();
+  const tolerance = Math.max(.12, generated.playbackRate * .075);
+  if (!generated.paused && !operator.seeking && Math.abs(operator.currentTime - generated.currentTime) > tolerance) operator.currentTime = generated.currentTime;
 });
+// Short clips flow straight into the next one; long rollouts loop on themselves.
 generated.addEventListener('ended', () => {
-  if (!generated.ended) return;
-  pauseBoth();
-  rewind();
-  if (autoplay) startPlayback();
+  if (group === 'long') { videos.forEach(v => { v.currentTime = 0; }); start(); }
+  else advance();
 });
-videos.forEach(video => {
-  video.addEventListener('loadedmetadata', updateTime);
-  video.addEventListener('error', () => {
-    pauseBoth();
-    status.textContent = 'This video could not load.';
-  });
+for (const event of ['playing', 'loadeddata']) generated.addEventListener(event, () => frames.forEach(f => f.classList.remove('loading')));
+videos.forEach(v => {
+  v.addEventListener('loadedmetadata', update);
+  v.addEventListener('error', () => { if (v.getAttribute('src')) { pauseBoth(); status.textContent = 'This video could not load.'; } });
 });
-
-function selectScene(button) {
-  preview.dataset.visible = 'false';
-  if (button.getAttribute('aria-pressed') === 'true') return;
-  pauseBoth();
-  scenes.forEach(scene => scene.setAttribute('aria-pressed', String(scene === button)));
-  const scene = button.dataset.scene;
-  variants.hidden = !paired.has(scene);
-  variants.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.variant === variantFor(scene))));
-  loadScene(fileStem(scene));
-}
-
-function loadScene(scene) {
-  status.textContent = '';
-  clockElapsed.textContent = '00:00';
-  seek.value = 0;
-  play.disabled = seek.disabled = true;
-  for (const video of videos) {
-    video.poster = scene + '-' + video.id + '.jpg';
-    video.src = scene + '-' + video.id + '.mp4';
-    video.load();
-  }
-  if (autoplay) startPlayback();
-}
-
-function advanceScene(direction) {
-  const current = scenes.findIndex(button => button.getAttribute('aria-pressed') === 'true');
-  const next = (current + direction + scenes.length) % scenes.length;
-  selectScene(scenes[next]);
-  animateVideoBrowse(generatedFrame, direction);
-}
-
-scenes.forEach((button, index) => {
-  button.addEventListener('click', () => selectScene(button));
-  button.addEventListener('pointerenter', event => {
-    if (event.pointerType !== 'mouse' || !generated.paused || button.getAttribute('aria-pressed') === 'true') return;
-    preview.querySelector('img').src = button.querySelector('img').src;
-    preview.dataset.visible = 'true';
-  });
-  button.addEventListener('pointerleave', () => { preview.dataset.visible = 'false'; });
-  button.addEventListener('keydown', event => {
-    const direction = { ArrowLeft: -1, ArrowRight: 1 }[event.key];
-    if (!direction) return;
-    event.preventDefault();
-    const target = scenes[index + direction];
-    if (!target) return;
-    target.focus();
-    selectScene(target);
-  });
-});
-
-bindVideoBrowse(generatedFrame, browseButtons, advanceScene);
-selectScene(scenes[0]);
-function syncVisibility() {
-  if (!hostVisible || document.hidden) pauseBoth();
-  else if (autoplay && generated.paused) startPlayback();
-}
+function syncVisibility() { if (!hostVisible || document.hidden) pauseBoth(); else if (autoplay && generated.paused) start(); }
 document.addEventListener('visibilitychange', syncVisibility);
-window.addEventListener('message', event => {
-  if (event.origin !== location.origin || event.source !== parent || event.data?.type !== 'teleop-visible') return;
-  hostVisible = event.data.visible;
-  syncVisibility();
+window.addEventListener('message', e => {
+  if (e.origin !== location.origin || e.source !== parent || e.data?.type !== 'teleop-visible') return;
+  hostVisible = e.data.visible; syncVisibility();
 });
+show(group);
 </script>
 </body>
 </html>

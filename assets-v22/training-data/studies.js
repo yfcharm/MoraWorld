@@ -1,4 +1,4 @@
-// Every lane contains the same source frame: RGB, robot, bowls, then table.
+// Every lane holds the same source frame: RGB, then each white-clay level in order.
 export function initializeFilms(wall, sync) {
   const clay = wall.querySelector('.mw-clay');
   const video = clay.querySelector('video');
@@ -9,6 +9,7 @@ export function initializeFilms(wall, sync) {
   const slider = control.querySelector('input');
   const labels = ['Robot only', 'Robot and bowls', 'Robot, bowls and table'];
   const stops = [...control.querySelector('.mw-stops').children];
+  const MAX = stops.length - 1;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   let level = Number(slider.value);
   let cue = 0;
@@ -18,7 +19,7 @@ export function initializeFilms(wall, sync) {
 
   function paint() {
     if (video.readyState < 2 || video.seeking) return;
-    const width = video.videoWidth / 4;
+    const width = video.videoWidth / (MAX + 2);
     const base = Math.floor(level);
     function lane(index, opacity) {
       context.globalAlpha = opacity;
@@ -32,12 +33,12 @@ export function initializeFilms(wall, sync) {
   }
 
   function setLevel(value) {
-    level = Math.max(0, Math.min(2, value));
+    level = Math.max(0, Math.min(MAX, value));
     const nearest = Math.round(level);
     slider.value = nearest;
     slider.setAttribute('aria-valuetext', labels[nearest]);
     control.style.setProperty('--position', level);
-    clay.style.setProperty('--layer-position', ((nearest + 1) / 3 * 100) + '%');
+    clay.style.setProperty('--layer-position', ((nearest + 1) / (MAX + 1) * 100) + '%');
     stops.forEach((stop, i) => stop.classList.toggle('mw-selected', i === nearest));
     paint();
   }
@@ -56,7 +57,7 @@ export function initializeFilms(wall, sync) {
 
   function position(clientX) {
     const rect = control.getBoundingClientRect();
-    return Math.max(0, Math.min(2, 3 * (clientX - rect.left) / rect.width - .5));
+    return Math.max(0, Math.min(MAX, (MAX + 1) * (clientX - rect.left) / rect.width - .5));
   }
   slider.addEventListener('pointerdown', event => {
     if (!event.isPrimary || event.button !== 0) return;
@@ -84,7 +85,7 @@ export function initializeFilms(wall, sync) {
   slider.addEventListener('keydown', event => {
     const current = Math.round(level);
     const keys = { ArrowLeft: current - 1, ArrowDown: current - 1, ArrowRight: current + 1,
-      ArrowUp: current + 1, Home: 0, End: 2, PageDown: 0, PageUp: 2 };
+      ArrowUp: current + 1, Home: 0, End: MAX, PageDown: 0, PageUp: MAX };
     if (!(event.key in keys)) return;
     event.preventDefault();
     cancelAnimationFrame(animation);
@@ -121,44 +122,7 @@ export function initializeFilms(wall, sync) {
   video.addEventListener('pause', stop);
   setLevel(level);
 
-  const robot = wall.querySelector('.mw-robot-film');
-  const modelName = wall.querySelector('.mw-model-name');
-  const chips = [...wall.querySelectorAll('.mw-bodies-picker button')];
-  const chapters = [
-    { start: 0, name: 'ALOHA' }, { start: 6, name: 'AgiBot A2D' },
-    { start: 12, name: 'Galaxea R1-Lite' }, { start: 18, name: 'DOS-W1' },
-    { start: 27, name: 'Genie-1 · simulated' }, { start: 33, name: 'Galaxea R1 Pro · simulated' },
-    { start: 39, name: 'AgiBot G2 · simulated' }
-  ];
-  let current = 0;
-  let pendingModel = null;
-  function showModel(index) {
-    current = index;
-    modelName.textContent = chapters[index].name;
-    chips.forEach((chip, i) => chip.setAttribute('aria-pressed', String(i === index)));
-  }
-  function chapterEnd(index) {
-    return chapters[index + 1]?.start ?? (robot.duration || chapters[index].start + 6);
-  }
-  function chooseModel(index) {
-    showModel(index);
-    chips[index].style.setProperty('--p', 0);
-    pendingModel = index;
-    if (robot.readyState >= 1) robot.currentTime = chapters[index].start;
-  }
-  chips.forEach((chip, i) => chip.addEventListener('click', () => chooseModel(i)));
-  robot.addEventListener('loadedmetadata', () => {
-    if (pendingModel !== null) robot.currentTime = chapters[pendingModel].start;
-  });
-  robot.addEventListener('seeked', () => { pendingModel = null; });
-  robot.addEventListener('timeupdate', () => {
-    if (pendingModel !== null || robot.seeking) return;
-    const index = chapters.findLastIndex(chapter => robot.currentTime >= chapter.start);
-    if (index < 0) return;
-    if (index !== current) showModel(index);
-    const { start } = chapters[index];
-    chips[index].style.setProperty('--p', Math.min(1, (robot.currentTime - start) / (chapterEnd(index) - start)));
-  });
+
 
   // Memory: mark the first look, the turn away and the return on one track.
   const revisit = wall.querySelector('.mw-revisit-film');
@@ -182,4 +146,46 @@ export function initializeFilms(wall, sync) {
   marks.forEach(mark => mark.addEventListener('click', () => {
     if (revisit.readyState >= 1) revisit.currentTime = Number(mark.dataset.t);
   }));
+
+  // Failure: light each step of the attempt as the film reaches it.
+  const attempt = wall.querySelector('.mw-failure-film');
+  const steps = [...wall.querySelectorAll('.mw-steps li')];
+  const reachedAt = [2.6, 4, 5.8];
+  let stepFrame = 0;
+  function markStep() {
+    const t = attempt.currentTime;
+    const now = reachedAt.filter(at => t >= at).length - 1;
+    steps.forEach((step, i) => step.classList.toggle('mw-now', i === now));
+    stepFrame = attempt.paused ? 0 : requestAnimationFrame(markStep);
+  }
+  attempt.addEventListener('playing', () => { if (!stepFrame) stepFrame = requestAnimationFrame(markStep); });
+  attempt.addEventListener('seeked', () => { if (!stepFrame) markStep(); });
+  steps.forEach(step => step.querySelector('button').addEventListener('click', () => {
+    if (attempt.readyState >= 1) attempt.currentTime = Number(step.querySelector('button').dataset.t);
+  }));
+}
+
+// Up close folds like an accordion: one panel open, the others collapse to labelled strips.
+{
+  const fold = document.querySelector('.mw-training-wall');
+  const panels = [...fold.querySelectorAll(':scope > .mw-cell')];
+  const OPEN = 7.8;
+  function measure() {
+    const gaps = parseFloat(getComputedStyle(fold).columnGap) || 0;
+    const free = fold.clientWidth - gaps * (panels.length - 1);
+    fold.style.setProperty('--open-w', Math.round(free * OPEN / (OPEN + panels.length - 1)) + 'px');
+  }
+  function open(panel) {
+    panels.forEach(p => {
+      const isOpen = p === panel;
+      p.classList.toggle('mw-open', isOpen);
+      p.querySelector('.mw-tab').setAttribute('aria-expanded', String(isOpen));
+      p.querySelector('.mw-cell-body').inert = !isOpen;
+    });
+    fold.dispatchEvent(new Event('mw-fold'));
+  }
+  panels.forEach(p => p.querySelector('.mw-tab').addEventListener('click', () => open(p)));
+  new ResizeObserver(measure).observe(fold);
+  measure();
+  open(panels.find(p => p.classList.contains('mw-open')) || panels[0]);
 }

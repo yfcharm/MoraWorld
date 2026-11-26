@@ -1,4 +1,4 @@
-import { initializeFilms } from './studies.js';
+import { initializeFilms } from './studies.js?v=1126a';
 
 const presentation = document.querySelector('#data .mw-training');
 const featured = presentation.querySelector('.mw-training-wall');
@@ -8,7 +8,7 @@ const canvas = presentation.querySelector('.mw-wall');
 const context = canvas.getContext('2d');
 const legend = presentation.querySelector('.mw-legend');
 const legendButtons = Array.from(legend.querySelectorAll('button'));
-const counter = presentation.querySelector('[data-count]');
+const counter = presentation.querySelector('.mw-hero [data-count]');
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 const playToggle = presentation.querySelector('.mw-play');
 let wantsPlayback = !motionPreference.matches;
@@ -37,6 +37,7 @@ let tileW = 0, tileH = 0, gap = 0;
 let hoverKind = null;
 let lockedKind = null;
 let hits = [];
+let hoverSlot = -1;
 
 const fallback = new Image();
 const texture = document.createElement('video');
@@ -52,7 +53,7 @@ function layout() {
   resolution = Math.min(devicePixelRatio || 1, 2);
   canvas.width = Math.round(boxWidth * resolution);
   canvas.height = Math.round(boxHeight * resolution);
-  tileW = boxWidth < 700 ? 66 : boxWidth < 1200 ? 86 : 98;
+  tileW = boxWidth < 700 ? 62 : boxWidth < 1200 ? 78 : 86;
   tileH = Math.round(tileW * 2 / 3);
   gap = boxWidth < 700 ? 3 : 4;
   const rowCount = Math.max(5, Math.ceil(boxHeight / (tileH + gap)));
@@ -103,6 +104,11 @@ function draw() {
         context.fillRect(x, y + tileH - 2, tileW, 2);
       }
       context.globalAlpha = 1;
+      if (slot === hoverSlot) {
+        context.lineWidth = 2;
+        context.strokeStyle = '#fff';
+        context.strokeRect(x + 1, y + 1, tileW - 2, tileH - 2);
+      }
       hits.push({ x, y, slot });
     }
   });
@@ -174,6 +180,8 @@ canvas.addEventListener('pointermove', event => {
   const hit = tileAt(event);
   const kind = hit ? KINDS[hit.slot] : null;
   if (kind !== hoverKind) { hoverKind = kind; setFocus(); }
+  const slotNow = hit ? hit.slot : -1;
+  if (slotNow !== hoverSlot) { hoverSlot = slotNow; wake(); }
   if (!hit) { tip.classList.remove('mw-show'); tipSlot = -1; return; }
   if (hit.slot !== tipSlot) {
     tipSlot = hit.slot;
@@ -186,13 +194,7 @@ canvas.addEventListener('pointermove', event => {
   tip.style.transform = 'translate(' + x + 'px,' + (event.clientY - box.top + 16) + 'px)';
   tip.classList.add('mw-show');
 });
-canvas.addEventListener('pointerleave', () => { hoverKind = null; setFocus(); tip.classList.remove('mw-show'); tipSlot = -1; });
-canvas.addEventListener('click', event => {
-  const hit = tileAt(event);
-  const kind = hit ? KINDS[hit.slot] : null;
-  lockedKind = lockedKind === kind ? null : kind;
-  setFocus();
-});
+canvas.addEventListener('pointerleave', () => { hoverKind = null; hoverSlot = -1; setFocus(); tip.classList.remove('mw-show'); tipSlot = -1; });
 canvas.addEventListener('keydown', event => {
   if (event.code === 'Space') { event.preventDefault(); wantsPlayback = !wantsPlayback; sync(); }
   if (event.key === 'Escape') { lockedKind = null; setFocus(); }
@@ -207,7 +209,7 @@ function playIfPaused(video) {
 function sync() {
   const active = wantsPlayback && !document.hidden;
   for (const video of shots) {
-    if (wallVisible && active && video.readyState >= 2) playIfPaused(video);
+    if (wallVisible && active && video.readyState >= 2 && !video.closest('.mw-cell:not(.mw-open)')) playIfPaused(video);
     else video.pause();
   }
   if (atlasVisible && active) loadTexture();
@@ -221,24 +223,52 @@ function sync() {
 }
 
 // Count up the headline figure once, the first time the wall comes into view.
-let counted = false;
-function countUp() {
-  if (counted) return;
-  counted = true;
-  const target = Number(counter.dataset.count);
+// Count a number up from zero once, the first time it scrolls into view.
+function countUp(element, delay = 0) {
+  if (element.dataset.counted) return;
+  element.dataset.counted = '1';
+  const target = Number(element.dataset.count);
+  const decimals = Number(element.dataset.decimals || 0);
+  const format = value => value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   if (motionPreference.matches) return;
-  const start = performance.now();
+  element.textContent = format(0);
+  const start = performance.now() + delay;
   const step = now => {
-    const t = Math.min(1, (now - start) / 1400);
-    counter.textContent = Math.round(target * (1 - Math.pow(1 - t, 4))).toLocaleString('en-US');
+    const t = Math.max(0, Math.min(1, (now - start) / 1300));
+    const eased = 1 - Math.pow(1 - t, 4);
+    element.textContent = format(Math.round(target * eased * 10 ** decimals) / 10 ** decimals);
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
 }
 
+// Fade sections in as they arrive; without JavaScript everything stays visible.
+const revealTargets = [
+  presentation.querySelector('.mw-intro'), scale,
+  ...legendButtons, presentation.querySelector('.mw-footnote'),
+  presentation.querySelector('.mw-closeup-head'), ...featured.querySelectorAll('.mw-cell')
+];
+if (!motionPreference.matches) {
+  const reveal = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      reveal.unobserve(entry.target);
+      entry.target.classList.add('mw-in');
+      const delay = Number(entry.target.style.getPropertyValue('--d') || 0) * 1000;
+      setTimeout(() => entry.target.classList.remove('mw-reveal', 'mw-in'), delay + 1600);
+      const number = entry.target.querySelector?.('[data-count]');
+      if (number && entry.target !== scale) countUp(number, delay);
+    }
+  }, { rootMargin: '0px 0px -12% 0px' });
+  legendButtons.forEach((button, i) => button.style.setProperty('--d', (i * .08).toFixed(2)));
+  featured.querySelectorAll('.mw-cell').forEach((cell, i) => cell.style.setProperty('--d', ((i % 2) * .1).toFixed(2)));
+  for (const target of revealTargets) { target.classList.add('mw-reveal'); reveal.observe(target); }
+}
+
 initializeFilms(featured, sync);
 playToggle.onclick = () => { wantsPlayback = !wantsPlayback; sync(); };
 for (const video of shots) video.addEventListener('loadeddata', sync);
+featured.addEventListener('mw-fold', sync);
 texture.addEventListener('loadeddata', () => { draw(); sync(); });
 fallback.onload = draw;
 document.addEventListener('visibilitychange', sync);
@@ -265,7 +295,7 @@ function loadTexture() {
 const visibility = new IntersectionObserver(entries => {
   for (const entry of entries) {
     if (entry.target === featured) wallVisible = entry.isIntersecting;
-    else { atlasVisible = entry.isIntersecting; if (entry.isIntersecting) countUp(); }
+    else { atlasVisible = entry.isIntersecting; if (entry.isIntersecting) countUp(counter); }
   }
   sync();
 });
