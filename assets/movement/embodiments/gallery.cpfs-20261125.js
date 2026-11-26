@@ -6,6 +6,7 @@
   const models = [...picker.querySelectorAll('button')];
   const all = root.querySelector('.ev-all');
   const ood = root.querySelector('.ev-ood-only');
+  const oodLegend = root.querySelector('#ev-ood-definition');
   const motion = root.querySelector('.ev-motion');
   const pager = root.querySelector('.ev-pager');
   const count = pager.querySelector('.ev-count');
@@ -125,6 +126,7 @@
       if (name === 'ood') return card.dataset.ood === 'true';
       return !name || card.dataset.platform === name;
     });
+    oodLegend.hidden = !subset.some(card => card.dataset.ood === 'true');
     pages = [];
     for (let i = 0; i < subset.length; i += pageSize) {
       // Anchor the last window at the end so an incomplete quartet stays filled.

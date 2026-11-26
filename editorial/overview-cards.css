@@ -140,8 +140,8 @@
   content: '';
 }
 
-.mw-overview-features dt a:hover {
-  color: #D6C0F6;
+.mw-overview-features > div:is(:hover, :focus-within) dt a {
+  color: #ECEEF1;
 }
 
 .mw-overview-story-tools {

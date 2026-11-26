@@ -471,7 +471,9 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   .mw-cover__hero { opacity: 1; transform: translateY(-46%); }
   #moraworld-article { background: #0B0D10; }
 }
-:is(#top, #overview, #take, #bring, #stay, #back, #how, #memory-demo, #real-time) {
+:is(#top, #overview, #take, #bring, #stay, #back, #how, #memory-demo, #real-time,
+    #embodiment-showcase, #control-demo, #mobile-showcase, #long-horizon,
+    #omp-introduction, #real-world-results) {
   scroll-margin-top: 78px;
 }
 #cover:focus { outline: none; }
@@ -514,6 +516,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   color: #A3AAB5;
   font-size: clamp(1rem, 1.5vw, 1.1875rem);
   line-height: 1.6;
+  text-wrap: balance;
 }
 .mw-overview-intro strong { color: #ECEEF1; font-weight: 600; }
 .mw-overview-player {
@@ -528,10 +531,13 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
   .mw-overview-intro { grid-template-columns: minmax(0, 1fr); }
   .mw-overview-player { border-radius: 12px; }
 }
+@media (max-width: 520px) {
+  .mw-overview-intro p { text-wrap: pretty; }
+}
 </style>
-<link rel="stylesheet" href="editorial/overview-cards.css?v=8">
-<link rel="stylesheet" href="editorial/chapter-backgrounds.css">
-<script defer src="editorial/overview-cards.js?v=8"></script>
+<link rel="stylesheet" href="editorial/overview-cards.css?v=10">
+<link rel="stylesheet" href="editorial/chapter-backgrounds.css?v=2">
+<script defer src="editorial/overview-cards.js?v=10"></script>
 </head>
 <body>
   <div class="mw-cover__nav">
@@ -557,8 +563,8 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
     </details>
   </div>
 <div id="cover" tabindex="-1">
-<section class="mw-cover" data-mw-cover data-mw-cover-src="editorial/interactive-cover/cover.js?v=4" aria-labelledby="mw-cover-title"
-         data-atlas-lo="editorial/interactive-cover/atlas-preview.mp4"
+<section class="mw-cover" data-mw-cover data-mw-cover-src="editorial/interactive-cover/cover.js?v=5" aria-labelledby="mw-cover-title"
+         data-atlas-hi="editorial/interactive-cover/atlas-original.mp4"
          data-atlas-still="editorial/interactive-cover/atlas-still.jpg">
   <img class="mw-cover__poster" src="editorial/interactive-cover/poster.jpg" alt="" fetchpriority="high">
   <canvas class="mw-cover__canvas" aria-hidden="true"></canvas>
@@ -579,7 +585,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 <section id="top" class="mw-overview" aria-labelledby="mw-overview-title">
   <div class="mw-overview-intro">
     <h2 id="mw-overview-title">Overview</h2>
-    <p><strong>MoraWorld</strong> is an interactive world model for robotics. It turns actions and scene geometry into visual rollouts for navigation and manipulation across embodiments, maintaining scene continuity over long horizons and responding to live control. These capabilities support synthetic data generation, policy evaluation in simulation, and real-robot trials.</p>
+    <p><strong>MoraWorld</strong> turns agent-built 3D scenes into controllable, photorealistic robot rollouts. One world model takes inputs from action maps to full grey-box scenes, with long-horizon generation and live control across embodiments. Physics-grounded scene variations support iterative policy training and evaluation, from simulation to real robots.</p>
   </div>
   <div id="take" class="mw-overview-player">
     <video controls playsinline preload="none" aria-label="MoraWorld overview" src="assets-v22/MoraWorld-overview-v2.mp4" poster="assets-v22/MoraWorld-overview-v2.jpg" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #0B0D10"></video>
@@ -588,7 +594,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
     <article class="mw-overview-card">
       <div class="mw-overview-visual">
         <div class="mw-overview-card-media" data-overview-diagram="control">
-          <canvas width="360" height="202" role="img" aria-label="Illustration of a complete mobile robot with a wheeled base, two arms and a head camera. Select a stage to see different control inputs."></canvas>
+          <canvas width="360" height="202" role="img" aria-label="First-person view from the robot’s head camera. Select a stage to see action trajectories, forearm geometry, objects, or the full grey-box scene."></canvas>
         </div>
         <div class="mw-overview-story-tools" hidden>
           <div class="mw-overview-story-stages" role="group" aria-label="Control inputs">
@@ -603,9 +609,9 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
       <div class="mw-overview-card-copy">
         <h3><a href="#bring">Control <span aria-hidden="true">→</span></a></h3>
         <dl class="mw-overview-features">
-          <div><dt>Multiple embodiments</dt><dd>Use one model for single and dual arms, human hands, and mobile robots.</dd></div>
-          <div><dt>Flexible control</dt><dd>Guide generation with an action map or a full grey-box scene.</dd></div>
-          <div><dt>Mobile manipulation</dt><dd>Combine base motion, arm actions, and camera motion in one take.</dd></div>
+          <div><dt><a href="#embodiment-showcase">Multiple embodiments</a></dt><dd>Use one model for single and dual arms, human hands, and mobile robots.</dd></div>
+          <div><dt><a href="#control-demo">Multi-granularity control</a></dt><dd>Guide generation with action maps, partial geometry, or full grey-box scenes.</dd></div>
+          <div><dt><a href="#mobile-showcase">Mobile manipulation</a></dt><dd>Combine base motion, arm actions, and camera motion in one take.</dd></div>
         </dl>
       </div>
     </article>
@@ -627,7 +633,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
         <h3><a href="#stay">Continuity <span aria-hidden="true">→</span></a></h3>
         <dl class="mw-overview-features">
           <div><dt><a href="#memory-demo">Viewpoint memory</a></dt><dd>Check which scene details persist when the camera returns.</dd></div>
-          <div><dt><a href="#long-horizon">Long-horizon generation</a></dt><dd>Generate continuous rollouts for minutes offline.</dd></div>
+          <div><dt><a href="#long-horizon">Long-horizon generation</a></dt><dd>Generate continuous rollouts lasting minutes.</dd></div>
           <div><dt><a href="#real-time">Real-time VR control</a></dt><dd>Steer the scene live with VR controllers.</dd></div>
         </dl>
       </div>
@@ -650,9 +656,9 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
       <div class="mw-overview-card-copy">
         <h3><a href="#back">Robots <span aria-hidden="true">→</span></a></h3>
         <dl class="mw-overview-features">
-          <div><dt>Data generation</dt><dd>Vary scene layouts and appearances while keeping the demonstrated actions.</dd></div>
-          <div><dt>Policy evaluation</dt><dd>Compare policy behavior on matched tasks in simulation.</dd></div>
-          <div><dt>Real-robot trials</dt><dd>Compare policies trained on real, generated, or mixed demonstrations.</dd></div>
+          <div><dt><a href="#omp-introduction">Agentic data synthesis</a></dt><dd>Vary scene layouts and appearances while keeping the demonstrated actions.</dd></div>
+          <div><dt><a href="#policy-real-sim">Policy evaluation</a></dt><dd>Compare policy behavior on matched tasks in simulation.</dd></div>
+          <div><dt><a href="#real-world-results">Real-robot trials</a></dt><dd>Compare policies trained on real, generated, or mixed demonstrations.</dd></div>
         </dl>
       </div>
     </article>
@@ -759,7 +765,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 
         <figure id="data-embodiments" tabindex="-1" aria-labelledby="data-embodiments-title" class="mw-cell mw-bodies" style="--c:#96c8fb">
           <div class="mw-cell-body">
-          <header class="mw-cap"><span class="mw-chip"><i style="background:#cfabff"></i>Human <i></i>Robot</span><h4 class="mw-title" id="data-embodiments-title">Eight bodies, one training mix</h4><p class="mw-desc">Human hands and seven robots, four real and three simulated, in one mix.</p></header>
+          <header class="mw-cap"><span class="mw-chip"><i style="background:#cfabff"></i>Human <i></i>Robot</span><h4 class="mw-title" id="data-embodiments-title">Training across embodiments</h4><p class="mw-desc">Examples shown include human hands, four real robots, and three simulated robots.</p></header>
           <div class="mw-body-grid" role="img" aria-label="Human hands and seven robot embodiments, each doing manipulation at the same time">
             <div class="mw-body mw-body-human"><video data-file="body-human.mp4" poster="assets-v22/training-data/body-human.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">Human hands</span></div>
             <div class="mw-body"><video data-file="body-aloha.mp4" poster="assets-v22/training-data/body-aloha.webp" muted playsinline loop preload="none" disablepictureinpicture aria-hidden="true"></video><span class="mw-body-name">ALOHA</span></div>
@@ -796,7 +802,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 <header class="mw-chapter-heading">
   <p class="mw-chapter-label">Control</p>
   <h2 id="mw-bring-title">Bring anything</h2>
-  <p class="mw-chapter-deck">One model for many embodiments, from action maps to full grey-box scenes. <strong>Navigate and manipulate in one take.</strong></p>
+  <p class="mw-chapter-deck">One model for many embodiments, with <strong>control at multiple levels of detail</strong>, from action maps to full grey-box scenes. Navigate and manipulate in one take.</p>
 </header>
 
 <div style="margin-top: 64px; padding-top: 40px; border-top: 1px solid #1F242B">
@@ -1257,7 +1263,7 @@ a{color:#A582FF}a:hover{color:#C9B8FF}
 </figure></div>
   </div>
 </section>
-<script src="assets/movement/embodiments/gallery.cpfs-20261125.js?v=7"></script>
+<script src="assets/movement/embodiments/gallery.cpfs-20261125.js?v=8"></script>
 </div>
 
 <!-- movement gallery starts -->
@@ -1811,7 +1817,7 @@ warmMemory.observe(q('#memory-gallery'));
   <header class="mw-feature-heading stay-feature-heading">
     <p class="mw-feature-count">2 / 2</p>
     <h3 id="realtime-title"><span>Real-time</span>: fast enough to drive</h3>
-    <p class="stay-feature-copy">MoraWorld turns controller input into visible motion in <strong>about two-thirds of a second even at P95</strong> (669 ms, software estimate), while processing 17-frame chunks in a median of <strong>262 ms</strong>.</p>
+    <p class="stay-feature-copy">MoraWorld processes 17-frame chunks in a median of <strong>262&nbsp;ms</strong>. Software-estimated latency from controller input to visible motion is <strong>669&nbsp;ms at P95</strong>.</p>
   </header>
   <iframe id="showcase-teleop" src="assets/showcase/colleague-demos/teleop/long.html?player=5" loading="lazy" title="Synchronized VR teleoperation recordings" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <script>

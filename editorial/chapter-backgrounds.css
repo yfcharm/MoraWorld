@@ -52,10 +52,16 @@
   content: '';
 }
 
-.mw-chapter-content {
+.mw-chapter-content,
+#how .h3-wrap {
+  box-sizing: content-box;
   max-width: 1120px;
   margin: 0 auto;
-  padding: var(--chapter-inset) 24px clamp(70px, 8vw, 120px);
+  padding-inline: 24px;
+}
+
+.mw-chapter-content {
+  padding-block: var(--chapter-inset) clamp(70px, 8vw, 120px);
 }
 
 .mw-chapter-heading { position: relative; }
@@ -111,6 +117,7 @@
 
 @media (max-width: 720px) {
   .mw-chapter::before { width: 78%; background-size: 34px 34px; opacity: .6; }
+  #how .mw-rigkey i { white-space: normal; }
 
   #data .mw-scale::after {
     background: linear-gradient(0deg, #0e1218, rgb(14 18 24 / 83%) 28%, rgb(14 18 24 / 37%) 59%, transparent 88%);

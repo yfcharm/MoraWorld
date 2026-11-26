@@ -15,14 +15,14 @@
     ctx.stroke();
   }
 
-  function shape(ctx, points, fill, stroke) {
+  function shape(ctx, points, fill, stroke, thickness = 1) {
     ctx.beginPath();
     points.forEach(([x, y], index) => index ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
     ctx.closePath();
     ctx.fillStyle = fill;
     ctx.fill();
     ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = thickness;
     ctx.stroke();
   }
 
@@ -139,44 +139,171 @@
     ctx.restore();
   }
 
+  function drawEgoFloorGrid(ctx) {
+    for (const edge of [-240, -40, 100, 210, 320, 430, 540, 680, 880]) {
+      line(ctx, [[320 + (edge - 320) * .16, 135], [edge, 360]], '#8d81bb27');
+    }
+    for (const y of [151, 174, 205, 247, 301, 359]) line(ctx, [[0, y], [640, y]], '#8d81bb26');
+  }
+
+  function drawEgoBackdrop(ctx, mode) {
+    const accent = ['#252039', '#292b41', '#282833', '#262934'][mode];
+    const light = ctx.createRadialGradient(320, 180, 40, 320, 175, 440);
+    light.addColorStop(0, accent);
+    light.addColorStop(1, '#11131d');
+    ctx.fillStyle = light;
+    ctx.fillRect(0, 0, 640, 360);
+  }
+
+  function drawEgoTrajectory(ctx, points, color, t) {
+    ctx.setLineDash([5, 8]);
+    line(ctx, points, color, 2);
+    ctx.setLineDash([]);
+    const [x, y] = points.at(-1);
+    const [px, py] = points.at(-2);
+    const heading = Math.atan2(y - py, x - px);
+    line(ctx, [[x - 9 * Math.cos(heading - .52), y - 9 * Math.sin(heading - .52)], [x, y],
+      [x - 9 * Math.cos(heading + .52), y - 9 * Math.sin(heading + .52)]], color, 2);
+    oval(ctx, ...points[0], 3.5, 3.5, '#201c30', color);
+    const position = t * (points.length - 1);
+    const step = Math.min(points.length - 2, Math.floor(position));
+    const fraction = position - step;
+    const from = points[step];
+    const to = points[step + 1];
+    const cx = mix(from[0], to[0], fraction);
+    const cy = mix(from[1], to[1], fraction);
+    ctx.save();
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 16;
+    oval(ctx, cx, cy, 4.4, 4.4, color, '#f4eaff');
+    ctx.restore();
+  }
+
+  function drawEgoActionMap(ctx, t) {
+    drawEgoFloorGrid(ctx);
+    drawEgoTrajectory(ctx, [[223, 273], [239, 241], [255, 218], [276, 201], [291, 196]], '#93d9d3', t);
+    drawEgoTrajectory(ctx, [[499, 271], [472, 242], [439, 204], [407, 183], [378, 191]], '#c8a6ff', t);
+    drawEgoTrajectory(ctx, [[328, 337], [327, 303], [324, 278], [312, 254]], '#8e90b6', t);
+    line(ctx, [[89, 226], [163, 226], [216, 248]], '#93d9d373');
+    line(ctx, [[517, 169], [477, 169], [430, 194]], '#c8a6ff73');
+    line(ctx, [[340, 309], [363, 315], [385, 315]], '#8e90b673');
+    label(ctx, 'Left gripper', 87, 214, { color: '#a0ded9', size: 16, weight: 550 });
+    label(ctx, 'Right gripper', 550, 157, { color: '#d3baff', size: 16, weight: 550, align: 'right' });
+    label(ctx, 'Base motion', 391, 315, { color: '#b1b2d0', size: 16, weight: 550 });
+  }
+
+  function drawEgoLink(ctx, from, to, nearWidth, farWidth) {
+    const dx = to[0] - from[0];
+    const dy = to[1] - from[1];
+    const length = Math.hypot(dx, dy);
+    const normal = [-dy / length, dx / length];
+    const edge = (point, width) => [point[0] + normal[0] * width, point[1] + normal[1] * width];
+    const top = edge(from, nearWidth);
+    const bottom = edge(from, -nearWidth);
+    const shading = ctx.createLinearGradient(...top, ...bottom);
+    shading.addColorStop(0, '#6b708b');
+    shading.addColorStop(1, '#252838');
+    shape(ctx, [top, edge(to, farWidth), edge(to, -farWidth), bottom], shading, '#797f9a', 1.2);
+    line(ctx, [edge(from, nearWidth * .70), edge(to, farWidth * .70)], '#a8abc35c', 1.2);
+  }
+
+  function drawEgoArm(ctx, origin, elbow, wrist, tip, reach, accent) {
+    const joint = [wrist[0] + reach[0], wrist[1] + reach[1]];
+    const target = [tip[0] + reach[0], tip[1] + reach[1]];
+    drawEgoLink(ctx, origin, elbow, 38, 22);
+    drawEgoLink(ctx, elbow, joint, 20, 12);
+    oval(ctx, ...elbow, 21, 17, '#464b62', '#969ab2');
+    oval(ctx, ...elbow, 12, 10, '#292e42', '#666e8b');
+    drawEgoLink(ctx, joint, target, 12, 7);
+    oval(ctx, ...joint, 10, 8, '#33394e', '#989db6');
+    oval(ctx, joint[0] - 2, joint[1] - 2, 2.4, 2.4, accent);
+    const direction = Math.atan2(target[1] - joint[1], target[0] - joint[0]);
+    ctx.save();
+    ctx.translate(...target);
+    ctx.rotate(direction);
+    for (const side of [-1, 1]) {
+      const finger = [[-3, side * 4], [7, side * 10], [14, side * 8], [20, side * 5]];
+      line(ctx, finger, '#222637', 8);
+      line(ctx, finger, '#9fa5bd', 4.5);
+      line(ctx, [[14, side * 8], [20, side * 5]], accent, 1.8);
+    }
+    ctx.restore();
+  }
+
+  function drawEgoForearms(ctx, t) {
+    const reach = Math.sin(t * Math.PI / 2);
+    drawEgoArm(ctx, [56, 382], [150, 312], [221, 249], [248, 224], [7 * reach, -9 * reach], '#98d7d2');
+    drawEgoArm(ctx, [590, 378], [500, 309], [439, 245], [420, 222], [-11 * reach, -13 * reach], '#c6a8ff');
+  }
+
+  function drawEgoObjects(ctx, withTable) {
+    const shadow = withTable ? '#23242d80' : '#0d101a88';
+    oval(ctx, 260, 239, 78, 8, shadow);
+    shape(ctx, [[193, 232], [212, 204], [300, 204], [322, 232], [318, 239], [196, 239]], gradient(ctx, 205, 242, '#737789', '#3c4053'), '#9da1b1');
+    shape(ctx, [[201, 228], [217, 208], [296, 208], [314, 228]], '#4d5165', '#a7abbd');
+
+    oval(ctx, 395, 224, 29, 6, shadow);
+    ctx.beginPath();
+    ctx.moveTo(377, 180);
+    ctx.lineTo(377, 218);
+    ctx.ellipse(395, 218, 18, 5, 0, Math.PI, 0, true);
+    ctx.lineTo(413, 180);
+    const shading = ctx.createLinearGradient(377, 0, 413, 0);
+    shading.addColorStop(0, '#d8a37e');
+    shading.addColorStop(1, '#815749');
+    ctx.fillStyle = shading;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#e1af90';
+    ctx.stroke();
+    oval(ctx, 395, 180, 18, 5.5, '#dfb395', '#f5cdad');
+  }
+
+  function drawEgoRoom(ctx) {
+    shape(ctx, [[0, 229], [155, 148], [476, 148], [640, 231], [640, 360], [0, 360]], gradient(ctx, 145, 349, '#4b4d5c', '#31333f'), '#646778');
+    shape(ctx, [[0, 33], [155, 66], [155, 148], [0, 229]], '#343746', '#6d7184');
+    shape(ctx, [[155, 66], [476, 66], [476, 148], [155, 148]], gradient(ctx, 65, 148, '#696b79', '#505363'), '#6d7184');
+    shape(ctx, [[476, 66], [640, 34], [640, 231], [476, 148]], '#3f4251', '#6d7184');
+    shape(ctx, [[26, 84], [122, 96], [122, 137], [26, 174]], '#202634', '#73768c', 1.2);
+    line(ctx, [[26, 124], [122, 115]], '#636b83');
+    shape(ctx, [[509, 101], [583, 85], [583, 196], [509, 152]], '#333746', '#6f7287');
+    shape(ctx, [[236, 88], [369, 88], [369, 135], [236, 135]], '#777a88', '#a0a4b5');
+    line(ctx, [[253, 109], [349, 109]], '#a0a4b5');
+    line(ctx, [[222, 148], [125, 360]], '#646779');
+    line(ctx, [[409, 148], [530, 360]], '#646779');
+    shape(ctx, [[106, 291], [534, 291], [534, 306], [106, 306]], '#3f4354', '#7d8295');
+    shape(ctx, [[190, 158], [450, 158], [534, 291], [106, 291]], gradient(ctx, 159, 291, '#777885', '#5b5f71'), '#8b8e9f');
+  }
+
   function drawControl(ctx, mode, progress) {
+    ctx.save();
+    ctx.scale(width / 640, height / 360);
+    drawEgoBackdrop(ctx, mode);
+    if (mode === 0) {
+      drawEgoActionMap(ctx, progress);
+    } else {
+      if (mode === 3) drawEgoRoom(ctx);
+      if (mode >= 2) drawEgoObjects(ctx, mode === 3);
+      drawEgoForearms(ctx, progress);
+      if (mode === 1) {
+        line(ctx, [[144, 220], [154, 254], [165, 277]], '#98d7d27a');
+        line(ctx, [[516, 219], [501, 254], [483, 275]], '#c6a8ff7a');
+        label(ctx, 'Left forearm', 103, 205, { color: '#a0ded9', size: 16, weight: 550 });
+        label(ctx, 'Right forearm', 553, 205, { color: '#d3baff', size: 16, weight: 550, align: 'right' });
+      }
+      if (mode === 2) {
+        line(ctx, [[178, 164], [209, 164], [238, 204]], '#adb2c880');
+        line(ctx, [[455, 144], [428, 144], [403, 175]], '#e8ab8b80');
+        label(ctx, 'Tray', 146, 164, { color: '#c3c7da', size: 16, weight: 550 });
+        label(ctx, 'Target object', 459, 144, { color: '#ebbb9b', size: 16, weight: 550 });
+      }
+    }
+    ctx.restore();
+
     const titles = ['Action map', 'Robot geometry', 'Arms + objects', 'Full grey-box scene'];
     label(ctx, titles[mode], 17, 20, { color: ink, weight: 650 });
-
-    if (mode === 3) {
-      ctx.save();
-      ctx.globalAlpha = .5 + .5 * ease(progress);
-      drawRoom(ctx);
-      ctx.restore();
-    } else {
-      shape(ctx, [[42, 148], [174, 113], [323, 147], [175, 185]], '#1f2031', '#3d4059');
-    }
-
-    if (mode >= 2) {
-      ctx.save();
-      ctx.globalAlpha = mode === 2 ? .5 + .5 * ease(progress) : 1;
-      drawWorkbench(ctx);
-      ctx.restore();
-    }
-
-    ctx.setLineDash([3, 5]);
-    line(ctx, [[71, 154], [100, 163], [128, 155], [159, 147]], mode === 0 ? lavender : '#756493', 1.5);
-    const route = [[191, 113], [209, 109], [225, 101], [244, 113]];
-    line(ctx, route, mode === 0 ? lavender : '#967bb1', 1.6);
-    ctx.setLineDash([]);
-
-    const reach = ease(progress);
-    const x = mix(141, 168, reach);
-    drawMobileRobot(ctx, x, 147, 1, reach, { ghost: mode === 0 });
-    if (mode === 0) {
-      dot(ctx, mix(191, 244, reach), 111 - Math.sin(reach * Math.PI) * 12, 4, lavender, '#f3e6ff');
-      label(ctx, 'Gripper path', 268, 101, { size: 11, color: lavender });
-    } else {
-      label(ctx, 'Head camera', 263, 58, { size: 11, color: lavender });
-      line(ctx, [[242, 69], [253, 58], [257, 58]], '#8d76ad');
-    }
-    label(ctx, 'Mobile base', 37, 120, { size: 11, color: muted });
-    line(ctx, [[87, 120], [111, 140], [125, 140]], '#7a668f');
+    panel(ctx, 274, 13, 70, 14, 3, '#1b1928cc', '#c6affd40');
+    label(ctx, 'HEAD CAMERA', 309, 20, { align: 'center', color: '#dccef9', size: 7.5, weight: 650 });
   }
 
   const roomRoute = [[105, 116], [152, 116], [165, 116], [183, 116], [183, 89], [206, 89], [255, 89]];
@@ -309,7 +436,7 @@
   }
 
   function useCases(ctx, progress) {
-    const columnLabels = ['Data variants', 'Policy evaluation', 'Real-robot trials'];
+    const columnLabels = ['Data synthesis', 'Policy evaluation', 'Real-robot trials'];
     const accents = ['#bd9df1', '#9ad5cf', '#edbea2'];
     firstPerson(ctx, 145, 34, .45);
     line(ctx, [[180, 78], [180, 93], [70, 93], [70, 112]], '#8b729e', 1.4);

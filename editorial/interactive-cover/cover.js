@@ -147,11 +147,14 @@
   Cover.prototype._resize = function () {
     var b = this.root.getBoundingClientRect();
     if (!b.width || !b.height) return;
-    // Backing resolution stays bounded on Retina and other high-density screens.
-    var maxPixels = 750000;
-    var scale = Math.min(1, Math.sqrt(maxPixels / (b.width * b.height)));
+    // Match the original cover's Retina sizing and maximum canvas width.
+    var scale = Math.min(window.devicePixelRatio || 1, 2);
     var W = Math.max(1, Math.round(b.width * scale));
     var H = Math.max(1, Math.round(b.height * scale));
+    if (W > 2560) {
+      H = Math.max(1, Math.round(H * 2560 / W));
+      W = 2560;
+    }
     if (W === this.W && H === this.H) return;
     this.W = W; this.H = H;
     this.canvas.width = W; this.canvas.height = H;
